@@ -312,6 +312,11 @@
 	],
 	"file_history":
 	[
+		"/home/yiro4618/hiwi/wstud-viewer-framework-django/viewer-framework/manage.py",
+		"/home/yiro4618/hiwi/wstud-viewer-framework-django/viewer-framework/viewer-framework/wsgi.py",
+		"/home/yiro4618/hiwi/wstud-viewer-framework-django/viewer-framework/viewer-framework/urls.py",
+		"/home/yiro4618/hiwi/wstud-viewer-framework-django/viewer-framework/viewer-framework/settings.py",
+		"/home/yiro4618/hiwi/wstud-viewer-framework-django/viewer-framework/viewer-framework/__init__.py",
 		"/home/yiro4618/hiwi/wstud-netspeak-log-analysis/src-py/django-project/log_browser/static/log_browser/js/identify_queries.js",
 		"/home/yiro4618/hiwi/wstud-netspeak-log-analysis/src-py/django-project/data_manager/static/data_manager/css/formats.css",
 		"/home/yiro4618/hiwi/wstud-netspeak-log-analysis/data/datasets/annotated-by-komlossy/features/length.tsv",
@@ -434,12 +439,7 @@
 		"/home/yiro4618/hiwi/wstud-netspeak-log-analysis/README",
 		"/home/yiro4618/workspace/clickbait-detection-chrome-plugin/src/options.js",
 		"/home/yiro4618/hiwi/wstud-netspeak-log-analysis/data/logs/3_parsed_logs/test1.ldjson",
-		"/home/yiro4618/hiwi/wstud-netspeak-log-analysis/data/logs/test.ldjson",
-		"/home/yiro4618/hiwi/wstud-netspeak-log-analysis/src-py/django-project_sqlite/netspeak_analysis/settings.py",
-		"/home/yiro4618/hiwi/wstud-netspeak-log-analysis/src-py/django-project/data_analyzer/static/data_analyzer/js/tags.js",
-		"/home/yiro4618/hiwi/wstud-netspeak-log-analysis/src-py/django-project/data_manager/static/data_manager/js/main.js",
-		"/home/yiro4618/hiwi/wstud-netspeak-log-analysis/src-py/django-project/data_manager/templates/data_manager/select_ips_table.html",
-		"/home/yiro4618/hiwi/wstud-netspeak-log-analysis/src-py/django-project/data_manager/templates/data_manager/select_ips.html"
+		"/home/yiro4618/hiwi/wstud-netspeak-log-analysis/data/logs/test.ldjson"
 	],
 	"find":
 	{
@@ -463,6 +463,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"viewer",
 			"tag",
 			"update_tags_list",
 			"handle_tag_selection",
@@ -589,8 +590,7 @@
 			"break",
 			"feature",
 			"id_interaction",
-			"float(",
-			"size_ttest"
+			"float("
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -654,7 +654,7 @@
 		"height": 0.0
 	},
 	"pinned_build_system": "",
-	"project": "viewer.sublime-project",
+	"project": "viewer-framework.sublime-project",
 	"replace":
 	{
 		"height": 48.0
@@ -695,7 +695,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 380.0,
+	"side_bar_width": 306.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
