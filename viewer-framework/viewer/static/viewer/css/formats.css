@@ -1,0 +1,5 @@
+.alert.custom_alert {
+	display: none;
+	padding: 3px;
+	text-align: center;
+}

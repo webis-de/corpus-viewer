@@ -12,6 +12,7 @@
 				<span id="info_number_of_items" class="text-muted">&nbsp;placeholder</span>
 			</div>
 		</div>
+        <!-- PAGINATOR -->
 		<div class="row">
 			<div class="col">
 				<nav class="btn-toolbar" id="info_paginator">
@@ -29,15 +30,101 @@
 				</nav>
 			</div>
 		</div>
+        <hr>
+        <!-- FILTERS -->
+        <div class="row mb-3">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header py-1 px-2">
+                        <a data-toggle="collapse" href="#div_filters" class="text-muted">Filters</a>
+                        <a href="#" id="reset_filters" class="float-right">Reset Filters</a>
+                    </div>
+                    <div class="collapse" id="div_filters">
+                        <div class="card-block py-1 px-2">
+                            dasdasd
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- TAGS -->
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header py-1 px-2">
+                        <a data-toggle="collapse" href="#div_tags" class="text-muted">Tags</a>
+                        <a href="{% url 'viewer:tags' %}" id="view_tags" class="float-right">View Tags</a>
+                    </div>
+                    <div class="collapse show" id="div_tags">
+                        <div class="card-block py-1 px-2">
+                            <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal_add_tag">
+                                <i class="fa fa-plus" aria-hidden="true"></i> Add Tag
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 	</div>
-	<div class="col-2">
-		<div class="row">
-		</div>
+	<div class="col">
+        <div class="row">
+            <div class="col" id="table_tweets">
+                <div class="wrapper_loading text-center">
+                    <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                </div>
+                <div class="content"></div>
+            </div>
+        </div>
 	</div>
+</div>
+
+<!-- MODAL ADD TAG -->
+<div class="modal fade" id="modal_add_tag">
+    <div class="modal-dialog" role="document">
+        <form id="form_add_tag">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Add Tag</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        Tag will be added to <span id="info_count_selected_tweets"></span> tweets.
+                    </div>
+                    <div class="form-check mb-3">
+                        <label class="form-check-label">
+                            <input name="add_to_all_filtered_entries" type="checkbox" class="form-check-input">
+                            Add tag to all filtered tweets
+                        </label>
+                    </div>
+                    <div class="form-group" style="position: relative">
+                        <label for="input_name_tag">Name</label>
+                        <input name="tag" type="text" id="input_name_tag" class="form-control" placeholder="Enter Tag-Name" value="">
+                        <div id="wrapper_tag_recommendations" class="wrapper_recommendation" style="display: none"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="input_color_tag">Color</label>
+                        <input name="color" id="input_color_tag" type="color" class="form-control" placeholder="Enter new tag" value="#000000">
+                    </div>
+                    <div class="alert_wrapper">
+                        <div class="alert alert-warning custom_alert" role="alert"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="add_tag($('#modal_add_tag'))">Add Tag</button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 
 <div style="display:none" id="data_page" data-urlparams="{{ session_json }}"></div>
 {% csrf_token %}
+
+<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
 
 <script src="{% static 'viewer/js/index_functions.js' %}"></script>
 <script src="{% static 'viewer/js/index.js' %}"></script>
