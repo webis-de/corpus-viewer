@@ -1,0 +1,44 @@
+{% include "viewer/header.html" %}
+{% load staticfiles %}
+<div class="row">
+	<div class="col">
+		<h1>Viewer</h1>
+	</div>
+</div>
+<div class="row">
+	<div class="col-2">
+		<div class="row">
+			<div class="col">
+				<span id="info_number_of_items" class="text-muted">&nbsp;placeholder</span>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<nav class="btn-toolbar" id="info_paginator">
+					<div class="btn-group btn-group-sm mr-2">
+					    <button type="button" class="btn btn-secondary" data-direction='first' disabled><i class="fa fa-fast-backward" aria-hidden="true"></i></button>
+					    <button type="button" class="btn btn-secondary" data-direction='left' disabled><i class="fa fa-backward" aria-hidden="true"></i></button>
+				  	</div>
+				  	<div class="input-group input-group-sm">
+					    <input type="text" class="form-control" placeholder="page" aria-describedby="btnGroupAddon">
+				  	</div>
+					<div class="btn-group btn-group-sm ml-2">
+					    <button type="button" class="btn btn-secondary" data-direction='right' disabled><i class="fa fa-forward" aria-hidden="true"></i></button>
+					    <button type="button" class="btn btn-secondary" data-direction='last' disabled><i class="fa fa-fast-forward" aria-hidden="true"></i></button>
+				  	</div>
+				</nav>
+			</div>
+		</div>
+	</div>
+	<div class="col-2">
+		<div class="row">
+		</div>
+	</div>
+</div>
+
+<div style="display:none" id="data_page" data-urlparams="{{ session_json }}"></div>
+{% csrf_token %}
+
+<script src="{% static 'viewer/js/index_functions.js' %}"></script>
+<script src="{% static 'viewer/js/index.js' %}"></script>
+{% include "viewer/footer.html" %}
