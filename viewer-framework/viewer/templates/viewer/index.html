@@ -39,10 +39,25 @@
                         <a data-toggle="collapse" href="#div_filters" class="text-muted">Filters</a>
                         <a href="#" id="reset_filters" class="float-right">Reset Filters</a>
                     </div>
-                    <div class="collapse" id="div_filters">
-                        <div class="card-block py-1 px-2">
-                            dasdasd
-                        </div>
+                    <div class="collapse show" id="div_filters">
+                    {% for filter in settings.filters %}
+                        {% if filter.type == 'checkbox' %}
+                            <div class="form-check mb-3">
+                                <label class="form-check-label">
+                                    <input name="add_to_all_filtered_entries" type="checkbox" class="form-check-input">
+                                    Add tag to all filtered tweets
+                                </label>
+                            </div>
+                        {% elif filter.type == 'text'%}
+                            <div class="card-block py-1 px-2">
+                                <div class="form-group" style="position: relative">
+                                    <label for="input_name_tag">Name</label>
+                                    <input name="tag" type="text" id="input_name_tag" class="form-control" placeholder="Enter Tag-Name" value="">
+                                    <div id="wrapper_tag_recommendations" class="wrapper_recommendation" style="display: none"></div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
                     </div>
                 </div>
             </div>
@@ -121,11 +136,14 @@
 
 <div style="display:none" id="data_page" data-urlparams="{{ session_json }}"></div>
 {% csrf_token %}
-
+<!-- 
 <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script> -->
 
+<script src="{% static 'viewer/js/jquery.js' %}"></script>
+<script src="{% static 'viewer/js/tether.js' %}"></script>
+<script src="{% static 'viewer/js/bootstrap.js' %}"></script>
 <script src="{% static 'viewer/js/index_functions.js' %}"></script>
 <script src="{% static 'viewer/js/index.js' %}"></script>
 {% include "viewer/footer.html" %}
