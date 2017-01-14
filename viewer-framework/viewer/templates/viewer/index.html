@@ -40,24 +40,28 @@
                         <a href="#" id="reset_filters" class="float-right">Reset Filters</a>
                     </div>
                     <div class="collapse show" id="div_filters">
-                    {% for filter in settings.filters %}
-                        {% if filter.type == 'checkbox' %}
-                            <div class="form-check mb-3">
-                                <label class="form-check-label">
-                                    <input name="add_to_all_filtered_entries" type="checkbox" class="form-check-input">
-                                    Add tag to all filtered tweets
-                                </label>
+                        <div class="card-block py-1 px-2">
+                            <div class="form-group" style="display: relative">
+                                <label for="input_name_tag">Name</label>
+                                <input name="tag" type="text" id="input_name_tag" class="form-control" placeholder="Enter Tag-Name" value="">
+                                <div id="wrapper_tag_recommendations" class="wrapper_recommendation" style="display: none"></div>
                             </div>
-                        {% elif filter.type == 'text'%}
-                            <div class="card-block py-1 px-2">
-                                <div class="form-group" style="position: relative">
-                                    <label for="input_name_tag">Name</label>
-                                    <input name="tag" type="text" id="input_name_tag" class="form-control" placeholder="Enter Tag-Name" value="">
-                                    <div id="wrapper_tag_recommendations" class="wrapper_recommendation" style="display: none"></div>
+                        {% for filter in settings.filters %}
+                            {% if filter.type == 'checkbox' %}
+                                <div class="form-check mb-3">
+                                    <label class="form-check-label">
+                                        <input name="{{ filter.data_field_id }}" id="input_{{ filter.data_field_id }}" type="checkbox" class="form-check-input" {{ filter.default_value }}²>
+                                        {{ filter.description }}
+                                    </label>
                                 </div>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
+                            {% elif filter.type == 'text'%}
+                                <div class="form-group">
+                                    <label for="input_{{ filter.data_field_id }}">{{ filter.description }}</label>
+                                    <input name="{{ filter.data_field_id }}" type="text" id="input_{{ filter.data_field_id }}" class="form-control" placeholder="{{ filter.placeholder }}" value="{{ filter.default_value }}">
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        </div>
                     </div>
                 </div>
             </div>

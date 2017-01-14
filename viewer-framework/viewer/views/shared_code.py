@@ -6,6 +6,7 @@ def set_session(request, key, default):
         request.session[sessionkey] = default
 
 def set_session_from_url(request, key, default):
+    print(key, default)
     sessionkey = 'viewer__'+key
     if request.GET.get(key) != None:
         request.session[sessionkey] = request.GET.get(key)
