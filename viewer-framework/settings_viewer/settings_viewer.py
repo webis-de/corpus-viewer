@@ -1,11 +1,11 @@
 DICT_SETTINGS_VIEWER = {
 	# possible values: 'database', 'csv-file', 'ldjson-file'
-	'data_type': 'database',
+	'data_type': 'csv-file',
 		# only necessary if data_type is '*-file'
 			# path to file,
-			'data_path': '',
+			'data_path': 'csv-file.csv',
 			# structure of data in file
-			'data_structure': ['id', 'name'],
+			'data_structure': ['name', 'count_of_something'],
 		# only necessary if data_type is 'database'
 			# name of the app where the model is located
 			'app_label': 'viewer',

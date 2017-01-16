@@ -22,13 +22,12 @@ def get_page(request):
     set_session_from_url(request, 'viewer__page', 1)
 
 ##### load data and apply filters
+    data = []
     if DICT_SETTINGS_VIEWER['data_type'] == 'database':
         db_model = apps.get_model(DICT_SETTINGS_VIEWER['app_label'], DICT_SETTINGS_VIEWER['model_name'])
         data = db_model.objects.all()
-
-
     elif DICT_SETTINGS_VIEWER['data_type'] == 'csv-file':
-        pass
+        data = load_file_csv()
     elif DICT_SETTINGS_VIEWER['data_type'] == 'ldjson-file':
         pass
 
@@ -46,7 +45,7 @@ def get_page(request):
 
 ##### handle post requests
     # print(DICT_SETTINGS_VIEWER)
-    time.sleep(0.5)
+    # time.sleep(0.5)
     context = {}
     context['settings'] = DICT_SETTINGS_VIEWER
     context['data'] = data
@@ -68,7 +67,15 @@ def get_page(request):
         })
 
 def load_file_csv():
-    pass
+    data = []
+    with open(DICT_SETTINGS_VIEWER['data_path'], newline='') as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            tmp = {}
+            for index, field in enumerate(DICT_SETTINGS_VIEWER['data_structure']):
+                tmp[field] = row[index]
+            data.append(tmp)
+    return data
 
 def load_file_ldjson():
     pass

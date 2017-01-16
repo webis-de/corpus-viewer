@@ -41,7 +41,7 @@ function load_current_page(update_tags = true)
     $.ajax({
         url: 'get_page?'+url_params,
         beforeSend: function() {
-            $('#table_entities .wrapper_loading').show();
+            start_loading();
         },
         success: function(result) {
             $('#table_entities .content').html(result.content)
@@ -61,7 +61,7 @@ function load_current_page(update_tags = true)
         //     // }
 
             update_ui();
-            $('#table_entities .wrapper_loading').hide();
+            stop_loading();
         },
     });
 }
@@ -121,4 +121,14 @@ function refresh_url()
     history.replaceState(null, null, '?'+url_params);
 
     return url_params
+}
+
+function start_loading()
+{
+    $('#wrapper_loading').show();
+}
+
+function stop_loading()
+{
+    $('#wrapper_loading').hide();
 }

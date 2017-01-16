@@ -1,6 +1,19 @@
 html {
   overflow-y: scroll;
 }
+
+/*#wrapper_loading {
+    position: absolute;
+    height: 50vh;
+    width: 100%;
+}*/
+    /*#wrapper_loading i {
+        text-align: center;
+        position: absolute;
+        left: calc(50%-1000px);
+        top: calc(50%);
+    }*/
+
 .alert.custom_alert {
 	display: none;
 	padding: 3px;
