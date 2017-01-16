@@ -8,8 +8,8 @@ def index(request):
     # request.session.flush()
 ##### handle post requests
     # print(DICT_SETTINGS_VIEWER)
-    
     context = {}
+    context['json_url_params'] = json.dumps(request.GET)
     context['settings'] = DICT_SETTINGS_VIEWER
     return render(request, 'viewer/index.html', context)
 

@@ -1,3 +1,6 @@
+html {
+  overflow-y: scroll;
+}
 .alert.custom_alert {
 	display: none;
 	padding: 3px;

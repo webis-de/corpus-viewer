@@ -3,13 +3,14 @@
 <div class="row">
 	<div class="col">
 		<h1>Viewer</h1>
+        <div id="json_url_params" data-json_url_params="{{ json_url_params }}" style="display: none"></div>
 	</div>
 </div>
 <div class="row">
 	<div class="col-2">
 		<div class="row">
 			<div class="col">
-				<span id="info_number_of_items" class="text-muted">&nbsp;placeholder</span>
+				<span id="info_number_of_items" class="text-muted">&nbsp;</span>
 			</div>
 		</div>
         <!-- PAGINATOR -->
@@ -17,15 +18,15 @@
 			<div class="col">
 				<nav class="btn-toolbar" id="info_paginator">
 					<div class="btn-group btn-group-sm mr-2">
-					    <button type="button" class="btn btn-secondary" data-direction='first' disabled><i class="fa fa-fast-backward" aria-hidden="true"></i></button>
-					    <button type="button" class="btn btn-secondary" data-direction='left' disabled><i class="fa fa-backward" aria-hidden="true"></i></button>
+					    <button type="button" class="btn btn-secondary" data-target='first' data-direction="left" disabled><i class="fa fa-fast-backward" aria-hidden="true"></i></button>
+					    <button type="button" class="btn btn-secondary" data-target='previous' data-direction="left" disabled><i class="fa fa-backward" aria-hidden="true"></i></button>
 				  	</div>
 				  	<div class="input-group input-group-sm">
-					    <input type="text" class="form-control" placeholder="page" aria-describedby="btnGroupAddon">
+					    <input type="number" class="form-control" id="input_page" placeholder="page" aria-describedby="btnGroupAddon">
 				  	</div>
 					<div class="btn-group btn-group-sm ml-2">
-					    <button type="button" class="btn btn-secondary" data-direction='right' disabled><i class="fa fa-forward" aria-hidden="true"></i></button>
-					    <button type="button" class="btn btn-secondary" data-direction='last' disabled><i class="fa fa-fast-forward" aria-hidden="true"></i></button>
+					    <button type="button" class="btn btn-secondary" data-target='next' data-direction="right" disabled><i class="fa fa-forward" aria-hidden="true"></i></button>
+					    <button type="button" class="btn btn-secondary" data-target='last' data-direction="right" disabled><i class="fa fa-fast-forward" aria-hidden="true"></i></button>
 				  	</div>
 				</nav>
 			</div>
@@ -42,8 +43,8 @@
                     <div class="collapse show" id="div_filters">
                         <div class="card-block py-1 px-2">
                             <div class="form-group" style="display: relative">
-                                <label for="input_name_tag">Name</label>
-                                <input name="tag" type="text" id="input_name_tag" class="form-control" placeholder="Enter Tag-Name" value="">
+                                <label for="input_name_tag">Filter by Tag(s)</label>
+                                <input name="tag" type="text" id="input_name_tag" class="form-control form-control-sm" placeholder="Enter Tag-Name(s)" value="">
                                 <div id="wrapper_tag_recommendations" class="wrapper_recommendation" style="display: none"></div>
                             </div>
                         {% for filter in settings.filters %}
@@ -57,7 +58,7 @@
                             {% elif filter.type == 'text'%}
                                 <div class="form-group">
                                     <label for="input_{{ filter.data_field_id }}">{{ filter.description }}</label>
-                                    <input name="{{ filter.data_field_id }}" type="text" id="input_{{ filter.data_field_id }}" class="form-control" placeholder="{{ filter.placeholder }}" value="{{ filter.default_value }}">
+                                    <input name="{{ filter.data_field_id }}" type="text" id="input_{{ filter.data_field_id }}" class="form-control form-control-sm" placeholder="{{ filter.placeholder }}" value="{{ filter.default_value }}">
                                 </div>
                             {% endif %}
                         {% endfor %}

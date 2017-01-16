@@ -25,7 +25,7 @@ SECRET_KEY = 'hsh3+=^3d8bk+)6q@99g&z)!&9hv06*(1a7h&!3@y9d1wz$!i7'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', 'webis42.medien.uni-weimar.de']
 
 
 # Application definition

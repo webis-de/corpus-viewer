@@ -1,1 +1,23 @@
-asds
+{% load tags_custom %}
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th class="th_tweet_selection"><input data-tweet_id="{{tweet.tweet_id}}" type="checkbox"></th>
+            {% for field in settings.displayed_fields %}
+            <th class="th_created_at">{{ field|get_display_name:settings }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+    {% for item in data %}
+        <tr>
+            <td class="td_tweet_selection">
+                <input data-tweet_id="{{tweet.tweet_id}}" type="checkbox">
+            </td>
+            {% for field in settings.displayed_fields %}
+            <td class="td_created_at">{{ item|get:field }}</td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
