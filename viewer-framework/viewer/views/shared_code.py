@@ -16,11 +16,14 @@ def set_session(request, key, default):
     if sessionkey not in request.session:
         request.session[sessionkey] = default
 
-def set_session_from_url(request, key, default):
+def set_session_from_url(request, key, default, is_array=False):
     sessionkey = 'viewer__'+key
 
     if request.GET.get(key) != None:
-        request.session[sessionkey] = request.GET.get(key)
+        if is_array:
+            request.session[sessionkey] = json.loads(request.GET.get(key))
+        else:
+            request.session[sessionkey] = request.GET.get(key)
     else:
         if sessionkey not in request.session:
             request.session[sessionkey] = default

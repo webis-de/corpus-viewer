@@ -1,4 +1,5 @@
 {% include "viewer/header.html" %}
+{% load tags_custom %}
 {% load staticfiles %}
 <div class="row">
 	<div class="col">
@@ -45,7 +46,7 @@
                         <a data-toggle="collapse" href="#div_filters" class="text-muted">Filters</a>
                         <a href="#" id="reset_filters" class="float-right">Reset Filters</a>
                     </div>
-                    <div class="collapse show" id="div_filters">
+                    <div class="collapse {% if request.session.viewer__is_collapsed_div_filters == False %}show{% endif %}" id="div_filters">
                         <div class="card-block py-1 px-2">
                             <div class="form-group" style="display: relative">
                                 <label for="input_name_tag">Filter by Tag(s)</label>
@@ -56,17 +57,25 @@
                             {% if filter.type == 'checkbox' %}
                                 <div class="form-check mb-3">
                                     <label class="form-check-label">
-                                        <input name="{{ filter.data_field_id }}" id="input_{{ filter.data_field_id }}" type="checkbox" class="form-check-input" {{ filter.default_value }}²>
+                                        <input name="{{ filter.data_field_name  }}" id="input_{{ filter.data_field_name  }}" type="checkbox" class="form-check-input" {{ filter.default_value }}²>
                                         {{ filter.description }}
                                     </label>
                                 </div>
                             {% elif filter.type == 'text'%}
                                 <div class="form-group">
-                                    <label for="input_{{ filter.data_field_id }}">{{ filter.description }}</label>
-                                    <input name="{{ filter.data_field_id }}" type="text" id="input_{{ filter.data_field_id }}" class="form-control form-control-sm" placeholder="{{ filter.placeholder }}" value="{{ filter.default_value }}">
+                                    <label for="input_{{ filter.data_field_name  }}">{{ filter.description }}</label>
+                                    <input name="{{ filter.data_field_name  }}" type="text" id="input_{{ filter.data_field_name  }}" class="form-control form-control-sm" placeholder="{{ filter.placeholder }}" value="{{ filter.default_value }}">
                                 </div>
                             {% endif %}
                         {% endfor %}
+                            {% for field in settings.displayed_fields %}
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input input_toggle_columns" data-column="{{ field }}" {% if field in request.session.viewer__viewer__columns %}checked{% endif %}>
+                                    {{ field|get_display_name:settings }}
+                                </label>
+                            </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
@@ -80,7 +89,7 @@
                         <a data-toggle="collapse" href="#div_tags" class="text-muted">Tags</a>
                         <a href="{% url 'viewer:tags' %}" id="view_tags" class="float-right">View Tags</a>
                     </div>
-                    <div class="collapse show" id="div_tags">
+                    <div class="collapse {% if request.session.viewer__is_collapsed_div_tags == False %}show{% endif %}" id="div_tags">
                         <div class="card-block py-1 px-2">
                             <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal_add_tag">
                                 <i class="fa fa-plus" aria-hidden="true"></i> Add Tag

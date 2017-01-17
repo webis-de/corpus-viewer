@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.apps import apps
 from django.template import Engine, Context
+from django.template.loader import get_template
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 glob_page_size = 25
@@ -13,11 +14,10 @@ def get_page(request):
 ##### handle session entries
     for viewer__filter in  DICT_SETTINGS_VIEWER['filters']:
         if viewer__filter['type'] == 'text':
-            set_session_from_url(request, 'filter_'+viewer__filter['data_field_id'], viewer__filter['default_value'])
+            set_session_from_url(request, 'filter_'+viewer__filter['data_field_name'], viewer__filter['default_value'])
         elif viewer__filter['type'] == 'checkbox':
-            set_session_from_url(request, 'filter_'+viewer__filter['data_field_id'], True if viewer__filter['default_value'] == 'checked' else False)
+            set_session_from_url(request, 'filter_'+viewer__filter['data_field_name'], True if viewer__filter['default_value'] == 'checked' else False)
 
-    set_session(request, 'is_collapsed_div_filters', True)
 
     set_session_from_url(request, 'viewer__page', 1)
 
@@ -29,7 +29,7 @@ def get_page(request):
     elif DICT_SETTINGS_VIEWER['data_type'] == 'csv-file':
         data = load_file_csv()
     elif DICT_SETTINGS_VIEWER['data_type'] == 'ldjson-file':
-        pass
+        data = load_file_ldjson()
 
 ##### page the dataset
     paginator = Paginator(data, glob_page_size)
@@ -57,8 +57,9 @@ def get_page(request):
     if data.has_next():
         next_page_number = data.next_page_number()
 
-    template = Engine.get_default().get_template(template_name='viewer/table.html')
-    return JsonResponse({'content':template.render(Context(context)),
+    template = get_template('viewer/table.html')
+    # template = Engine.get_default().get_template(template_name='viewer/table.html')
+    return JsonResponse({'content':template.render(context, request),
             # 'tags':[ {'id': tag.id, 'name': tag.name, 'color': tag.color} for tag in set_tags],
             'count_pages':data.paginator.num_pages,
             'count_entries':data.paginator.count,
@@ -68,8 +69,8 @@ def get_page(request):
 
 def load_file_csv():
     data = []
-    with open(DICT_SETTINGS_VIEWER['data_path'], newline='') as csvfile:
-        reader = csv.reader(csvfile)
+    with open(DICT_SETTINGS_VIEWER['data_path'], newline='') as file:
+        reader = csv.reader(file)
         for row in reader:
             tmp = {}
             for index, field in enumerate(DICT_SETTINGS_VIEWER['data_structure']):
@@ -78,4 +79,19 @@ def load_file_csv():
     return data
 
 def load_file_ldjson():
-    pass
+    # with open(DICT_SETTINGS_VIEWER['data_path'], 'w') as file:
+    #     for i in range(1000):
+    #         obj = {
+    #             'name': 'ldjson_'+str(i),
+    #             'count_of_something': i*i
+    #         }
+    #         file.write(json.dumps(obj)+'\n')
+    data = []
+    with open(DICT_SETTINGS_VIEWER['data_path'], 'r') as file:
+        for row in file:
+            obj = json.loads(row)
+            tmp = {}
+            for field in DICT_SETTINGS_VIEWER['data_structure']:
+                tmp[field] = obj[field]
+            data.append(tmp)
+    return data
