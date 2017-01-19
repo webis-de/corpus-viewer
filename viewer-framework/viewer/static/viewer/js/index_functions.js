@@ -1,3 +1,13 @@
+function handle_selection_all_items(input)
+{
+	if(input.prop('checked'))
+	{
+		$('.column_viewer__item_selection input').prop('checked', true);
+	} else {
+		$('.column_viewer__item_selection input').prop('checked', false);
+	}
+}
+
 function handle_toggle_column(input)
 {
 	let column = input.data('column')

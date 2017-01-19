@@ -13,7 +13,7 @@ def index(request):
             response['status'] = 'success'
         return JsonResponse(response)
     # index_example_data()
-    # request.session.flush()
+    request.session.flush()
     set_session(request, 'is_collapsed_div_filters', True)
     set_session(request, 'is_collapsed_div_tags', True)
     set_session_from_url(request, 'viewer__columns', DICT_SETTINGS_VIEWER['displayed_fields'], is_array=True)
@@ -30,7 +30,10 @@ def get_url_params(request):
     if 'viewer__columns' in dict_url_params:
         dict_url_params['viewer__columns'] = json.loads(dict_url_params['viewer__columns'])
     else:
-        dict_url_params['viewer__columns'] = request.session['viewer__viewer__columns']
+        list_tmp = request.session['viewer__viewer__columns']
+        list_tmp.append('viewer__item_selection')
+        dict_url_params['viewer__columns'] = list_tmp
+        # 
 
     return dict_url_params
 

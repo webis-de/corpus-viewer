@@ -68,14 +68,25 @@
                                 </div>
                             {% endif %}
                         {% endfor %}
-                            {% for field in settings.displayed_fields %}
-                            <div class="form-check">
+                        <fieldset>
+                        <legend>Show/Hide Columns</legend>
+                            <div class="form-check mb-0">
                                 <label class="form-check-label">
-                                    <input type="checkbox" class="form-check-input input_toggle_columns" data-column="{{ field }}" {% if field in request.session.viewer__viewer__columns %}checked{% endif %}>
-                                    {{ field|get_display_name:settings }}
+                                    <input type="checkbox" class="form-check-input input_toggle_columns" data-column="viewer__item_selection" {% if "viewer__item_selection" in request.session.viewer__viewer__columns %}checked{% endif %}>
+                                    Item Selection
                                 </label>
                             </div>
+                            {% for field in settings.displayed_fields %}
+                                {% if not field == "viewer__item_selection" %}
+                                <div class="form-check mb-0">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input input_toggle_columns" data-column="{{ field }}" {% if field in request.session.viewer__viewer__columns %}checked{% endif %}>
+                                        {{ field|get_display_name:settings }}
+                                    </label>
+                                </div>
+                                {% endif %}
                             {% endfor %}
+                        </fieldset>
                         </div>
                     </div>
                 </div>

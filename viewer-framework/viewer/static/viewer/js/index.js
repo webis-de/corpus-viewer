@@ -18,5 +18,7 @@ $(document).ready(function()
 
     $(document).on('change', '.input_toggle_columns', function(e) { handle_toggle_column($(this)) });
 
+    $(document).on('change', '#select_all_items', function(e) { handle_selection_all_items($(this)) });
+
     load_current_page();
 });

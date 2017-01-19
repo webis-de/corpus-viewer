@@ -2,20 +2,24 @@
 <table class="table table-sm">
     <thead>
         <tr>
-            <th class="th_tweet_selection"><input data-tweet_id="{{tweet.tweet_id}}" type="checkbox"></th>
+            <th class="column_viewer__item_selection"><input id="select_all_items" type="checkbox"></th>
             {% for field in settings.displayed_fields %}
-            <th class="column_{{ field }}" style="{% if not field in request.session.viewer__viewer__columns %}display: none{% endif %}">{{ field|get_display_name:settings }}</th>
+                {% if not field == "viewer__item_selection" %}
+                <th class="column_{{ field }}" style="{% if not field in request.session.viewer__viewer__columns %}display: none{% endif %}">{{ field|get_display_name:settings }}</th>
+                {% endif %}
             {% endfor %}
         </tr>
     </thead>
     <tbody>
     {% for item in data %}
         <tr>
-            <td class="td_item_selection">
-                <input data-tweet_id="{{tweet.tweet_id}}" type="checkbox">
+            <td class="column_viewer__item_selection">
+                <input data-tweet_id="{{item.id}}" type="checkbox">
             </td>
             {% for field in settings.displayed_fields %}
-            <td class="column_{{ field }}" style="{% if not field in request.session.viewer__viewer__columns %}display: none{% endif %}">{{ item|get:field }}</td>
+                {% if not field == "viewer__item_selection" %}
+                <td class="column_{{ field }}" style="{% if not field in request.session.viewer__viewer__columns %}display: none{% endif %}">{{ item|get:field }}</td>
+                {% endif %}
             {% endfor %}
         </tr>
     {% endfor %}
