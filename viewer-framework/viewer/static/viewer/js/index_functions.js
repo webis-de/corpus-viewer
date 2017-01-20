@@ -1,11 +1,28 @@
+function update_info_selected_items()
+{
+    $('#info_selected_items span').text(Object.keys(glob_selected_items).length)
+}
+
+function handle_select_item(input)
+{
+    if(input.prop('checked'))
+    {
+        glob_selected_items[input.data('id_item')] = true;
+    } else {
+        delete glob_selected_items[input.data('id_item')];
+    }
+    update_info_selected_items()
+}
+
 function handle_selection_all_items(input)
 {
-	if(input.prop('checked'))
-	{
-		$('.column_viewer__item_selection input').prop('checked', true);
-	} else {
-		$('.column_viewer__item_selection input').prop('checked', false);
-	}
+    if(input.prop('checked'))
+    {
+        $('.input_select_item').prop('checked', true);
+    } else {
+        $('.input_select_item').prop('checked', false);
+    }
+    $('.input_select_item').trigger('change')
 }
 
 function handle_toggle_column(input)
@@ -109,6 +126,19 @@ function update_ui()
     $('#input_page').val(glob_current_page)
     $('#info_number_of_items').text('filtered items: '+glob_count_entries.toLocaleString()+' ('+glob_count_pages.toLocaleString()+' page(s))');
 
+    let counter = 0
+    $('.input_select_item').each(function(index, element) {
+        const elem = $(element)
+        if(elem.data('id_item') in glob_selected_items)
+        {
+            elem.prop('checked', true)
+            counter++
+        }
+    });
+    if(counter == $('.input_select_item').length)
+    {
+        $('#input_select_all_items').prop('checked', true)
+    }
 }
 function load_page_parameters()
 {

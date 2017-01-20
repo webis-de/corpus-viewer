@@ -102,6 +102,7 @@
                     </div>
                     <div class="collapse {% if request.session.viewer__is_collapsed_div_tags == False %}show{% endif %}" id="div_tags">
                         <div class="card-block py-1 px-2">
+                            <div id="info_selected_items"><span>0</span> item(s) selected</div>
                             <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal_add_tag">
                                 <i class="fa fa-plus" aria-hidden="true"></i> Add Tag
                             </button>
@@ -165,11 +166,11 @@
 {% csrf_token %}
 
 <script src="{% static 'viewer/js/jquery-3.1.1.min.js' %}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script> -->
+<!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script> -->
 
-<!-- <script src="{% static 'viewer/js/tether.js' %}"></script> -->
-<!-- <script src="{% static 'viewer/js/bootstrap.js' %}"></script> -->
+<script src="{% static 'viewer/js/tether.js' %}"></script>
+<script src="{% static 'viewer/js/bootstrap.js' %}"></script>
 <script src="{% static 'viewer/js/index_functions.js' %}"></script>
 <script src="{% static 'viewer/js/index.js' %}"></script>
 {% include "viewer/footer.html" %}

@@ -2,7 +2,7 @@
 <table class="table table-sm">
     <thead>
         <tr>
-            <th class="column_viewer__item_selection"><input id="select_all_items" type="checkbox"></th>
+            <th class="column_viewer__item_selection"><input id="input_select_all_items" type="checkbox"></th>
             {% for field in settings.displayed_fields %}
                 {% if not field == "viewer__item_selection" %}
                 <th class="column_{{ field }}" style="{% if not field in request.session.viewer__viewer__columns %}display: none{% endif %}">{{ field|get_display_name:settings }}</th>
@@ -14,7 +14,7 @@
     {% for item in data %}
         <tr>
             <td class="column_viewer__item_selection">
-                <input data-tweet_id="{{item.id}}" type="checkbox">
+                <input data-id_item="{{item.id}}" class="input_select_item" type="checkbox">
             </td>
             {% for field in settings.displayed_fields %}
                 {% if not field == "viewer__item_selection" %}

@@ -1,3 +1,5 @@
+let glob_selected_items = {}
+
 let glob_columns = []
 
 let glob_current_page = 1;
@@ -18,7 +20,8 @@ $(document).ready(function()
 
     $(document).on('change', '.input_toggle_columns', function(e) { handle_toggle_column($(this)) });
 
-    $(document).on('change', '#select_all_items', function(e) { handle_selection_all_items($(this)) });
+    $(document).on('change', '#input_select_all_items', function(e) { handle_selection_all_items($(this)) });
+    $(document).on('change', '.input_select_item', function(e) { handle_select_item($(this)) });
 
     load_current_page();
 });
