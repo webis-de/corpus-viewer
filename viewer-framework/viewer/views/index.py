@@ -11,18 +11,22 @@ def index(request):
         if obj['task'] == 'set_session_entry':
             request.session['viewer__'+obj['session_key']] = obj['session_value']
             response['status'] = 'success'
+        elif obj['task'] == 'add_tag':
+            add_tag(obj)
         return JsonResponse(response)
     # index_example_data()
     # request.session.flush()
     set_session(request, 'is_collapsed_div_filters', True)
     set_session(request, 'is_collapsed_div_tags', True)
-    set_session_from_url(request, 'viewer__columns', DICT_SETTINGS_VIEWER['displayed_fields'], is_array=True)
+    set_session_from_url(request, 'viewer__columns', DICT_SETTINGS_VIEWER['displayed_fields'] + ['viewer__item_selection', 'viewer__tags'], is_array=True)
 
-    dict_url_params = get_url_params(request)
     context = {}
-    context['json_url_params'] = json.dumps(dict_url_params)
+    context['json_url_params'] = json.dumps(get_url_params(request))
     context['settings'] = DICT_SETTINGS_VIEWER
     return render(request, 'viewer/index.html', context)
+
+def add_tag(obj):
+    pass
 
 def get_url_params(request):
     dict_url_params = request.GET.copy()
@@ -30,10 +34,8 @@ def get_url_params(request):
     if 'viewer__columns' in dict_url_params:
         dict_url_params['viewer__columns'] = json.loads(dict_url_params['viewer__columns'])
     else:
-        list_tmp = request.session['viewer__viewer__columns']
-        list_tmp.append('viewer__item_selection')
-        dict_url_params['viewer__columns'] = list_tmp
-        # 
+        set_tmp = set(request.session['viewer__viewer__columns'])
+        dict_url_params['viewer__columns'] = request.session['viewer__viewer__columns']
 
     return dict_url_params
 

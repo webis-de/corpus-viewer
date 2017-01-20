@@ -1,6 +1,116 @@
+function add_tag(modal)
+{
+    const id_item = modal.data('id_item');
+    let data = {}
+    data.task = 'add_tag'
+    data.color = $('#input_color_tag').val()
+
+    if($('#input_add_to_all_filtered_items').prop('checked'))
+    {
+        data.ids = 'all'
+    } else {
+        // if the modal was triggered by the button
+        if(id_item == undefined)
+        {
+            data.ids = Object.keys(glob_selected_items)
+        // if the modal was triggered by a link
+        } else {
+            data.ids = [id_item]
+        }
+    }
+    
+    $.ajax({
+        method: 'POST',
+        contentType: 'application/json',
+        headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+        data: JSON.stringify(data),
+        success: function(result) {
+            modal.modal('hide');
+        }
+    })
+}
+
+function handle_change_add_to_all_filtered_items(input)
+{
+    let count = 0
+    if(input.prop('checked'))
+    {
+        count = glob_count_entries
+    } else {
+        if($('#modal_add_tag').data('id_item') == undefined)
+        {
+            count = Object.keys(glob_selected_items).length
+        } else {
+            count = 1
+        }
+    }
+    $('#info_count_selected_items').text(count)
+}
+
+function handle_shown_modal(event, modal)
+{
+    $('#input_name_new_tag').focus()
+}
+
+function handle_show_modal(event, modal)
+{
+    let count = 1
+    if(modal.data('id_item') == undefined)
+    {
+        count = Object.keys(glob_selected_items).length
+    }
+    $('#info_count_selected_items').text(count)
+}
+
+function handle_hide_modal(event, modal)
+{
+    modal.removeData('id_item');
+    // console.log('hidden')
+}
+
+function handle_click_link_add_tag(event, link)
+{
+    event.preventDefault();
+    $('#modal_add_tag').data('id_item', link.data('id_item'));
+    $('#modal_add_tag').modal('show')
+}
+
+function handle_rightclick_on_tr(event, tr)
+{
+    event.preventDefault(); 
+    const id_item = tr.data('id_item')
+    const elem = $('.input_select_item[data-id_item="'+id_item+'"]')
+    if(elem.prop('checked'))
+    {
+        elem.prop('checked', false)
+    } else {
+        elem.prop('checked', true)
+    }
+    elem.trigger('change')
+}
+
+function update_input_select_all_items()
+{
+    if($('.input_select_item:checked').length == $('.input_select_item').length)
+    {
+        $('#input_select_all_items').prop('checked', true)
+    } else {
+        $('#input_select_all_items').prop('checked', false)
+    }
+}
+
 function update_info_selected_items()
 {
     $('#info_selected_items span').text(Object.keys(glob_selected_items).length)
+}
+
+function handle_deselect_all_items(event)
+{
+    event.preventDefault()
+    glob_selected_items = {}
+    $('.input_select_item').prop('checked', false);
+    update_input_select_all_items()
+    update_info_selected_items()
 }
 
 function handle_select_item(input)
@@ -11,6 +121,7 @@ function handle_select_item(input)
     } else {
         delete glob_selected_items[input.data('id_item')];
     }
+    update_input_select_all_items()
     update_info_selected_items()
 }
 
@@ -126,19 +237,14 @@ function update_ui()
     $('#input_page').val(glob_current_page)
     $('#info_number_of_items').text('filtered items: '+glob_count_entries.toLocaleString()+' ('+glob_count_pages.toLocaleString()+' page(s))');
 
-    let counter = 0
     $('.input_select_item').each(function(index, element) {
         const elem = $(element)
         if(elem.data('id_item') in glob_selected_items)
         {
             elem.prop('checked', true)
-            counter++
         }
     });
-    if(counter == $('.input_select_item').length)
-    {
-        $('#input_select_all_items').prop('checked', true)
-    }
+    update_input_select_all_items()
 }
 function load_page_parameters()
 {

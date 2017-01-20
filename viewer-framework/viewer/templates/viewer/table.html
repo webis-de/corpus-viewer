@@ -1,26 +1,31 @@
 {% load tags_custom %}
-<table class="table table-sm">
+<table class="table table-sm table-striped">
     <thead>
         <tr>
-            <th class="column_viewer__item_selection"><input id="input_select_all_items" type="checkbox"></th>
+            <th class="column_viewer__item_selection" {% if not "viewer__item_selection" in request.session.viewer__viewer__columns %}style="display: none"{% endif %}><input id="input_select_all_items" type="checkbox"></th>
             {% for field in settings.displayed_fields %}
-                {% if not field == "viewer__item_selection" %}
-                <th class="column_{{ field }}" style="{% if not field in request.session.viewer__viewer__columns %}display: none{% endif %}">{{ field|get_display_name:settings }}</th>
+                {% if not field == "viewer__item_selection" and not field == "viewer__tags" %}
+                <th class="column_{{ field }}" {% if not field in request.session.viewer__viewer__columns %}style="display: none"{% endif %}>{{ field|get_display_name:settings }}</th>
                 {% endif %}
             {% endfor %}
+            <th class="column_viewer__tags" {% if not "viewer__tags" in request.session.viewer__viewer__columns %}style="display: none"{% endif %}>Tags</th>
         </tr>
     </thead>
     <tbody>
     {% for item in data %}
-        <tr>
-            <td class="column_viewer__item_selection">
+        <tr class="row_viewer__item" data-id_item="{{ item.id }}">
+            <td class="column_viewer__item_selection" {% if not "viewer__item_selection" in request.session.viewer__viewer__columns %}style="display: none"{% endif %}>
                 <input data-id_item="{{item.id}}" class="input_select_item" type="checkbox">
             </td>
             {% for field in settings.displayed_fields %}
-                {% if not field == "viewer__item_selection" %}
-                <td class="column_{{ field }}" style="{% if not field in request.session.viewer__viewer__columns %}display: none{% endif %}">{{ item|get:field }}</td>
+                {% if not field == "viewer__item_selection" and not field == "viewer__tags" %}
+                <td class="column_{{ field }}" {% if not field in request.session.viewer__viewer__columns %}style="display: none"{% endif %}>{{ item|get:field }}</td>
                 {% endif %}
             {% endfor %}
+            <td class="column_viewer__tags" {% if not "viewer__tags" in request.session.viewer__viewer__columns %}style="display: none"{% endif %}>
+                <div class="wrapper_tags"><div class="tag_marker"></div></div>
+                <a class="link_add_tag" data-id_item="{{item.id}}" href="#"><i class="fa fa-plus" aria-hidden="true"></i></a>
+            </td>
         </tr>
     {% endfor %}
     </tbody>

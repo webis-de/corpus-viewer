@@ -1,6 +1,10 @@
 html {
   overflow-y: scroll;
 }
+.modal-open {
+    padding-right: 0 !important
+}
+
 /*#wrapper_loading {
     position: absolute;
     height: 50vh;
@@ -17,4 +21,12 @@ html {
 	display: none;
 	padding: 3px;
 	text-align: center;
+}
+
+.tag_marker {
+    float: left;
+    width: 1rem;
+    height: 1.5rem;
+    margin-right: 0.3rem;
+    border: 1px solid grey;
 }

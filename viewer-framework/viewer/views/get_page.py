@@ -9,7 +9,6 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 glob_page_size = 25
 
 def get_page(request):
-    # index_example_data()
     # request.session.flush()
 ##### handle session entries
     for viewer__filter in  DICT_SETTINGS_VIEWER['filters']:
@@ -20,7 +19,6 @@ def get_page(request):
 
 
     set_session_from_url(request, 'viewer__page', 1)
-
 ##### load data and apply filters
     data = []
     if DICT_SETTINGS_VIEWER['data_type'] == 'database':
@@ -44,8 +42,6 @@ def get_page(request):
         data = paginator.page(paginator.num_pages)
 
 ##### handle post requests
-    # print(DICT_SETTINGS_VIEWER)
-    # time.sleep(0.5)
     context = {}
     context['settings'] = DICT_SETTINGS_VIEWER
     context['data'] = data
@@ -58,7 +54,6 @@ def get_page(request):
         next_page_number = data.next_page_number()
 
     template = get_template('viewer/table.html')
-    # template = Engine.get_default().get_template(template_name='viewer/table.html')
     return JsonResponse({'content':template.render(context, request),
             # 'tags':[ {'id': tag.id, 'name': tag.name, 'color': tag.color} for tag in set_tags],
             'count_pages':data.paginator.num_pages,

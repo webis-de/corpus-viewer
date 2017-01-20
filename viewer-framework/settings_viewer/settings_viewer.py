@@ -1,6 +1,6 @@
 DICT_SETTINGS_VIEWER = {
 	# possible values: 'database', 'csv-file', 'ldjson-file'
-	'data_type': 'ldjson-file',
+	'data_type': 'database',
 		# only necessary if data_type is '*-file'
 			# path to file,
 			'data_path': 'file.ldjson',

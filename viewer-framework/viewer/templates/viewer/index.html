@@ -49,8 +49,8 @@
                     <div class="collapse {% if request.session.viewer__is_collapsed_div_filters == False %}show{% endif %}" id="div_filters">
                         <div class="card-block py-1 px-2">
                             <div class="form-group" style="display: relative">
-                                <label for="input_name_tag">Filter by Tag(s)</label>
-                                <input name="tag" type="text" id="input_name_tag" class="form-control form-control-sm" placeholder="Enter Tag-Name(s)" value="">
+                                <label for="input_name_tags">Filter by Tag(s)</label>
+                                <input name="tag" type="text" id="input_name_tags" class="form-control form-control-sm" placeholder="Enter Tag-Name(s)" value="">
                                 <div id="wrapper_tag_recommendations" class="wrapper_recommendation" style="display: none"></div>
                             </div>
                         {% for filter in settings.filters %}
@@ -69,7 +69,7 @@
                             {% endif %}
                         {% endfor %}
                         <fieldset>
-                        <legend>Show/Hide Columns</legend>
+                            <legend>Show/Hide Columns</legend>
                             <div class="form-check mb-0">
                                 <label class="form-check-label">
                                     <input type="checkbox" class="form-check-input input_toggle_columns" data-column="viewer__item_selection" {% if "viewer__item_selection" in request.session.viewer__viewer__columns %}checked{% endif %}>
@@ -77,7 +77,7 @@
                                 </label>
                             </div>
                             {% for field in settings.displayed_fields %}
-                                {% if not field == "viewer__item_selection" %}
+                                {% if not field == "viewer__item_selection" and not field == "viewer__tags" %}
                                 <div class="form-check mb-0">
                                     <label class="form-check-label">
                                         <input type="checkbox" class="form-check-input input_toggle_columns" data-column="{{ field }}" {% if field in request.session.viewer__viewer__columns %}checked{% endif %}>
@@ -86,6 +86,12 @@
                                 </div>
                                 {% endif %}
                             {% endfor %}
+                            <div class="form-check mb-0">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input input_toggle_columns" data-column="viewer__tags" {% if "viewer__tags" in request.session.viewer__viewer__columns %}checked{% endif %}>
+                                    Tags
+                                </label>
+                            </div>
                         </fieldset>
                         </div>
                     </div>
@@ -102,7 +108,7 @@
                     </div>
                     <div class="collapse {% if request.session.viewer__is_collapsed_div_tags == False %}show{% endif %}" id="div_tags">
                         <div class="card-block py-1 px-2">
-                            <div id="info_selected_items"><span>0</span> item(s) selected</div>
+                            <div class="mb-2" id="info_selected_items"><span>0</span> item(s) selected <a id="link_deselect_all_items" href="">deselect all</a></div>
                             <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal_add_tag">
                                 <i class="fa fa-plus" aria-hidden="true"></i> Add Tag
                             </button>
@@ -132,17 +138,17 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        Tag will be added to <span id="info_count_selected_tweets"></span> tweets.
+                        Tag will be added to <span id="info_count_selected_items"></span> item(s).
                     </div>
                     <div class="form-check mb-3">
                         <label class="form-check-label">
-                            <input name="add_to_all_filtered_entries" type="checkbox" class="form-check-input">
-                            Add tag to all filtered tweets
+                            <input id="input_add_to_all_filtered_items" type="checkbox" class="form-check-input">
+                            Add tag to all filtered items
                         </label>
                     </div>
                     <div class="form-group" style="position: relative">
-                        <label for="input_name_tag">Name</label>
-                        <input name="tag" type="text" id="input_name_tag" class="form-control" placeholder="Enter Tag-Name" value="">
+                        <label for="input_name_new_tag">Name</label>
+                        <input name="tag" type="text" id="input_name_new_tag" class="form-control" placeholder="Enter Tag-Name" value="">
                         <div id="wrapper_tag_recommendations" class="wrapper_recommendation" style="display: none"></div>
                     </div>
                     <div class="form-group">
@@ -155,7 +161,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="add_tag($('#modal_add_tag'))">Add Tag</button>
+                    <button type="button" class="btn btn-primary" id="submit_add_tag">Add Tag</button>
                 </div>
             </div>
         </form>
