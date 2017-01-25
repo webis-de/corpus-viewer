@@ -3,6 +3,7 @@ function add_tag(modal)
     const id_item = modal.data('id_item');
     let data = {}
     data.task = 'add_tag'
+    data.tag = $('#input_name_new_tag').val()
     data.color = $('#input_color_tag').val()
 
     if($('#input_add_to_all_filtered_items').prop('checked'))
@@ -18,7 +19,7 @@ function add_tag(modal)
             data.ids = [id_item]
         }
     }
-    
+
     $.ajax({
         method: 'POST',
         contentType: 'application/json',
@@ -205,20 +206,41 @@ function load_current_page(update_tags = true)
             glob_count_pages = result.count_pages;
             glob_count_entries = result.count_entries
 
-        //     // if(update_tags)
-        //     // {
-        //     //     update_tags_list(result.tags);
-        //     // } else {
-        //     //     $.each($('.checkbox_tag_selection:checked'), function(index, element) {
-        //     //         add_tag_marker($(element).data('tag_id'), $(element).data('tag_name'), $(element).data('tag_color'));
-        //     //     });
-        //     // }
+            if(update_tags)
+            {
+                update_tags_list(result.tags_filtered_items);
+            } else {
+                // $.each($('.checkbox_tag_selection:checked'), function(index, element) {
+                //     add_tag_marker($(element).data('tag_id'), $(element).data('tag_name'), $(element).data('tag_color'));
+                // });
+            }
 
             update_ui();
             stop_loading();
         },
     });
 }
+function update_tags_list(tags)
+{
+
+    var content = '';
+    for (var i = 0; i < tags.length; i++) {
+        var tag = tags[i];
+        content +=  '<tr class="tr_tag">'+
+                        '<td>'+
+                            '<input type="checkbox" class="checkbox_tag_selection" data-tag_id="'+tag.id+'" data-tag_name="'+tag.name+'" data-tag_color="'+tag.color+'">'+
+                        '</td>'+
+                        '<td class="td_tag_selection" data-tag_id="'+tag.id+'">'+
+                            '<div class="tag_marker" style="background-color: '+tag.color+'"></div>'+
+                        '</td>'+
+                        '<td data-tag_id="'+tag.id+'">'+
+                            '<span class="label label-default">'+tag.name+'</span>'+
+                        '</td>'+
+                    '</tr>';
+    }
+    $('#wrapper_tags_filtered_items').html(content);
+}
+
 function update_ui()
 {
     if(glob_prev_page != undefined)
@@ -291,17 +313,7 @@ function refresh_url()
 {
     var data = {};
     data.viewer__page = glob_current_page;
-    // data.viewer__columns = glob_columns;
     data.viewer__columns = JSON.stringify(glob_columns);
-
-    // data.sort_by = glob_sort_by;
-    // data.order = glob_order;
-
-    // data.filter_tag = JSON.stringify(glob_filter_tag);
-    // data.filter_twitter_users = JSON.stringify(glob_filter_twitter_users)
-    // data.filter_start_datetime = glob_filter_start_datetime
-    // data.filter_end_datetime = glob_filter_end_datetime
-    // data.filter_text_content = glob_filter_text_content
 
     var url_params = '';
     $.each(data, function(index, value) {

@@ -26,7 +26,34 @@ def index(request):
     return render(request, 'viewer/index.html', context)
 
 def add_tag(obj):
-    pass
+    db_obj_tag = get_tag(obj['tag'], defaults={'color': obj['color']})
+
+    if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+        print('not implemented')
+    else:
+        entities = []
+        if obj['ids'] == 'all':
+            tmp, entities = load_data()
+        else:
+            entities = obj['ids']
+
+        index_missing_entities(entities)
+
+        db_obj_entities = m_Entity.objects.filter(id_item__in=entities)
+        db_obj_tag.m2m_entity.add(*db_obj_entities)
+
+    if db_obj_tag.color != obj['color']:
+        db_obj_tag.color = obj['color']
+        db_obj_tag.save()
+
+def index_missing_entities(entities):
+    queryset = m_Entity.objects.all()
+    set_new_entities = set(entities)
+
+    set_new_entities.difference_update({entity.id_item for entity in queryset})
+
+    if len(set_new_entities) > 0:
+        m_Entity.objects.bulk_create([m_Entity(id_item=entity) for entity in set_new_entities])
 
 def get_url_params(request):
     dict_url_params = request.GET.copy()
@@ -38,7 +65,3 @@ def get_url_params(request):
         dict_url_params['viewer__columns'] = request.session['viewer__viewer__columns']
 
     return dict_url_params
-
-def tags(request):
-    context = {}
-    return render(request, 'viewer/tags.html', context)

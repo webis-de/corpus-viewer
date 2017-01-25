@@ -17,17 +17,11 @@ def get_page(request):
         elif viewer__filter['type'] == 'checkbox':
             set_session_from_url(request, 'filter_'+viewer__filter['data_field_name'], True if viewer__filter['default_value'] == 'checked' else False)
 
-
     set_session_from_url(request, 'viewer__page', 1)
 ##### load data and apply filters
-    data = []
-    if DICT_SETTINGS_VIEWER['data_type'] == 'database':
-        db_model = apps.get_model(DICT_SETTINGS_VIEWER['app_label'], DICT_SETTINGS_VIEWER['model_name'])
-        data = db_model.objects.all()
-    elif DICT_SETTINGS_VIEWER['data_type'] == 'csv-file':
-        data = load_file_csv()
-    elif DICT_SETTINGS_VIEWER['data_type'] == 'ldjson-file':
-        data = load_file_ldjson()
+    data, data_only_ids = load_data()
+
+    list_tags = get_set_tags_filtered_items(data_only_ids)
 
 ##### page the dataset
     paginator = Paginator(data, glob_page_size)
@@ -41,6 +35,7 @@ def get_page(request):
         # If page is out of range (e.g. 9999), deliver last page of results.
         data = paginator.page(paginator.num_pages)
 
+    add_tags(data)
 ##### handle post requests
     context = {}
     context['settings'] = DICT_SETTINGS_VIEWER
@@ -55,38 +50,36 @@ def get_page(request):
 
     template = get_template('viewer/table.html')
     return JsonResponse({'content':template.render(context, request),
-            # 'tags':[ {'id': tag.id, 'name': tag.name, 'color': tag.color} for tag in set_tags],
-            'count_pages':data.paginator.num_pages,
-            'count_entries':data.paginator.count,
-            'previous_page_number':previous_page_number,
-            'next_page_number':next_page_number
+            'tags_filtered_items': list_tags,
+            'count_pages': data.paginator.num_pages,
+            'count_entries': data.paginator.count,
+            'previous_page_number': previous_page_number,
+            'next_page_number': next_page_number
         })
 
-def load_file_csv():
-    data = []
-    with open(DICT_SETTINGS_VIEWER['data_path'], newline='') as file:
-        reader = csv.reader(file)
-        for row in reader:
-            tmp = {}
-            for index, field in enumerate(DICT_SETTINGS_VIEWER['data_structure']):
-                tmp[field] = row[index]
-            data.append(tmp)
-    return data
+def get_set_tags_filtered_items(list_ids):
+    n = 100
+    chunks = [list_ids[x:x+n] for x in range(0, len(list_ids), n)]
 
-def load_file_ldjson():
-    # with open(DICT_SETTINGS_VIEWER['data_path'], 'w') as file:
-    #     for i in range(1000):
-    #         obj = {
-    #             'name': 'ldjson_'+str(i),
-    #             'count_of_something': i*i
-    #         }
-    #         file.write(json.dumps(obj)+'\n')
-    data = []
-    with open(DICT_SETTINGS_VIEWER['data_path'], 'r') as file:
-        for row in file:
-            obj = json.loads(row)
-            tmp = {}
-            for field in DICT_SETTINGS_VIEWER['data_structure']:
-                tmp[field] = obj[field]
-            data.append(tmp)
-    return data
+    list_tags = []
+    for chunk in chunks:
+        list_tags += m_Tag.objects.filter(m2m_entity__in=chunk).distinct()
+    
+    dict_ordered_tags = OrderedDict()
+    for tag in list_tags:
+        if tag.name not in dict_ordered_tags:
+            dict_ordered_tags[tag.name] = {'id': tag.id, 'name': tag.name, 'color': tag.color}
+
+    return list(dict_ordered_tags.values())
+
+def add_tags(data):
+    if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+        for item in data:
+            item.tags = []
+    else:
+        list_ids = [item[DICT_SETTINGS_VIEWER['id']] for item in data]
+        db_obj_entities = m_Entity.objects.filter(id_item__in=list_ids).prefetch_related('tags')
+        dict_entities = {entity.id_item: entity for entity in db_obj_entities}
+
+        for item in data:
+            item['tags'] = dict_entities[str(item[DICT_SETTINGS_VIEWER['id']])].tags.all()
