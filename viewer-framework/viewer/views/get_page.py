@@ -11,13 +11,15 @@ glob_page_size = 25
 def get_page(request):
     # request.session.flush()
 ##### handle session entries
+    # this seems to be redundant
+    set_session_from_url(request, 'viewer__page', 1)
+
     for viewer__filter in  DICT_SETTINGS_VIEWER['filters']:
         if viewer__filter['type'] == 'text':
             set_session_from_url(request, 'filter_'+viewer__filter['data_field_name'], viewer__filter['default_value'])
         elif viewer__filter['type'] == 'checkbox':
             set_session_from_url(request, 'filter_'+viewer__filter['data_field_name'], True if viewer__filter['default_value'] == 'checked' else False)
 
-    set_session_from_url(request, 'viewer__page', 1)
 ##### load data and apply filters
     data, data_only_ids = load_data()
 
@@ -82,4 +84,8 @@ def add_tags(data):
         dict_entities = {entity.id_item: entity for entity in db_obj_entities}
 
         for item in data:
-            item['tags'] = dict_entities[str(item[DICT_SETTINGS_VIEWER['id']])].tags.all()
+            try:
+                item['tags'] = dict_entities[str(item[DICT_SETTINGS_VIEWER['id']])].tags.all()
+            except KeyError:
+                # if there is no entity entry in the database
+                item['tags'] = []

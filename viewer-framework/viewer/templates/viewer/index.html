@@ -116,7 +116,7 @@
                             <table>
                                 <thead>
                                     <tr>
-                                        <td colspan="3"><label class="mb-1"><input type="checkbox"> select all</label></td>
+                                        <td colspan="3"><label class="mb-1"><input type="checkbox" id="checkbox_tag_selection_all"> select all</label></td>
                                     </tr>
                                 </thead>
                                 <tbody id="wrapper_tags_filtered_items"></tbody>
@@ -186,6 +186,7 @@
 
 <script src="{% static 'viewer/js/tether.js' %}"></script>
 <script src="{% static 'viewer/js/bootstrap.js' %}"></script>
+<script src="{% static 'viewer/js/helper_functions.js' %}"></script>
 <script src="{% static 'viewer/js/index_functions.js' %}"></script>
 <script src="{% static 'viewer/js/index.js' %}"></script>
 {% include "viewer/footer.html" %}

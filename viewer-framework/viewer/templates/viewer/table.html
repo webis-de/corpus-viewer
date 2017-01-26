@@ -23,7 +23,7 @@
                 {% endif %}
             {% endfor %}
             <td class="column_viewer__tags" {% if not "viewer__tags" in request.session.viewer__viewer__columns %}style="display: none"{% endif %}>
-                <div class="wrapper_tags {{ item.tags }}"></div>
+                <div class="wrapper_tags {{ item.tags|display_as_tag_classes }}"></div>
                 <a class="link_add_tag" data-id_item="{{item.id}}" href="#"><i class="fa fa-plus" aria-hidden="true"></i></a>
             </td>
         </tr>

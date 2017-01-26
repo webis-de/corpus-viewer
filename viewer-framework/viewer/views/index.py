@@ -16,8 +16,12 @@ def index(request):
         return JsonResponse(response)
     # index_example_data()
     # request.session.flush()
+
     set_session(request, 'is_collapsed_div_filters', True)
     set_session(request, 'is_collapsed_div_tags', True)
+    
+    # this seems to be redundant
+    set_session_from_url(request, 'viewer__page', 1)
     set_session_from_url(request, 'viewer__columns', DICT_SETTINGS_VIEWER['displayed_fields'] + ['viewer__item_selection', 'viewer__tags'], is_array=True)
 
     context = {}
@@ -58,10 +62,14 @@ def index_missing_entities(entities):
 def get_url_params(request):
     dict_url_params = request.GET.copy()
 
+    if 'viewer__page' in dict_url_params:
+        dict_url_params['viewer__page'] = dict_url_params['viewer__page']
+    else:
+        dict_url_params['viewer__page'] = request.session['viewer__viewer__page']
+
     if 'viewer__columns' in dict_url_params:
         dict_url_params['viewer__columns'] = json.loads(dict_url_params['viewer__columns'])
     else:
-        set_tmp = set(request.session['viewer__viewer__columns'])
         dict_url_params['viewer__columns'] = request.session['viewer__viewer__columns']
 
     return dict_url_params
