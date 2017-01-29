@@ -114,8 +114,9 @@ function save_new_name(input)
                 console.log('saved new name')
                 remove_input_field(input);
             } else {
-                $('#modal_merge_tags .modal-body span:nth-of-type(1)').text(result.data.id_tag_name);
-                $('#modal_merge_tags .modal-body span:nth-of-type(2)').text(result.data.existing_tag_name);
+                $('#modal_merge_tags .modal-body p:nth-of-type(1) span:nth-of-type(1)').text(result.data.existing_tag_name);
+                $('#modal_merge_tags .modal-body p:nth-of-type(2) span:nth-of-type(1)').text(result.data.id_tag_name);
+                $('#modal_merge_tags .modal-body p:nth-of-type(2) span:nth-of-type(2)').text(result.data.existing_tag_name);
 
                 $('#modal_merge_tags').data('id_tag', result.data.id_tag);
                 $('#modal_merge_tags').data('existing_tag', result.data.existing_tag);
