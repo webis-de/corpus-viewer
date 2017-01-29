@@ -1,0 +1,87 @@
+{% include "viewer/header.html" %}
+{% load staticfiles %}
+{% csrf_token %}
+<div class="row">
+    <div class="col">
+        <h1>Tags</h1>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <table class="table table-sm" id="table_tags">
+            <thead>
+                <tr>
+                    <th class="column_tag_name">name</th>
+                    <th class="column_tag_color">color</th>
+                    <th class="column_tag_count_items">count items</th>
+                    <th class="column_tag_filty_by">filter by this tag</th>
+                    <th class="column_tag_delete" class="td_delete_tag">delete</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for tag in tags %}
+                <tr data-id_tag="{{ tag.id }}" data-tag_name="{{ tag.name }}">
+                    <td class="column_tag_name" data-original_value="{{ tag.name }}">{{ tag.name }}</td>
+                    <td class="column_tag_color" data-original_value="{{ tag.color }}"><input name="color" type="color" value="{{ tag.color }}"></td>
+                    <td class="column_tag_count_items">{{ tag.m2m_entity.all.count }}</td>
+                    <td class="column_tag_filty_by"><a href="{% url 'viewer:index' %}?filter_tag=[&quot;{{ tag.name }}&quot;]"><i class="fa fa-share" aria-hidden="true"></i></a></td>
+                    <td class="column_delete_tag"><i class="fa fa-times text-danger" style="cursor:pointer" aria-hidden="true"></i></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- MODAL MERGE TAGS -->
+<div class="modal fade" data-id_tag="" id="modal_delete_tag" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <form>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Delete Tag</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Do you want to delete the tag '<span></span>'?
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="delete_tag($('#modal_delete_tag'))">Delete Tag</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL MERGE TAGS -->
+<div class="modal fade" data-tag_id="" data-existing_tag="" id="modal_merge_tags" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <form>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Merge Tags</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Do you want to merge tag '<span></span>' into tag '<span></span>'?
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="merge_tags($('#modal_merge_tags'))">Merge Tags</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="{% static 'viewer/js/jquery-3.1.1.min.js' %}"></script>
+<script src="{% static 'viewer/js/tether.js' %}"></script>
+<script src="{% static 'viewer/js/bootstrap.js' %}"></script>
+<script src="{% static 'viewer/js/helper_functions.js' %}"></script>
+<script src="{% static 'viewer/js/tags.js' %}"></script>
+<!-- <link rel="stylesheet" type="text/css" href="{% static 'viewer/css/formats.css' %}" /> -->
+{% include "viewer/footer.html" %}

@@ -1,4 +1,5 @@
 let glob_selected_items = {}
+let glob_selected_tags = {}
 
 let glob_columns = []
 

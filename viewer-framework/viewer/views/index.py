@@ -12,13 +12,14 @@ def index(request):
             request.session['viewer__'+obj['session_key']] = obj['session_value']
             response['status'] = 'success'
         elif obj['task'] == 'add_tag':
-            add_tag(obj)
+            response['data'] = add_tag(obj)
         return JsonResponse(response)
     # index_example_data()
     # request.session.flush()
-
+    print(request.session.items())
     set_session(request, 'is_collapsed_div_filters', True)
     set_session(request, 'is_collapsed_div_tags', True)
+    set_session(request, 'viewer__selected_tags', [])
     
     # this seems to be redundant
     set_session_from_url(request, 'viewer__page', 1)
@@ -30,7 +31,7 @@ def index(request):
     return render(request, 'viewer/index.html', context)
 
 def add_tag(obj):
-    db_obj_tag = get_tag(obj['tag'], defaults={'color': obj['color']})
+    [db_obj_tag, created_tag] = get_or_create_tag(obj['tag'], defaults={'color': obj['color']})
 
     if DICT_SETTINGS_VIEWER['data_type'] == 'database':
         print('not implemented')
@@ -43,12 +44,17 @@ def add_tag(obj):
 
         index_missing_entities(entities)
 
-        db_obj_entities = m_Entity.objects.filter(id_item__in=entities)
-        db_obj_tag.m2m_entity.add(*db_obj_entities)
+        n = 100
+        chunks = [entities[x:x+n] for x in range(0, len(entities), n)]
+        for chunk in chunks:
+            db_obj_entities = m_Entity.objects.filter(id_item__in=chunk)
+            db_obj_tag.m2m_entity.add(*db_obj_entities)
 
     if db_obj_tag.color != obj['color']:
         db_obj_tag.color = obj['color']
         db_obj_tag.save()
+
+    return {'created_tag': created_tag, 'tag': {'id': db_obj_tag.id, 'name': db_obj_tag.name, 'color': db_obj_tag.color} }    
 
 def index_missing_entities(entities):
     queryset = m_Entity.objects.all()

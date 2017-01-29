@@ -17,6 +17,6 @@ def get_display_name(field, settings):
 def display_as_tag_classes(list_tags):
     result = ''
     for tag in list_tags:
-        result += 'tag_' + str(tag.id)
+        result += 'tag_' + str(tag.id) + ' '
 
     return result.strip()

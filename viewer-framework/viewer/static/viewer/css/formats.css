@@ -5,17 +5,12 @@ html {
     padding-right: 0 !important
 }
 
-/*#wrapper_loading {
-    position: absolute;
-    height: 50vh;
-    width: 100%;
-}*/
-    /*#wrapper_loading i {
-        text-align: center;
-        position: absolute;
-        left: calc(50%-1000px);
-        top: calc(50%);
-    }*/
+.column_viewer__item_selection {
+    width: 3rem
+}
+.column_viewer__tags {
+    width: 20rem
+}
 
 .alert.custom_alert {
 	display: none;
@@ -29,4 +24,9 @@ html {
     height: 1.5rem;
     margin-right: 0.3rem;
     border: 1px solid grey;
+}
+
+/* tags */
+#table_tags .column_tag_name {
+    width: 40%
 }

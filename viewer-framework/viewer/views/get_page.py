@@ -23,7 +23,7 @@ def get_page(request):
 ##### load data and apply filters
     data, data_only_ids = load_data()
 
-    list_tags = get_set_tags_filtered_items(data_only_ids)
+    list_tags = get_set_tags_filtered_items(data_only_ids, request)
 
 ##### page the dataset
     paginator = Paginator(data, glob_page_size)
@@ -59,18 +59,18 @@ def get_page(request):
             'next_page_number': next_page_number
         })
 
-def get_set_tags_filtered_items(list_ids):
+def get_set_tags_filtered_items(list_ids, request):
     n = 100
     chunks = [list_ids[x:x+n] for x in range(0, len(list_ids), n)]
 
     list_tags = []
     for chunk in chunks:
         list_tags += m_Tag.objects.filter(m2m_entity__in=chunk).distinct()
-    
+
     dict_ordered_tags = OrderedDict()
     for tag in list_tags:
         if tag.name not in dict_ordered_tags:
-            dict_ordered_tags[tag.name] = {'id': tag.id, 'name': tag.name, 'color': tag.color}
+            dict_ordered_tags[tag.name] = {'id': tag.id, 'name': tag.name, 'color': tag.color, 'is_selected': str(tag.id) in request.session['viewer__viewer__selected_tags']}
 
     return list(dict_ordered_tags.values())
 

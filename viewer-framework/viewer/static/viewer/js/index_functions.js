@@ -69,7 +69,7 @@ function handle_select_item(input)
     } else {
         delete glob_selected_items[input.data('id_item')];
     }
-    update_input_select_all_items()
+    update_checkbox_select_all('input_select_item', 'input_select_all_items')
     update_info_selected_items()
 }
 
@@ -78,7 +78,7 @@ function handle_deselect_all_items(event)
     event.preventDefault()
     glob_selected_items = {}
     $('.input_select_item').prop('checked', false);
-    update_input_select_all_items()
+    update_checkbox_select_all('input_select_item', 'input_select_all_items')
     update_info_selected_items()
 }
 
@@ -141,7 +141,7 @@ function add_tag(modal)
             data.ids = Object.keys(glob_selected_items)
         // if the modal was triggered by a link
         } else {
-            data.ids = [id_item]
+            data.ids = [String(id_item)]
         }
     }
 
@@ -151,6 +151,23 @@ function add_tag(modal)
         headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
         data: JSON.stringify(data),
         success: function(result) {
+            if(data.ids == 'all')
+            {
+                $('#table_entities .wrapper_tags').each(function(index, element) {
+                    $(element).addClass('tag_'+result.data.tag.id)
+                })
+            } else {
+                $.each(data.ids, function(index, id_item) {
+                    $('#table_entities tr[data-id_item="'+id_item+'"] .wrapper_tags').addClass('tag_'+result.data.tag.id)
+                })
+                add_tag_marker(result.data.tag.id, result.data.tag.name, result.data.tag.color)
+            }
+
+            if(result.data.created_tag)
+            {
+                add_tag_to_tags_list(result.data.tag.id, result.data.tag.name, result.data.tag.color)
+            }
+
             modal.modal('hide');
         }
     })
@@ -177,20 +194,22 @@ function handle_change_displayed_tag_all(input)
 {
     if(input.prop('checked'))
     {
-        // glob_selected_tags[tag_id] = tag_id;
         $('.checkbox_tag_selection').each(function(index, element) {
             let checkbox = $(element)
             let tag_id = checkbox.data('tag_id');
             let tag_name = checkbox.data('tag_name');
             let tag_color = checkbox.data('tag_color');
+            glob_selected_tags[tag_id] = tag_id;
             add_tag_marker(tag_id, tag_name, tag_color);
+            set_session_entry('viewer__selected_tags', glob_selected_tags)
             checkbox.prop('checked', true)
         })
     } else {
-        // delete glob_selected_tags[tag_id];
         $('.checkbox_tag_selection').each(function(index, element) {
             let checkbox = $(element)
             let tag_id = checkbox.data('tag_id');
+            delete glob_selected_tags[tag_id];
+            set_session_entry('viewer__selected_tags', glob_selected_tags)
             remove_tag_marker(tag_id);
             checkbox.prop('checked', false)
         })
@@ -204,12 +223,15 @@ function handle_change_displayed_tag(checkbox)
     let tag_color = checkbox.data('tag_color');
     if(checkbox.prop('checked'))
     {
-        // glob_selected_tags[tag_id] = tag_id;
+        glob_selected_tags[tag_id] = tag_id;
+        set_session_entry('viewer__selected_tags', glob_selected_tags)
         add_tag_marker(tag_id, tag_name, tag_color);
     } else {
-        // delete glob_selected_tags[tag_id];
+        delete glob_selected_tags[tag_id];
+        set_session_entry('viewer__selected_tags', glob_selected_tags)
         remove_tag_marker(tag_id);
     }
+    update_checkbox_select_all('checkbox_tag_selection', 'checkbox_tag_selection_all')
 }   
 
 function load_current_page(update_tags = true)
@@ -228,6 +250,7 @@ function load_current_page(update_tags = true)
             glob_next_page = result.next_page_number;
             glob_count_pages = result.count_pages;
             glob_count_entries = result.count_entries
+
 
             if(update_tags)
             {
@@ -251,7 +274,6 @@ function load_page_parameters()
             if(key == 'viewer__page')
             {
                 glob_current_page = parseInt(value)
-                console.log(glob_current_page)
             } else if(key == 'viewer__columns') {
                 glob_columns = value
             }

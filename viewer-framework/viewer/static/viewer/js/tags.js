@@ -1,0 +1,151 @@
+let glob_clicked_enter = false;
+
+$(document).ready(function()
+{
+    $(document).on('click', '.column_tag_name[data-original_value]', function() { make_text_input($(this)) });
+    $(document).on('blur', '.column_tag_name[data-original_value] input', function() { if(!glob_clicked_enter) {save_new_name($(this));} glob_clicked_enter = false  });
+    $(document).on('keyup', '.column_tag_name[data-original_value] input', function(e) { if (e.keyCode == 13) {glob_clicked_enter = true; save_new_name($(this))} });
+
+    $(document).on('hide.bs.modal', '#modal_merge_tags', function() { revert_input_field($('tr[data-id_tag="'+$('#modal_merge_tags').data('id_tag')+'"] .column_tag_name[data-original_value] input')); });
+
+    $(document).on('change', '.column_tag_color input', function() { save_new_color($(this)) });
+
+    $(document).on('click', '.column_delete_tag i', function() { request_delete_tag($(this).parent().parent().data('id_tag'), $(this).parent().parent().data('tag_name')) });
+}); 
+
+function request_delete_tag(id_tag, tag_name)
+{
+    $('#modal_delete_tag .modal-body span:nth-of-type(1)').text(tag_name);
+
+    $('#modal_delete_tag').data('id_tag', id_tag);
+
+    $('#modal_delete_tag').modal('show');
+}
+
+function delete_tag(modal)
+{
+    let data = {};
+    data.task = 'delete_tag';
+    data.id_tag = modal.data('id_tag');;
+
+    $.ajax({
+        method: 'POST',
+        contentType: 'application/json',
+        headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+        data: JSON.stringify(data),
+        success: function(result) {
+            $('tr[data-id_tag="'+data.id_tag+'"]').remove();
+            modal.modal('hide');
+        },
+    }); 
+}
+
+function save_new_color(input)
+{
+    let td = input.parent();
+    let new_color = input.val();
+
+    if(new_color == td.data('original_value'))
+    {
+        return;
+    }
+
+    let data = {};
+    data.task = 'update_color';
+    data.id_tag = td.parent().data('id_tag');
+    data.new_color = new_color;
+
+    $.ajax({
+        method: 'POST',
+        contentType: 'application/json',
+        headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+        data: JSON.stringify(data),
+        success: function(result) {
+            td.data('original_value', new_color);
+        },
+    }); 
+}
+
+function merge_tags(modal)
+{
+    let data = {};
+    data.task = 'merge_tags';
+    data.id_tag = modal.data('id_tag');
+    data.existing_tag = modal.data('existing_tag');
+
+    $.ajax({
+        method: 'POST',
+        contentType: 'application/json',
+        headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+        data: JSON.stringify(data),
+        success: function(result) {
+            $('tr[data-id_tag="'+data.existing_tag+'"] .column_tag_count_items').text(result.data.count_entities_updated)
+            $('tr[data-id_tag="'+data.id_tag+'"]').remove();
+            modal.modal('hide');
+        },
+    }); 
+}
+
+function save_new_name(input) 
+{
+    let td = input.parent();
+    let new_name = input.val().trim();
+
+    if(new_name == td.data('original_value'))
+    {
+        console.log('same name')
+        remove_input_field(input);
+        return;
+    }
+
+    let data = {};
+    data.task = 'update_name';
+    data.id_tag = td.parent().data('id_tag');
+    data.new_name = new_name;
+
+    $.ajax({
+        method: 'POST',
+        contentType: 'application/json',
+        headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+        data: JSON.stringify(data),
+        success: function(result) {
+            if(result.status == 'success')
+            {
+                console.log('saved new name')
+                remove_input_field(input);
+            } else {
+                $('#modal_merge_tags .modal-body span:nth-of-type(1)').text(result.data.id_tag_name);
+                $('#modal_merge_tags .modal-body span:nth-of-type(2)').text(result.data.existing_tag_name);
+
+                $('#modal_merge_tags').data('id_tag', result.data.id_tag);
+                $('#modal_merge_tags').data('existing_tag', result.data.existing_tag);
+
+                $('#modal_merge_tags').modal('show');
+            }
+        },
+    });
+}   
+
+function revert_input_field(input)
+{
+    let td = input.parent();
+    td.html(td.data('original_value'));
+}   
+
+function remove_input_field(input)
+{
+    let td = input.parent();
+    let new_name = input.val().trim().replace(/ /g, '-');
+    td.data('original_value', new_name);
+    td.html(new_name);
+}   
+
+function make_text_input(column)
+{
+    if(column.find('input').length == 0)
+    {
+        let current_name = column.text().trim();
+        column.html('<input style="height: 1.5rem" type="text" value="'+current_name+'">');
+        column.find('input').select();
+    }
+}

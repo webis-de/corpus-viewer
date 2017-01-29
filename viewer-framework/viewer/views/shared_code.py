@@ -5,11 +5,11 @@ from collections import OrderedDict
 from settings_viewer import DICT_SETTINGS_VIEWER
 from viewer.models import m_Tag, m_Entity, Example_Model
 
-def get_tag(name, defaults={}):
+def get_or_create_tag(name, defaults={}):
     name = name.strip()
     name = name.replace(' ', '-')
     db_obj_tag = m_Tag.objects.get_or_create(name=name, defaults=defaults)
-    return db_obj_tag[0]
+    return db_obj_tag
 
 def load_data():
     data = []
