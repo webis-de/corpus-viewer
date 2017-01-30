@@ -49,9 +49,14 @@
                     <div class="collapse {% if request.session.viewer__is_collapsed_div_filters == False %}show{% endif %}" id="div_filters">
                         <div class="card-block py-1 px-2">
                             <div class="form-group" style="display: relative">
-                                <label for="input_name_tags">Filter by Tag(s)</label>
-                                <input name="tag" type="text" id="input_name_tags" class="form-control form-control-sm" placeholder="Enter Tag-Name(s)" value="">
-                                <div id="wrapper_tag_recommendations" class="wrapper_recommendation" style="display: none"></div>
+                                <label for="input_filter_tags">Filter by Tag(s)</label>
+                                <input name="tag" type="text" id="input_filter_tags" class="form-control form-control-sm" placeholder="Enter Tag-Name(s)" value="">
+                                <div id="wrapper_tag_recommendations_filter" class="wrapper_recommendation" style="display: none"></div>
+                                <ul id="list_filter_tags" class="list-unstyled">
+                                    {% for tag in request.session.viewer__viewer__filter_tags %}
+                                        <li data-tag="{{ tag }}"><span class="badge badge-default">{{ tag }} <i class="fa fa-times" aria-hidden="true"></i></span></li>
+                                    {% endfor %}
+                                </ul>
                             </div>
                         {% for filter in settings.filters %}
                             {% if filter.type == 'checkbox' %}

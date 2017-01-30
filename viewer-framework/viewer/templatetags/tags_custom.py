@@ -16,7 +16,12 @@ def get_display_name(field, settings):
 @register.filter
 def display_as_tag_classes(list_tags):
     result = ''
-    for tag in list_tags:
-        result += 'tag_' + str(tag.id) + ' '
+
+    try:
+        for tag in list_tags:
+            result += 'tag_' + str(tag.id) + ' '
+    except TypeError:
+        for tag in list_tags.all():
+            result += 'tag_' + str(tag.id) + ' '
 
     return result.strip()

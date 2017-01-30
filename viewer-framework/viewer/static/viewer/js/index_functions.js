@@ -34,6 +34,60 @@ function handle_pager_click(button)
     load_current_page(false);
 }
 
+function handle_remove_tag_from_filter(tag)
+{
+    index = glob_filter_tags.indexOf(tag);
+    if(index > -1)
+    {
+        glob_filter_tags.splice(index, 1);
+    }
+    $('#list_filter_tags li[data-tag="' + tag + '"').remove();
+
+    set_session_entry('viewer__filter_tags', glob_filter_tags, function() {
+        glob_current_page = 1;
+        load_current_page();
+    })
+}
+
+function handle_recommendation_filter(input, wrapper_recommendation, func)
+{
+    let tag_name = input.val();
+    if(tag_name == '')
+    {
+        remove_wrapper_recommendation(wrapper_recommendation);
+    } else {
+        let data = {};
+        data.task = 'get_tag_recommendations';
+        data.tag_name = tag_name;
+
+        $.ajax({
+            method: 'POST',
+            contentType: 'application/json',
+            headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+            data: JSON.stringify(data),
+            success: function(result) {
+                set_recommendations(wrapper_recommendation, $(result.data.array_recommendations));
+            }
+        });
+    }
+}
+
+function handle_click_on_recommendation_filter(recommendation, func)
+{
+    let wrapper_recommendation = recommendation.parent();
+    let input_tag_names = wrapper_recommendation.parent().find('input');
+    let tag_name = recommendation.data('tag_name');
+
+    input_tag_names.val('');
+    remove_wrapper_recommendation(wrapper_recommendation);
+    input_tag_names.focus();
+
+    if(func)
+    {
+        func(tag_name);
+    }
+}
+
 function handle_toggle_column(input)
 {
     let column = input.data('column')
@@ -84,7 +138,7 @@ function handle_deselect_all_items(event)
 
 function handle_rightclick_on_tr(event, tr)
 {
-    event.preventDefault(); 
+    event.preventDefault();
     const id_item = tr.data('id_item')
     const elem = $('.input_select_item[data-id_item="'+id_item+'"]')
     if(elem.prop('checked'))
@@ -232,7 +286,7 @@ function handle_change_displayed_tag(checkbox)
         remove_tag_marker(tag_id);
     }
     update_checkbox_select_all('checkbox_tag_selection', 'checkbox_tag_selection_all')
-}   
+}
 
 function load_current_page(update_tags = true)
 {
@@ -276,6 +330,8 @@ function load_page_parameters()
                 glob_current_page = parseInt(value)
             } else if(key == 'viewer__columns') {
                 glob_columns = value
+            } else if(key == 'viewer__filter_tags') {
+                glob_filter_tags = value
             }
         }
     })

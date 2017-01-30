@@ -13,6 +13,10 @@ def index(request):
             response['status'] = 'success'
         elif obj['task'] == 'add_tag':
             response['data'] = add_tag(obj)
+        elif obj['task'] == 'get_tag_recommendations':
+            array_tag_recommendations = get_tag_recommendations(request, obj)
+            response['status'] = 'success'
+            response['data'] = {'array_recommendations':array_tag_recommendations}
         return JsonResponse(response)
     # index_example_data()
     # request.session.flush()
@@ -20,15 +24,26 @@ def index(request):
     set_session(request, 'is_collapsed_div_filters', True)
     set_session(request, 'is_collapsed_div_tags', True)
     set_session(request, 'viewer__selected_tags', [])
-    
+
     # this seems to be redundant
     set_session_from_url(request, 'viewer__page', 1)
     set_session_from_url(request, 'viewer__columns', DICT_SETTINGS_VIEWER['displayed_fields'] + ['viewer__item_selection', 'viewer__tags'], is_array=True)
+    set_session_from_url(request, 'viewer__filter_tags', [], is_array=True)
 
     context = {}
     context['json_url_params'] = json.dumps(get_url_params(request))
     context['settings'] = DICT_SETTINGS_VIEWER
     return render(request, 'viewer/index.html', context)
+
+
+def get_tag_recommendations(request, obj):
+    array_tag_recommendations = []
+    array_tags = m_Tag.objects.filter(name__contains=obj['tag_name'])
+
+    for tag in array_tags:
+        array_tag_recommendations.append({'name':tag.name, 'color':tag.color});
+
+    return array_tag_recommendations
 
 def add_tag(obj):
     [db_obj_tag, created_tag] = get_or_create_tag(obj['tag'], defaults={'color': obj['color']})
@@ -54,7 +69,7 @@ def add_tag(obj):
         db_obj_tag.color = obj['color']
         db_obj_tag.save()
 
-    return {'created_tag': created_tag, 'tag': {'id': db_obj_tag.id, 'name': db_obj_tag.name, 'color': db_obj_tag.color} }    
+    return {'created_tag': created_tag, 'tag': {'id': db_obj_tag.id, 'name': db_obj_tag.name, 'color': db_obj_tag.color} }
 
 def index_missing_entities(entities):
     queryset = m_Entity.objects.all()
@@ -77,5 +92,10 @@ def get_url_params(request):
         dict_url_params['viewer__columns'] = json.loads(dict_url_params['viewer__columns'])
     else:
         dict_url_params['viewer__columns'] = request.session['viewer__viewer__columns']
+
+    if 'viewer__filter_tags' in dict_url_params:
+        dict_url_params['viewer__filter_tags'] = json.loads(dict_url_params['viewer__filter_tags'])
+    else:
+        dict_url_params['viewer__filter_tags'] = request.session['viewer__viewer__filter_tags']
 
     return dict_url_params

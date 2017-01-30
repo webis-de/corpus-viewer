@@ -1,3 +1,80 @@
+// recommendations ////////////////////////////////////////////////////////////////////////////
+function trigger_tag_filter_change(tag)
+{
+    $('#list_filter_tags').append('<li data-tag="' + tag + '"><span class="badge badge-default">' + tag + ' <span class="fa fa-times"></span></span></li>')
+    glob_filter_tags.push(tag);
+    set_session_entry('viewer__filter_tags', glob_filter_tags, function() {
+        glob_current_page = 1;
+        load_current_page();
+    })
+
+}
+function handle_click_on_recommendation(recommendation, input_tag_color)
+{
+    let wrapper_recommendation = recommendation.parent();
+    let input_tag_name = wrapper_recommendation.parent().find('input');
+    let tag_name = recommendation.data('tag_name');
+
+    input_tag_name.val(tag_name);
+    remove_wrapper_recommendation(wrapper_recommendation);
+
+
+    if(input_tag_color)
+    {
+        let tag_color = recommendation.data('tag_color');
+        input_tag_color.val(tag_color);
+    }
+}
+function handle_recommendation(input, wrapper_recommendation)
+{
+    let tag_name = input.val().replace(' ', '-');
+    if(tag_name == '')
+    {
+        remove_wrapper_recommendation(wrapper_recommendation);
+    } else {
+        let data = {};
+        data.task = 'get_tag_recommendations';
+        data.tag_name = tag_name;
+
+        $.ajax({
+            method: 'POST',
+            contentType: 'application/json',
+            headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+            data: JSON.stringify(data),
+            success: function(result) {
+                set_recommendations(wrapper_recommendation, $(result.data.array_recommendations));
+            }
+        });
+    }
+}
+function remove_wrapper_recommendation(wrapper_recommendation)
+{
+    wrapper_recommendation.hide();
+    reset_recommendations(wrapper_recommendation);
+}
+function set_recommendations(wrapper_recommendation, array_recommendations)
+{
+    reset_recommendations(wrapper_recommendation);
+
+    array_recommendations.each(function() {
+        wrapper_recommendation.append(
+            '<div class="recommendation" data-tag_name="'+this.name+'" data-tag_color="'+this.color+'">'+
+                '<div class="tag_marker_recommendation" style="background-color: '+this.color+';"></div>'+
+            this.name+'</div>');
+    });
+
+    if(array_recommendations.length != 0)
+    {
+        wrapper_recommendation.show();
+    } else {
+        wrapper_recommendation.hide();
+    }
+}
+function reset_recommendations(wrapper_recommendation)
+{
+    wrapper_recommendation.find('.recommendation').remove();
+}
+
 function update_info_selected_items()
 {
     $('#info_selected_items span').text(Object.keys(glob_selected_items).length)
@@ -18,6 +95,7 @@ function refresh_url()
     let data = {};
     data.viewer__page = glob_current_page;
     data.viewer__columns = JSON.stringify(glob_columns);
+    data.viewer__filter_tags = JSON.stringify(glob_filter_tags);
 
     let url_params = '';
     $.each(data, function(index, value) {

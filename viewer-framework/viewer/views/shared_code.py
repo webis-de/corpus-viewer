@@ -4,6 +4,7 @@ import csv
 from collections import OrderedDict
 from settings_viewer import DICT_SETTINGS_VIEWER
 from viewer.models import m_Tag, m_Entity, Example_Model
+from django.apps import apps
 
 def get_or_create_tag(name, defaults={}):
     name = name.strip()

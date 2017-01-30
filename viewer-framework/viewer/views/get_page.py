@@ -1,7 +1,6 @@
 from .shared_code import *
 from django.http import JsonResponse
 from django.shortcuts import render
-from django.apps import apps
 from django.template import Engine, Context
 from django.template.loader import get_template
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -24,6 +23,13 @@ def get_page(request):
     data, data_only_ids = load_data()
 
     list_tags = get_set_tags_filtered_items(data_only_ids, request)
+
+    if len(request.session['viewer__viewer__filter_tags']) > 0:
+        if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+            for tag in request.session['viewer__viewer__filter_tags']:
+                data = data.filter(tags__name=tag)
+        else:
+            data = filter_data_tags(data, request.session['viewer__viewer__filter_tags'])
 
 ##### page the dataset
     paginator = Paginator(data, glob_page_size)
@@ -58,6 +64,14 @@ def get_page(request):
             'previous_page_number': previous_page_number,
             'next_page_number': next_page_number
         })
+
+def filter_data_tags(data, list_tags):
+    # data = []
+
+    # for tag in list_tags:
+
+
+    return data
 
 def get_set_tags_filtered_items(list_ids, request):
     n = 100
