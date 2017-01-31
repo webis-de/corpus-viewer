@@ -166,6 +166,7 @@ function add_tag_to_tags_list(id, name, color)
 
 function update_tags_list(tags)
 {
+    glob_selected_tags = {}
     let content = '';
     for (let i = 0; i < tags.length; i++) {
         let tag = tags[i];
@@ -174,6 +175,7 @@ function update_tags_list(tags)
         {
             checked = 'checked'
             add_tag_marker(tag.id, tag.name, tag.color)
+            glob_selected_tags[tag.id] = tag.id;
         }
 
         content +=  '<tr class="tr_tag">'+
@@ -190,6 +192,7 @@ function update_tags_list(tags)
     }
     $('#wrapper_tags_filtered_items').html(content);
     update_checkbox_select_all('checkbox_tag_selection', 'checkbox_tag_selection_all')
+    set_session_entry('viewer__selected_tags', glob_selected_tags)
 }
 
 function set_session_entry(session_key, session_value, callback)

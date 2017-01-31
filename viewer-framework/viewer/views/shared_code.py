@@ -15,19 +15,23 @@ def get_or_create_tag(name, defaults={}):
 def load_data():
     data = []
     data_only_ids = []
+    dict_ids = {}
+
     if DICT_SETTINGS_VIEWER['data_type'] == 'database':
         db_model = apps.get_model(DICT_SETTINGS_VIEWER['app_label'], DICT_SETTINGS_VIEWER['model_name'])
-        data = db_model.objects.all()
+        data = db_model.objects.all().prefetch_related('viewer_tags')
         data_only_ids = [str(getattr(entity, DICT_SETTINGS_VIEWER['id'])) for entity in db_model.objects.all().only(DICT_SETTINGS_VIEWER['id'])]
     elif DICT_SETTINGS_VIEWER['data_type'] == 'csv-file':
         data = load_file_csv()
         data_only_ids = [str(item[DICT_SETTINGS_VIEWER['id']]) for item in data]
+        dict_ids = {str(item[DICT_SETTINGS_VIEWER['id']]):index for index, item in enumerate(data)}
     elif DICT_SETTINGS_VIEWER['data_type'] == 'ldjson-file':
         data = load_file_ldjson()
         data_only_ids = [str(item[DICT_SETTINGS_VIEWER['id']]) for item in data]
+        dict_ids = {str(item[DICT_SETTINGS_VIEWER['id']]):index for index, item in enumerate(data)}
 
 
-    return data, data_only_ids
+    return data, data_only_ids, dict_ids
 
 def load_file_csv():
     data = []

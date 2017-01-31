@@ -10,11 +10,11 @@ class m_Entity(models.Model):
 class m_Tag(models.Model):
     class Meta:
         ordering = ['name']
-        
+
     name = models.CharField(max_length=100, unique=True)
     color = models.CharField(max_length=7, default="#000000")
-    m2m_example_model = models.ManyToManyField(Example_Model, related_name='tags')
-    m2m_entity = models.ManyToManyField(m_Entity, related_name='tags')
+    m2m_custom_model = models.ManyToManyField(Example_Model, related_name='viewer_tags')
+    m2m_entity = models.ManyToManyField(m_Entity, related_name='viewer_tags')
 
     def __str__(self):
         return '<Tag [%s]>' % (self.name)

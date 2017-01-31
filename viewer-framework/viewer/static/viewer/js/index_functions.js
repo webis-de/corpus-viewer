@@ -199,7 +199,10 @@ function add_tag(modal)
         }
     }
 
+    let url_params = refresh_url();
+
     $.ajax({
+        url: 'get_page?'+url_params,
         method: 'POST',
         contentType: 'application/json',
         headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},

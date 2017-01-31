@@ -26,6 +26,7 @@ def tags(request):
         return JsonResponse(response)
 
     context = {}
+    context['settings'] = DICT_SETTINGS_VIEWER
     context['tags'] = tags
     if request.is_ajax():
         return render(request, 'viewer/tags.html', context)
@@ -34,20 +35,20 @@ def tags(request):
 
 def delete_tag(obj):
     response = {}
-    
+
     tag = m_Tag.objects.get(id=obj['id_tag'])
     tag.delete()
 
     return response
-    
+
 def merge_tags(obj):
     response = {}
-    
-    tag = m_Tag.objects.get(id=obj['id_tag'])    
+
+    tag = m_Tag.objects.get(id=obj['id_tag'])
 
     existing_tag = m_Tag.objects.get(id=obj['existing_tag'])
     existing_tag.m2m_entity.add(*tag.m2m_entity.all())
-    existing_tag.save()  
+    existing_tag.save()
 
     tag.delete()
 

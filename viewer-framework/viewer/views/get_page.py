@@ -20,16 +20,21 @@ def get_page(request):
             set_session_from_url(request, 'filter_'+viewer__filter['data_field_name'], True if viewer__filter['default_value'] == 'checked' else False)
 
 ##### load data and apply filters
-    data, data_only_ids = load_data()
+    data, data_only_ids = get_filtered_data(request)
+
+    print(len(data))
+    print(len(data_only_ids))
 
     list_tags = get_set_tags_filtered_items(data_only_ids, request)
 
-    if len(request.session['viewer__viewer__filter_tags']) > 0:
-        if DICT_SETTINGS_VIEWER['data_type'] == 'database':
-            for tag in request.session['viewer__viewer__filter_tags']:
-                data = data.filter(tags__name=tag)
-        else:
-            data = filter_data_tags(data, request.session['viewer__viewer__filter_tags'])
+
+##### handle post requests
+    if request.method == 'POST':
+        response = {}
+        obj = json.loads(request.body.decode("utf-8"))
+        if obj['task'] == 'add_tag':
+            response['data'] = add_tag(obj, data)
+        return JsonResponse(response)
 
 ##### page the dataset
     paginator = Paginator(data, glob_page_size)
@@ -65,6 +70,28 @@ def get_page(request):
             'next_page_number': next_page_number
         })
 
+def get_filtered_data(request):
+    data, data_only_ids, dict_ids = load_data()
+    print(len(data))
+    print(len(data_only_ids))
+    # print(dict_ids)
+
+
+    if len(request.session['viewer__viewer__filter_tags']) > 0:
+        if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+            for tag in request.session['viewer__viewer__filter_tags']:
+                data = data.filter(viewer_tags__name=tag)
+        else:
+            data = filter_data_tags(data, request.session['viewer__viewer__filter_tags'])
+
+    if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+        data_only_ids = [item.id for item in data]
+    else:
+        data_only_ids = [item for item in data_only_ids if item in data[DICT_SETTINGS_VIEWER['id']]]
+
+
+    return data, data_only_ids
+
 def filter_data_tags(data, list_tags):
     # data = []
 
@@ -73,33 +100,89 @@ def filter_data_tags(data, list_tags):
 
     return data
 
+
+def add_tag(obj, data):
+    [db_obj_tag, created_tag] = get_or_create_tag(obj['tag'], defaults={'color': obj['color']})
+
+    entities = []
+    if obj['ids'] == 'all':
+        entities = data
+    else:
+        entities = obj['ids']
+
+    if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+        n = 100
+        chunks = [entities[x:x+n] for x in range(0, len(entities), n)]
+        for chunk in chunks:
+            db_obj_tag.m2m_custom_model.add(*chunk)
+    else:
+
+        index_missing_entities(entities)
+
+        n = 100
+        chunks = [entities[x:x+n] for x in range(0, len(entities), n)]
+        for chunk in chunks:
+            db_obj_entities = m_Entity.objects.filter(id_item__in=chunk)
+            db_obj_tag.m2m_entity.add(*db_obj_entities)
+
+    if db_obj_tag.color != obj['color']:
+        db_obj_tag.color = obj['color']
+        db_obj_tag.save()
+
+    return {'created_tag': created_tag, 'tag': {'id': db_obj_tag.id, 'name': db_obj_tag.name, 'color': db_obj_tag.color} }
+
+def index_missing_entities(entities):
+    queryset = m_Entity.objects.all()
+    set_new_entities = set(entities)
+
+    set_new_entities.difference_update({entity.id_item for entity in queryset})
+
+    if len(set_new_entities) > 0:
+        m_Entity.objects.bulk_create([m_Entity(id_item=entity) for entity in set_new_entities])
+
+
 def get_set_tags_filtered_items(list_ids, request):
-    n = 100
-    chunks = [list_ids[x:x+n] for x in range(0, len(list_ids), n)]
+    if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+        list_tags = []
+        n = 100
+        chunks = [list_ids[x:x+n] for x in range(0, len(list_ids), n)]
+        for chunk in chunks:
+            list_tags += m_Tag.objects.filter(m2m_custom_model__in=chunk).distinct()
 
-    list_tags = []
-    for chunk in chunks:
-        list_tags += m_Tag.objects.filter(m2m_entity__in=chunk).distinct()
 
-    dict_ordered_tags = OrderedDict()
-    for tag in list_tags:
-        if tag.name not in dict_ordered_tags:
-            dict_ordered_tags[tag.name] = {'id': tag.id, 'name': tag.name, 'color': tag.color, 'is_selected': str(tag.id) in request.session['viewer__viewer__selected_tags']}
+        dict_ordered_tags = OrderedDict()
+        for tag in list_tags:
+            if tag.name not in dict_ordered_tags:
+                dict_ordered_tags[tag.name] = {'id': tag.id, 'name': tag.name, 'color': tag.color, 'is_selected': str(tag.id) in request.session['viewer__viewer__selected_tags']}
+        return list(dict_ordered_tags.values())
+    else:
+        n = 100
+        chunks = [list_ids[x:x+n] for x in range(0, len(list_ids), n)]
 
-    return list(dict_ordered_tags.values())
+        list_tags = []
+        for chunk in chunks:
+            list_tags += m_Tag.objects.filter(m2m_entity__in=chunk).distinct()
+
+        dict_ordered_tags = OrderedDict()
+        for tag in list_tags:
+            if tag.name not in dict_ordered_tags:
+                dict_ordered_tags[tag.name] = {'id': tag.id, 'name': tag.name, 'color': tag.color, 'is_selected': str(tag.id) in request.session['viewer__viewer__selected_tags']}
+
+        return list(dict_ordered_tags.values())
 
 def add_tags(data):
     if DICT_SETTINGS_VIEWER['data_type'] == 'database':
-        for item in data:
-            item.tags = []
+        pass
+        # for item in data:
+        #     item.tags = []
     else:
         list_ids = [item[DICT_SETTINGS_VIEWER['id']] for item in data]
-        db_obj_entities = m_Entity.objects.filter(id_item__in=list_ids).prefetch_related('tags')
+        db_obj_entities = m_Entity.objects.filter(id_item__in=list_ids).prefetch_related('viewer_tags')
         dict_entities = {entity.id_item: entity for entity in db_obj_entities}
 
         for item in data:
             try:
-                item['tags'] = dict_entities[str(item[DICT_SETTINGS_VIEWER['id']])].tags.all()
+                item['viewer_tags'] = dict_entities[str(item[DICT_SETTINGS_VIEWER['id']])].viewer_tags.all()
             except KeyError:
                 # if there is no entity entry in the database
-                item['tags'] = []
+                item['viewer_tags'] = []
