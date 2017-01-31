@@ -59,6 +59,9 @@ def load_file_ldjson():
     return data
 
 def index_example_data():
+    Example_Model.objects.all().delete()
+    m_Entity.objects.all().delete()
+    m_Tag.objects.all().delete()
     list_entries = []
     for i in range(1000):
         list_entries.append(Example_Model(name='name'+str(i), count_of_something=i))
