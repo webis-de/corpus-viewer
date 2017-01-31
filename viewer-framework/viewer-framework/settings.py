@@ -48,6 +48,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'viewer-framework.middleware.SqlPrintMiddleware',
 ]
 
 ROOT_URLCONF = 'viewer-framework.urls'
