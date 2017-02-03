@@ -301,7 +301,7 @@ function load_current_page(update_tags = true)
             start_loading();
         },
         success: function(result) {
-            $('#table_entities .content').html(result.content)
+            $('#table_entities .content .table').html(result.content)
             // console.log(result)
             glob_prev_page = result.previous_page_number;
             glob_next_page = result.next_page_number;
@@ -311,7 +311,7 @@ function load_current_page(update_tags = true)
 
             if(update_tags)
             {
-                update_tags_list(result.tags_filtered_items);
+                update_tags_list(result.tags_filtered_items, false);
             } else {
                 $.each($('.checkbox_tag_selection:checked'), function(index, element) {
                     add_tag_marker($(element).data('tag_id'), $(element).data('tag_name'), $(element).data('tag_color'));
