@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['localhost', 'webis42.medien.uni-weimar.de']
 
 INSTALLED_APPS = [
     'viewer.apps.ViewerConfig',
+    'example_app.apps.ExampleAppConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

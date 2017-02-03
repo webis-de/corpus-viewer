@@ -1,8 +1,5 @@
 from django.db import models
-
-class Example_Model(models.Model):
-    name = models.CharField(max_length=30, unique=True)
-    count_of_something = models.IntegerField(default=0)
+from example_app.models import Example_Model
 
 class m_Entity(models.Model):
     id_item = models.CharField(max_length=200, unique=True, db_index=True)

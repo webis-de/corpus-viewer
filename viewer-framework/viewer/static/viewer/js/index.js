@@ -28,7 +28,7 @@ $(document).ready(function()
     $(document).on('change', '#input_select_all_items', function(e) { handle_selection_all_items($(this)) });
     $(document).on('change', '.input_select_item', function(e) { handle_select_item($(this)) });
     $(document).on('click', '#link_deselect_all_items', function(e) { handle_deselect_all_items(e) });
-    // $(document).on('contextmenu', '.row_viewer__item', function(e) {handle_rightclick_on_tr(e, $(this))})
+    $(document).on('contextmenu', '.row_viewer__item', function(e) {handle_rightclick_on_tr(e, $(this))})
 
     $(document).on('click', '.link_add_tag', function(e) { handle_click_link_add_tag(e, $(this)) });
     $(document).on('show.bs.modal', '#modal_add_tag', function(e) { handle_show_modal(e, $(this)) });

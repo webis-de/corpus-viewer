@@ -1,10 +1,13 @@
 import time
 import json
 import csv
+import importlib
 from collections import OrderedDict
 from settings_viewer import DICT_SETTINGS_VIEWER
-from viewer.models import m_Tag, m_Entity, Example_Model
+from viewer.models import m_Tag, m_Entity
 from django.apps import apps
+module_custom = importlib.import_module(DICT_SETTINGS_VIEWER['app_label']+'.models')
+model_custom = getattr(module_custom, DICT_SETTINGS_VIEWER['model_name'])
 
 def get_or_create_tag(name, defaults={}):
     name = name.strip()
@@ -18,9 +21,8 @@ def load_data():
     dict_ids = {}
 
     if DICT_SETTINGS_VIEWER['data_type'] == 'database':
-        db_model = apps.get_model(DICT_SETTINGS_VIEWER['app_label'], DICT_SETTINGS_VIEWER['model_name'])
-        data = db_model.objects.all().prefetch_related('viewer_tags')
-        data_only_ids = [str(getattr(entity, DICT_SETTINGS_VIEWER['id'])) for entity in db_model.objects.all().only(DICT_SETTINGS_VIEWER['id'])]
+        data = model_custom.objects.all().prefetch_related('viewer_tags')
+        data_only_ids = [str(getattr(entity, DICT_SETTINGS_VIEWER['id'])) for entity in model_custom.objects.all().only(DICT_SETTINGS_VIEWER['id'])]
     elif DICT_SETTINGS_VIEWER['data_type'] == 'csv-file':
         data = load_file_csv()
         data_only_ids = [str(item[DICT_SETTINGS_VIEWER['id']]) for item in data]
@@ -63,14 +65,14 @@ def load_file_ldjson():
     return data
 
 def index_example_data():
-    Example_Model.objects.all().delete()
+    model_custom.objects.all().delete()
     m_Entity.objects.all().delete()
     m_Tag.objects.all().delete()
     list_entries = []
     for i in range(1000):
-        list_entries.append(Example_Model(name='name'+str(i), count_of_something=i))
+        list_entries.append(model_custom(name='name'+str(i), count_of_something=i))
 
-    Example_Model.objects.bulk_create(list_entries)
+    model_custom.objects.bulk_create(list_entries)
 
 def set_session(request, key, default):
     sessionkey = 'viewer__'+key

@@ -9,7 +9,7 @@ DICT_SETTINGS_VIEWER = {
 			'data_structure': ['name', 'count_of_something', 'id'],
 		# only necessary if data_type is 'database'
 			# name of the app where the model is located
-			'app_label': 'viewer',
+			'app_label': 'example_app',
 			# name of the model
 			'model_name': 'Example_Model',
 	'data_fields': {
