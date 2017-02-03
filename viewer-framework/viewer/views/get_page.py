@@ -77,19 +77,18 @@ def get_filtered_data(request):
     if DICT_SETTINGS_VIEWER['data_type'] == 'database':
         data_only_ids = [item.id for item in data]
     else:
-        data_only_ids = [item for item in data_only_ids if item in data[DICT_SETTINGS_VIEWER['id']]]
-
+        data_only_ids = [item[DICT_SETTINGS_VIEWER['id']] for item in data]
 
     return data, data_only_ids
 
 def filter_data_tags(data, list_tags):
-    # data = []
+    queryset_tags = m_Tag.objects.filter(name__in=list_tags).prefetch_related('m2m_entity')
 
-    # for tag in list_tags:
-
-
+    for db_obj_tag in queryset_tags:
+        list_ids = [entity.id_item for entity in db_obj_tag.m2m_entity.all()]
+        data = [item for item in data if str(item[DICT_SETTINGS_VIEWER['id']]) in list_ids]
+        
     return data
-
 
 def add_tag(obj, data):
     [db_obj_tag, created_tag] = get_or_create_tag(obj['tag'], defaults={'color': obj['color']})
