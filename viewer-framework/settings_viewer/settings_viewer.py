@@ -33,6 +33,7 @@ DICT_SETTINGS_VIEWER = {
 	'displayed_fields': [
 		'id', 'name', 'count_of_something'
 	],
+	'page_size': 25,
 	# Possible filter types: 'text', 'checkbox'
 	#
 	'filters': [

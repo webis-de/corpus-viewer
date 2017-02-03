@@ -21,7 +21,7 @@ def load_data():
     dict_ids = {}
 
     if DICT_SETTINGS_VIEWER['data_type'] == 'database':
-        data = model_custom.objects.all().prefetch_related('viewer_tags')
+        data = model_custom.objects.all()
         data_only_ids = [str(getattr(entity, DICT_SETTINGS_VIEWER['id'])) for entity in model_custom.objects.all().only(DICT_SETTINGS_VIEWER['id'])]
     elif DICT_SETTINGS_VIEWER['data_type'] == 'csv-file':
         data = load_file_csv()
@@ -31,7 +31,6 @@ def load_data():
         data = load_file_ldjson()
         data_only_ids = [str(item[DICT_SETTINGS_VIEWER['id']]) for item in data]
         dict_ids = {str(item[DICT_SETTINGS_VIEWER['id']]):index for index, item in enumerate(data)}
-
 
     return data, data_only_ids, dict_ids
 
@@ -69,7 +68,7 @@ def index_example_data():
     m_Entity.objects.all().delete()
     m_Tag.objects.all().delete()
     list_entries = []
-    for i in range(1000):
+    for i in range(2000):
         list_entries.append(model_custom(name='name'+str(i), count_of_something=i))
 
     model_custom.objects.bulk_create(list_entries)

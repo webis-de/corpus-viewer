@@ -16,9 +16,11 @@ def index(request):
             response['status'] = 'success'
             response['data'] = {'array_recommendations':array_tag_recommendations}
         return JsonResponse(response)
+        
     # index_example_data()
     # request.session.flush()
     print(request.session.items())
+    
     set_session(request, 'is_collapsed_div_filters', True)
     set_session(request, 'is_collapsed_div_tags', True)
     set_session(request, 'viewer__selected_tags', [])

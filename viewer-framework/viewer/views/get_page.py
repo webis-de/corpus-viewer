@@ -5,8 +5,6 @@ from django.template import Engine, Context
 from django.template.loader import get_template
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-glob_page_size = 25
-
 def get_page(request):
     # request.session.flush()
 ##### handle session entries
@@ -22,11 +20,7 @@ def get_page(request):
 ##### load data and apply filters
     data, data_only_ids = get_filtered_data(request)
 
-    print(len(data))
-    print(len(data_only_ids))
-
     list_tags = get_set_tags_filtered_items(data_only_ids, request)
-
 
 ##### handle post requests
     if request.method == 'POST':
@@ -37,10 +31,9 @@ def get_page(request):
         return JsonResponse(response)
 
 ##### page the dataset
-    paginator = Paginator(data, glob_page_size)
+    paginator = Paginator(data, DICT_SETTINGS_VIEWER['page_size'])
     try:
         data = paginator.page(request.session['viewer__viewer__page'])
-        # data = paginator.page(request.session['index__current_page'])
     except PageNotAnInteger:
         # If page is not an integer, deliver first page.
         data = paginator.page(1)
@@ -72,13 +65,10 @@ def get_page(request):
 
 def get_filtered_data(request):
     data, data_only_ids, dict_ids = load_data()
-    print(len(data))
-    print(len(data_only_ids))
-    # print(dict_ids)
-
 
     if len(request.session['viewer__viewer__filter_tags']) > 0:
         if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+
             for tag in request.session['viewer__viewer__filter_tags']:
                 data = data.filter(viewer_tags__name=tag)
         else:
@@ -111,7 +101,7 @@ def add_tag(obj, data):
         entities = obj['ids']
 
     if DICT_SETTINGS_VIEWER['data_type'] == 'database':
-        n = 100
+        n = 900
         chunks = [entities[x:x+n] for x in range(0, len(entities), n)]
         for chunk in chunks:
             db_obj_tag.m2m_custom_model.add(*chunk)
@@ -119,7 +109,7 @@ def add_tag(obj, data):
 
         index_missing_entities(entities)
 
-        n = 100
+        n = 900
         chunks = [entities[x:x+n] for x in range(0, len(entities), n)]
         for chunk in chunks:
             db_obj_entities = m_Entity.objects.filter(id_item__in=chunk)
@@ -144,7 +134,7 @@ def index_missing_entities(entities):
 def get_set_tags_filtered_items(list_ids, request):
     if DICT_SETTINGS_VIEWER['data_type'] == 'database':
         list_tags = []
-        n = 100
+        n = 900
         chunks = [list_ids[x:x+n] for x in range(0, len(list_ids), n)]
         for chunk in chunks:
             list_tags += m_Tag.objects.filter(m2m_custom_model__in=chunk).distinct()
@@ -156,7 +146,7 @@ def get_set_tags_filtered_items(list_ids, request):
                 dict_ordered_tags[tag.name] = {'id': tag.id, 'name': tag.name, 'color': tag.color, 'is_selected': str(tag.id) in request.session['viewer__viewer__selected_tags']}
         return list(dict_ordered_tags.values())
     else:
-        n = 100
+        n = 900
         chunks = [list_ids[x:x+n] for x in range(0, len(list_ids), n)]
 
         list_tags = []
@@ -171,11 +161,7 @@ def get_set_tags_filtered_items(list_ids, request):
         return list(dict_ordered_tags.values())
 
 def add_tags(data):
-    if DICT_SETTINGS_VIEWER['data_type'] == 'database':
-        pass
-        # for item in data:
-        #     item.tags = []
-    else:
+    if DICT_SETTINGS_VIEWER['data_type'] != 'database':
         list_ids = [item[DICT_SETTINGS_VIEWER['id']] for item in data]
         db_obj_entities = m_Entity.objects.filter(id_item__in=list_ids).prefetch_related('viewer_tags')
         dict_entities = {entity.id_item: entity for entity in db_obj_entities}
