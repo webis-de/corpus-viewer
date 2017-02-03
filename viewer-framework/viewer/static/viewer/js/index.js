@@ -23,6 +23,9 @@ $(document).ready(function()
     $(document).on('show.bs.collapse', '.card .collapse', function(e) { set_session_entry('is_collapsed_'+$(this).attr('id'), false) });
     $(document).on('hide.bs.collapse', '.card .collapse', function(e) { set_session_entry('is_collapsed_'+$(this).attr('id'), true) });
 
+    $(document).on('click', '#link_reset_filters', function(e) { handle_reset_filters($(this)) });
+
+    $(document).on('change', '#input_toggle_columns_all', function(e) { handle_toggle_column_all($(this)) });
     $(document).on('change', '.input_toggle_columns', function(e) { handle_toggle_column($(this)) });
 
     $(document).on('change', '#input_select_all_items', function(e) { handle_selection_all_items($(this)) });

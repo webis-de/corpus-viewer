@@ -88,19 +88,59 @@ function handle_click_on_recommendation_filter(recommendation, func)
     }
 }
 
+function handle_reset_filters()
+{
+    glob_current_page = 1;
+    glob_filter_tags = [];
+
+    let input_toggle_columns_all = $('#input_toggle_columns_all')
+    if(!input_toggle_columns_all.prop('checked'))
+    {
+        input_toggle_columns_all.prop('checked', true)
+        input_toggle_columns_all.trigger('change')
+    }
+
+    load_current_page();
+}
+
+function handle_toggle_column_all(input)
+{
+    if(input.prop('checked'))
+    {
+        glob_columns = [];
+        $('.input_toggle_columns').each(function(index, element) {
+            let elem = $(element)
+            elem.prop('checked', true)
+            let column = elem.data('column')
+            glob_columns.push(column);
+            $('.column_'+column).show();
+        })
+    } else {
+        glob_columns = [];
+        $('.input_toggle_columns').each(function(index, element) {
+            let elem = $(element)
+            elem.prop('checked', false)
+            let column = elem.data('column')
+            $('.column_'+column).hide();
+        })
+    }
+    set_session_entry('viewer__columns', glob_columns)
+    refresh_url();
+}
+
 function handle_toggle_column(input)
 {
     let column = input.data('column')
     if(input.prop('checked'))
     {
         glob_columns.push(column);
-        set_session_entry('viewer__columns', glob_columns)
         $('.column_'+column).show();
     } else {
         remove_element_from_array(glob_columns, column);
-        set_session_entry('viewer__columns', glob_columns)
         $('.column_'+column).hide();
     }
+    update_checkbox_select_all('input_toggle_columns', 'input_toggle_columns_all')
+    set_session_entry('viewer__columns', glob_columns)
     refresh_url();
 }
 

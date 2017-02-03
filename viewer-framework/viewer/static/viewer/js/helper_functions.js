@@ -241,6 +241,13 @@ function update_ui()
     $('#input_page').val(glob_current_page)
     $('#info_number_of_items').text('filtered items: '+glob_count_entries.toLocaleString()+' ('+glob_count_pages.toLocaleString()+' page(s))');
 
+    $('#list_filter_tags').html('');
+    for (let i = 0; i < glob_filter_tags.length; i++) {
+        $('#list_filter_tags').append('<li data-tag="' + glob_filter_tags[i] + '"><span class="badge badge-default">' + glob_filter_tags[i] + ' <i class="fa fa-times" aria-hidden="true"></i></span></li>')
+    }
+
+    update_checkbox_select_all('input_toggle_columns', 'input_toggle_columns_all')
+
     $('.input_select_item').each(function(index, element) {
         const elem = $(element)
         if(elem.data('id_item') in glob_selected_items)

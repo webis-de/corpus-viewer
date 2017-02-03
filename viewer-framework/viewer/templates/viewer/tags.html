@@ -30,7 +30,7 @@
                             {{ tag.m2m_entity.all.count }}
                         {% endif %}
                     </td>
-                    <td class="column_tag_filty_by"><a href="{% url 'viewer:index' %}?filter_tag=[&quot;{{ tag.name }}&quot;]"><i class="fa fa-share" aria-hidden="true"></i></a></td>
+                    <td class="column_tag_filty_by"><a href="{% url 'viewer:index' %}?viewer__filter_tags=[&quot;{{ tag.name }}&quot;]"><i class="fa fa-share" aria-hidden="true"></i></a></td>
                     <td class="column_delete_tag"><i class="fa fa-times text-danger" style="cursor:pointer" aria-hidden="true"></i></td>
                 </tr>
             {% endfor %}

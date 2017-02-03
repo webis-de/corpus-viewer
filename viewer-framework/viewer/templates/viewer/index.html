@@ -44,7 +44,7 @@
                 <div class="card">
                     <div class="card-header py-1 px-2">
                         <a data-toggle="collapse" href="#div_filters" class="text-muted">Filters</a>
-                        <a href="#" id="reset_filters" class="float-right">Reset Filters</a>
+                        <a href="#" id="link_reset_filters" class="float-right">Reset Filters</a>
                     </div>
                     <div class="collapse {% if request.session.viewer__is_collapsed_div_filters == False %}show{% endif %}" id="div_filters">
                         <div class="card-block py-1 px-2">
@@ -75,6 +75,11 @@
                         {% endfor %}
                         <fieldset>
                             <legend>Show/Hide Columns</legend>
+                            <div class="form-check mb-0">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" id="input_toggle_columns_all">
+                                    select all
+                                </label>
                             <div class="form-check mb-0">
                                 <label class="form-check-label">
                                     <input type="checkbox" class="form-check-input input_toggle_columns" data-column="viewer__item_selection" {% if "viewer__item_selection" in request.session.viewer__viewer__columns %}checked{% endif %}>
