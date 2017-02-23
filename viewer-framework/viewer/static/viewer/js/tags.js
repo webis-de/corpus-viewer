@@ -13,6 +13,25 @@ $(document).ready(function()
     $(document).on('click', '.column_delete_tag i', function() { request_delete_tag($(this).parent().parent().data('id_tag'), $(this).parent().parent().data('tag_name')) });
 }); 
 
+function import_tags(modal)
+{
+    let data = {};
+    data.task = 'import_tags';
+    // data.id_tag = $(modal);
+
+    console.log(data)
+    $.ajax({
+        method: 'POST',
+        contentType: 'application/json',
+        headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+        data: JSON.stringify(data),
+        success: function(result) {
+    //         $('tr[data-id_tag="'+data.id_tag+'"]').remove();
+            modal.modal('hide');
+        },
+    }); 
+}
+
 function request_delete_tag(id_tag, tag_name)
 {
     $('#modal_delete_tag .modal-body span:nth-of-type(1)').text(tag_name);
