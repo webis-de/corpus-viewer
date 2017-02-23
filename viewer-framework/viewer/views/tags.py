@@ -22,6 +22,10 @@ def tags(request):
             response = update_color(obj)
         elif obj['task'] == 'delete_tag':
             response = delete_tag(obj)
+        elif obj['task'] == 'export_tags':
+            response = export_tags(obj)
+        elif obj['task'] == 'import_tags':
+            response = import_tags(obj)
 
         return JsonResponse(response)
 
@@ -32,6 +36,28 @@ def tags(request):
         return render(request, 'viewer/tags.html', context)
     else:
         return render(request, 'viewer/tags.html', context)
+
+def import_tags(obj):
+    response = {}
+    
+    return response
+
+def export_tags(obj):
+    response = {}
+    name_file = 'tags_exported.ldjson'
+    path_file = os.path.join(name_file)
+
+    with open(path_file, 'w') as f:
+        queryset_tags = m_Tag.objects.all()
+        for tag in queryset_tags:
+            obj_tag = {}
+            obj_tag['name'] = tag.name
+            obj_tag['color'] = tag.color
+            if DICT_SETTINGS_VIEWER['data_type'] == 'database'
+            # obj_tag['']
+            f.write(json.dumps(obj_tag)+'\n')
+
+    return response
 
 def delete_tag(obj):
     response = {}

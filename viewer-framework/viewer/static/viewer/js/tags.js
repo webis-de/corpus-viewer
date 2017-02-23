@@ -13,11 +13,11 @@ $(document).ready(function()
     $(document).on('click', '.column_delete_tag i', function() { request_delete_tag($(this).parent().parent().data('id_tag'), $(this).parent().parent().data('tag_name')) });
 }); 
 
-function import_tags(modal)
+function export_tags(modal)
 {
     let data = {};
-    data.task = 'import_tags';
-    // data.id_tag = $(modal);
+    data.task = 'export_tags';
+    data.path = $('#'+modal.attr('id')+' input[name="path"]').val();
 
     console.log(data)
     $.ajax({
@@ -26,7 +26,24 @@ function import_tags(modal)
         headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
         data: JSON.stringify(data),
         success: function(result) {
-    //         $('tr[data-id_tag="'+data.id_tag+'"]').remove();
+            // modal.modal('hide');
+        },
+    }); 
+}
+
+function import_tags(modal)
+{
+    let data = {};
+    data.task = 'import_tags';
+    data.path = $('#'+modal.attr('id')+' input[name="path"]').val();
+
+    console.log(data)
+    $.ajax({
+        method: 'POST',
+        contentType: 'application/json',
+        headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+        data: JSON.stringify(data),
+        success: function(result) {
             modal.modal('hide');
         },
     }); 
