@@ -39,22 +39,61 @@ def tags(request):
 
 def import_tags(obj):
     response = {}
-    
+
+    if os.path.isfile(obj['path']):
+        with open(obj['path'], 'r') as f:
+            list_tags_to_be_created = []
+            for line in f:
+                obj_json = json.loads(line)
+                if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+                    obj_tag = m_Tag(
+                        name = obj_json['name'],
+                        color = obj_json['color'],
+                    )
+                else:
+                    obj_tag = m_Tag(
+                        name = obj_json['name'],
+                        color = obj_json['color'],
+                        m2m_entity = list,
+                        
+                    )
+
+                
+                list_tags_to_be_created.append(obj_tag)
+            m_Tag.objects.bulk_create(list_tags_to_be_created)
+
     return response
 
 def export_tags(obj):
     response = {}
-    name_file = 'tags_exported.ldjson'
-    path_file = os.path.join(name_file)
+
+    if obj['path'].strip() != '':
+        if not os.path.exists(obj['path']):
+            os.makedirs(obj['path'])
+        
+    name_file = 'tags_exported_'+str(int(time.time()))+'.ldjson'
+    path_file = os.path.join(obj['path'], name_file)
+
 
     with open(path_file, 'w') as f:
         queryset_tags = m_Tag.objects.all()
+        if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+            queryset_tags = queryset_tags.prefetch_related('m2m_custom_model')
+        else:
+            queryset_tags = queryset_tags.prefetch_related('m2m_entity')
         for tag in queryset_tags:
             obj_tag = {}
             obj_tag['name'] = tag.name
             obj_tag['color'] = tag.color
-            if DICT_SETTINGS_VIEWER['data_type'] == 'database'
-            # obj_tag['']
+            list_ids = []
+            if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+                for entity in tag.m2m_custom_model.all():
+                    list_ids.append(entity.id)
+            else:
+                for entity in tag.m2m_entity.all():
+                    list_ids.append(entity.id_item)
+
+            obj_tag['ids'] = list_ids
             f.write(json.dumps(obj_tag)+'\n')
 
     return response

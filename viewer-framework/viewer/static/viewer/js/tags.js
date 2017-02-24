@@ -19,7 +19,6 @@ function export_tags(modal)
     data.task = 'export_tags';
     data.path = $('#'+modal.attr('id')+' input[name="path"]').val();
 
-    console.log(data)
     $.ajax({
         method: 'POST',
         contentType: 'application/json',
@@ -37,14 +36,13 @@ function import_tags(modal)
     data.task = 'import_tags';
     data.path = $('#'+modal.attr('id')+' input[name="path"]').val();
 
-    console.log(data)
     $.ajax({
         method: 'POST',
         contentType: 'application/json',
         headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
         data: JSON.stringify(data),
         success: function(result) {
-            modal.modal('hide');
+            // modal.modal('hide');
         },
     }); 
 }
