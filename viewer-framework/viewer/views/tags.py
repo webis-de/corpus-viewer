@@ -42,25 +42,33 @@ def import_tags(obj):
 
     if os.path.isfile(obj['path']):
         with open(obj['path'], 'r') as f:
-            list_tags_to_be_created = []
             for line in f:
                 obj_json = json.loads(line)
-                if DICT_SETTINGS_VIEWER['data_type'] == 'database':
-                    obj_tag = m_Tag(
-                        name = obj_json['name'],
-                        color = obj_json['color'],
-                    )
-                else:
-                    obj_tag = m_Tag(
-                        name = obj_json['name'],
-                        color = obj_json['color'],
-                        m2m_entity = list,
-                        
-                    )
 
-                
-                list_tags_to_be_created.append(obj_tag)
-            m_Tag.objects.bulk_create(list_tags_to_be_created)
+                obj_tag = m_Tag.objects.create(name = obj_json['name'], color = obj_json['color'])
+
+                if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+                    ThroughModel = m_Tag.m2m_custom_model.through
+                    list_tmp = []
+
+                    for id_item in obj_json['ids']:
+                        obj_db_entity = model_custom.objects.get(id_item=id_item)
+                        list_tmp.append(ThroughModel(**{
+                            'm_tag_id': obj_tag.pk, 
+                            DICT_SETTINGS_VIEWER['model_name'].lower()+'_id': obj_db_entity.pk
+                        }))
+                        # list_tmp.append(ThroughModel(m_tag_id=obj_tag.pk, m_entity_id=obj_db_entity.pk))
+
+                    ThroughModel.objects.bulk_create(list_tmp)
+                else:
+                    ThroughModel = m_Tag.m2m_entity.through
+                    list_tmp = []
+
+                    for id_item in obj_json['ids']:
+                        obj_db_entity = m_Entity.objects.get(id_item=id_item)
+                        list_tmp.append(ThroughModel(m_tag_id=obj_tag.pk, m_entity_id=obj_db_entity.pk))
+
+                    ThroughModel.objects.bulk_create(list_tmp)
 
     return response
 
