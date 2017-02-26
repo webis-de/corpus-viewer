@@ -12,11 +12,11 @@ def get_page(request):
     set_session_from_url(request, 'viewer__page', 1)
     set_session_from_url(request, 'viewer__filter_tags', [], is_array=True)
 
-    for viewer__filter in  DICT_SETTINGS_VIEWER['filters']:
-        if viewer__filter['type'] == 'text':
-            set_session_from_url(request, 'filter_'+viewer__filter['data_field_name'], viewer__filter['default_value'])
-        elif viewer__filter['type'] == 'checkbox':
-            set_session_from_url(request, 'filter_'+viewer__filter['data_field_name'], True if viewer__filter['default_value'] == 'checked' else False)
+    # for viewer__filter in  DICT_SETTINGS_VIEWER['filters']:
+    #     if viewer__filter['type'] == 'text':
+    #         set_session_from_url(request, 'filter_'+viewer__filter['data_field'], viewer__filter['default_value'])
+    #     elif viewer__filter['type'] == 'checkbox':
+    #         set_session_from_url(request, 'filter_'+viewer__filter['data_field'], True if viewer__filter['default_value'] == 'checked' else False)
 
 ##### load data and apply filters
     data, data_only_ids = get_filtered_data(request)
@@ -66,7 +66,9 @@ def get_page(request):
 
 def get_filtered_data(request):
     data, data_only_ids, dict_ids = load_data()
-
+    # 
+    # FILTER BY TAGS
+    # 
     if len(request.session['viewer__viewer__filter_tags']) > 0:
         if DICT_SETTINGS_VIEWER['data_type'] == 'database':
 
@@ -74,13 +76,30 @@ def get_filtered_data(request):
                 data = data.filter(viewer_tags__name=tag)
         else:
             data = filter_data_tags(data, request.session['viewer__viewer__filter_tags'])
-
+    # 
+    # FILTERS
+    # 
+    for obj_filter in DICT_SETTINGS_VIEWER['filters']:
+        data = filter_data(request, data, obj_filter)
+    # 
+    # UPDATE data_only_ids
+    #     
     if DICT_SETTINGS_VIEWER['data_type'] == 'database':
         data_only_ids = [item.id for item in data]
     else:
         data_only_ids = [item[DICT_SETTINGS_VIEWER['id']] for item in data]
 
     return data, data_only_ids
+
+def filter_data(request, data, obj_filter):
+    value = request.session['viewer__viewer__filter_custom'][obj_filter['data_field']]
+    if value != '':
+        if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+            data = data.filter(**{obj_filter['data_field']+'__icontains': value})
+        else:
+            pass
+
+    return data
 
 def filter_data_tags(data, list_tags):
     queryset_tags = m_Tag.objects.filter(name__in=list_tags).prefetch_related('m2m_entity')

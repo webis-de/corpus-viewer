@@ -96,6 +96,7 @@ function refresh_url()
     data.viewer__page = glob_current_page;
     data.viewer__columns = JSON.stringify(glob_columns);
     data.viewer__filter_tags = JSON.stringify(glob_filter_tags);
+    data.viewer__filter_custom = JSON.stringify(glob_filter_custom);
 
     let url_params = '';
     $.each(data, function(index, value) {

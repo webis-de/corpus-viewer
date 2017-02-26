@@ -41,7 +41,7 @@ DICT_SETTINGS_VIEWER = {
 		# 	'type': 'checkbox',
 		# 	'data_field_name': 'count_of_something',
 		# 	'description': 'Some Checkbox',
-		# 	'default_value': '',
+		# 	'default_value': False,
 		# 	'event': 'change'
 		# },
 		{

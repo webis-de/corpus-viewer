@@ -19,19 +19,26 @@ def index(request):
         
     # index_example_data()
     # request.session.flush()
-    print(request.session.items())
-    
+
     set_session(request, 'is_collapsed_div_filters', True)
     set_session(request, 'is_collapsed_div_tags', True)
     set_session(request, 'viewer__selected_tags', [])
+    set_session(request, 'viewer__filter_custom', {obj_filter['data_field']:obj_filter['default_value'] for obj_filter in DICT_SETTINGS_VIEWER['filters']})
 
     # this seems to be redundant
     set_session_from_url(request, 'viewer__page', 1)
     set_session_from_url(request, 'viewer__columns', DICT_SETTINGS_VIEWER['displayed_fields'] + ['viewer__item_selection', 'viewer__tags'], is_array=True)
     set_session_from_url(request, 'viewer__filter_tags', [], is_array=True)
 
+    # for obj_filter in DICT_SETTINGS_VIEWER['filters']:
+    #     set_session_from_url(request, 'viewer__filter_custom_'+obj_filter['data_field'], obj_filter['default_value'])
+
+    for key, value in request.session.items():
+        print(key, value)
+
     context = {}
     context['json_url_params'] = json.dumps(get_url_params(request))
+    context['json_filters'] = json.dumps(DICT_SETTINGS_VIEWER['filters'])
     context['settings'] = DICT_SETTINGS_VIEWER
     return render(request, 'viewer/index.html', context)
 
@@ -62,5 +69,10 @@ def get_url_params(request):
         dict_url_params['viewer__filter_tags'] = json.loads(dict_url_params['viewer__filter_tags'])
     else:
         dict_url_params['viewer__filter_tags'] = request.session['viewer__viewer__filter_tags']
+
+    if 'viewer__filter_custom' in dict_url_params:
+        dict_url_params['viewer__filter_custom'] = json.loads(dict_url_params['viewer__filter_custom'])
+    else:
+        dict_url_params['viewer__filter_custom'] = request.session['viewer__viewer__filter_custom']
 
     return dict_url_params

@@ -2,6 +2,7 @@ let glob_selected_items = {}
 let glob_selected_tags = {}
 
 let glob_filter_tags = []
+let glob_filter_custom = {}
 let glob_columns = []
 
 let glob_current_page = 1;
@@ -45,5 +46,7 @@ $(document).ready(function()
 
     load_page_parameters()
 
+    // FILTERS
+    load_filters()
     load_current_page();
 });
