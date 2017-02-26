@@ -1,6 +1,6 @@
 DICT_SETTINGS_VIEWER = {
 	# possible values: 'database', 'csv-file', 'ldjson-file'
-	'data_type': 'ldjson-file',
+	'data_type': 'database',
 		# only necessary if data_type is '*-file'
 			# path to file,
 			'data_path': 'file.ldjson',
@@ -44,13 +44,13 @@ DICT_SETTINGS_VIEWER = {
 		# 	'default_value': '',
 		# 	'event': 'change'
 		# },
-		# {
-		# 	'type': 'text',
-		# 	'data_field_name': 'name',
-		# 	'description': 'Some Text Input',
-		# 	'placeholder': 'Text Input',
-		# 	'default_value': '',
-		# 	'event': 'change'
-		# },
+		{
+			'type': 'text',
+			'data_field': 'name',
+			'description': 'Some Text Input',
+			'placeholder': 'Text Input',
+			'default_value': '',
+			'event': 'change'
+		},
 	],
 }

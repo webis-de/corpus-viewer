@@ -62,14 +62,14 @@
                             {% if filter.type == 'checkbox' %}
                                 <div class="form-check mb-3">
                                     <label class="form-check-label">
-                                        <input name="{{ filter.data_field_name  }}" id="input_{{ filter.data_field_name  }}" type="checkbox" class="form-check-input" {{ filter.default_value }}²>
+                                        <input name="{{ filter.data_field  }}" id="input_{{ filter.data_field  }}" type="checkbox" class="form-check-input" {{ filter.default_value }}²>
                                         {{ filter.description }}
                                     </label>
                                 </div>
                             {% elif filter.type == 'text'%}
                                 <div class="form-group">
-                                    <label for="input_{{ filter.data_field_name  }}">{{ filter.description }}</label>
-                                    <input name="{{ filter.data_field_name  }}" type="text" id="input_{{ filter.data_field_name  }}" class="form-control form-control-sm" placeholder="{{ filter.placeholder }}" value="{{ filter.default_value }}">
+                                    <label for="input_{{ filter.data_field  }}">{{ filter.description }}</label>
+                                    <input name="{{ filter.data_field  }}" type="text" id="input_{{ filter.data_field  }}" class="form-control form-control-sm" placeholder="{{ filter.placeholder }}" value="{{ filter.default_value }}">
                                 </div>
                             {% endif %}
                         {% endfor %}
