@@ -57,7 +57,6 @@ def import_tags(obj):
                             'm_tag_id': obj_tag.pk, 
                             DICT_SETTINGS_VIEWER['model_name'].lower()+'_id': obj_db_entity.pk
                         }))
-                        # list_tmp.append(ThroughModel(m_tag_id=obj_tag.pk, m_entity_id=obj_db_entity.pk))
 
                     ThroughModel.objects.bulk_create(list_tmp)
                 else:
