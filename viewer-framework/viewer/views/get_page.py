@@ -10,9 +10,12 @@ def get_page(request):
 ##### handle session entries
     # this seems to be redundant
     set_session_from_url(request, 'viewer__page', 1)
-    set_session_from_url(request, 'viewer__filter_tags', [], is_array=True)
-    set_session_from_url(request, 'viewer__filter_custom', {obj_filter['data_field']:obj_filter['default_value'] for obj_filter in DICT_SETTINGS_VIEWER['filters']}, is_array=True)
+    set_session_from_url(request, 'viewer__filter_tags', [], is_json=True)
+    set_session_from_url(request, 'viewer__filter_custom', {obj_filter['data_field']:obj_filter['default_value'] for obj_filter in DICT_SETTINGS_VIEWER['filters']}, is_json=True)
 
+    dict_tmp = {obj_filter['data_field']:obj_filter['default_value'] for obj_filter in DICT_SETTINGS_VIEWER['filters']}
+    dict_tmp.update(request.session['viewer__viewer__filter_custom'])
+    request.session['viewer__viewer__filter_custom'] = dict_tmp.copy()
     # for viewer__filter in  DICT_SETTINGS_VIEWER['filters']:
     #     if viewer__filter['type'] == 'text':
     #         set_session_from_url(request, 'filter_'+viewer__filter['data_field'], viewer__filter['default_value'])

@@ -50,7 +50,15 @@ DICT_SETTINGS_VIEWER = {
 			'description': 'Some Text Input',
 			'placeholder': 'Text Input',
 			'default_value': '',
-			'event': 'change'
+			'event': 'input'
 		},
+		# {
+		# 	'type': 'text',
+		# 	'data_field': 'count_of_something',
+		# 	'description': 'Some Text Input',
+		# 	'placeholder': 'Text Input',
+		# 	'default_value': '',
+		# 	'event': 'change'
+		# },
 	],
 }
