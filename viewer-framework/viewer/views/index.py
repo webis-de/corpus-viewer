@@ -23,7 +23,7 @@ def index(request):
     set_session(request, 'is_collapsed_div_filters', True)
     set_session(request, 'is_collapsed_div_tags', True)
     set_session(request, 'viewer__selected_tags', [])
-    set_session(request, 'viewer__filter_custom', {obj_filter['data_field']:obj_filter['default_value'] for obj_filter in DICT_SETTINGS_VIEWER['filters']})
+    set_session_from_url(request, 'viewer__filter_custom', {obj_filter['data_field']:obj_filter['default_value'] for obj_filter in DICT_SETTINGS_VIEWER['filters']}, is_array=True)
 
     # this seems to be redundant
     set_session_from_url(request, 'viewer__page', 1)

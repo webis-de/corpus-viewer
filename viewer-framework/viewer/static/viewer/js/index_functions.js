@@ -93,6 +93,10 @@ function handle_reset_filters()
     glob_current_page = 1;
     glob_filter_tags = [];
 
+    $.each(glob_filter_custom, function(key, value){
+        glob_filter_custom[key] = ''
+    })
+
     let input_toggle_columns_all = $('#input_toggle_columns_all')
     if(!input_toggle_columns_all.prop('checked'))
     {
@@ -390,7 +394,7 @@ function load_filters()
             let data_field = $(this).prop('name')
             let value = $(this).val()
             glob_filter_custom[data_field] = value
-            
+
             set_session_entry('viewer__filter_custom', glob_filter_custom, function() {
                 glob_current_page = 1;
                 load_current_page();

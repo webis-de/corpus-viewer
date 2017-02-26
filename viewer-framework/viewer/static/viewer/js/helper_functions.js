@@ -247,6 +247,10 @@ function update_ui()
         $('#list_filter_tags').append('<li data-tag="' + glob_filter_tags[i] + '"><span class="badge badge-default">' + glob_filter_tags[i] + ' <i class="fa fa-times" aria-hidden="true"></i></span></li>')
     }
 
+    $.each(glob_filter_custom, function(key, value) {
+        $('#input_'+key).val(value)
+    })
+
     update_checkbox_select_all('input_toggle_columns', 'input_toggle_columns_all')
 
     $('.input_select_item').each(function(index, element) {

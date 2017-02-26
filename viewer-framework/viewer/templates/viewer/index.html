@@ -70,7 +70,7 @@
                             {% elif filter.type == 'text'%}
                                 <div class="form-group">
                                     <label for="input_{{ filter.data_field  }}">{{ filter.description }}</label>
-                                    <input name="{{ filter.data_field  }}" type="text" id="input_{{ filter.data_field  }}" class="form-control form-control-sm" placeholder="{{ filter.placeholder }}" value="{{ filter.default_value }}">
+                                    <input name="{{ filter.data_field  }}" type="text" id="input_{{ filter.data_field  }}" class="form-control form-control-sm" placeholder="{{ filter.placeholder }}" value="{{ request.session.viewer__viewer__filter_custom|get:filter.data_field }}">
                                 </div>
                             {% endif %}
                         {% endfor %}

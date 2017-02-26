@@ -11,6 +11,7 @@ def get_page(request):
     # this seems to be redundant
     set_session_from_url(request, 'viewer__page', 1)
     set_session_from_url(request, 'viewer__filter_tags', [], is_array=True)
+    set_session_from_url(request, 'viewer__filter_custom', {obj_filter['data_field']:obj_filter['default_value'] for obj_filter in DICT_SETTINGS_VIEWER['filters']}, is_array=True)
 
     # for viewer__filter in  DICT_SETTINGS_VIEWER['filters']:
     #     if viewer__filter['type'] == 'text':
