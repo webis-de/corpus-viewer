@@ -4,11 +4,14 @@ import csv
 import importlib
 import os
 from collections import OrderedDict
+from django.core.cache import cache
 from settings_viewer import DICT_SETTINGS_VIEWER
 from viewer.models import m_Tag, m_Entity
 from django.apps import apps
 module_custom = importlib.import_module(DICT_SETTINGS_VIEWER['app_label']+'.models')
 model_custom = getattr(module_custom, DICT_SETTINGS_VIEWER['model_name'])
+
+cache.set('data', {})
 
 def get_or_create_tag(name, defaults={}):
     name = name.strip()
@@ -21,17 +24,23 @@ def load_data():
     data_only_ids = []
     dict_ids = {}
 
-    if DICT_SETTINGS_VIEWER['data_type'] == 'database':
-        data = model_custom.objects.all()
-        data_only_ids = [str(getattr(entity, DICT_SETTINGS_VIEWER['id'])) for entity in model_custom.objects.all().only(DICT_SETTINGS_VIEWER['id'])]
-    elif DICT_SETTINGS_VIEWER['data_type'] == 'csv-file':
-        data = load_file_csv()
-        data_only_ids = [str(item[DICT_SETTINGS_VIEWER['id']]) for item in data]
-        dict_ids = {str(item[DICT_SETTINGS_VIEWER['id']]):index for index, item in enumerate(data)}
-    elif DICT_SETTINGS_VIEWER['data_type'] == 'ldjson-file':
-        data = load_file_ldjson()
-        data_only_ids = [str(item[DICT_SETTINGS_VIEWER['id']]) for item in data]
-        dict_ids = {str(item[DICT_SETTINGS_VIEWER['id']]):index for index, item in enumerate(data)}
+    data_cached = cache.get('data')
+    if len(data_cached) == 0 or not get_setting('use_cache'):
+        if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+            data = model_custom.objects.all()
+            data_only_ids = [str(getattr(entity, DICT_SETTINGS_VIEWER['id'])) for entity in model_custom.objects.all().only(DICT_SETTINGS_VIEWER['id'])]
+        elif DICT_SETTINGS_VIEWER['data_type'] == 'csv-file':
+            data = load_file_csv()
+            data_only_ids = [str(item[DICT_SETTINGS_VIEWER['id']]) for item in data]
+            dict_ids = {str(item[DICT_SETTINGS_VIEWER['id']]):index for index, item in enumerate(data)}
+        elif DICT_SETTINGS_VIEWER['data_type'] == 'ldjson-file':
+            data = load_file_ldjson()
+            data_only_ids = [str(item[DICT_SETTINGS_VIEWER['id']]) for item in data]
+            dict_ids = {str(item[DICT_SETTINGS_VIEWER['id']]):index for index, item in enumerate(data)}
+        cache.set('data', (data, data_only_ids, dict_ids))
+    else:
+        print('using cache')
+        data, data_only_ids, dict_ids = cache.get('data')
 
     return data, data_only_ids, dict_ids
 
@@ -48,12 +57,15 @@ def load_file_csv():
 
 def load_file_ldjson():
     # with open(DICT_SETTINGS_VIEWER['data_path'], 'w') as file:
-    #     for i in range(1000):
+    #     for i in range(100000):
     #         obj = {
+    #             'id': str(i),
     #             'name': 'ldjson_'+str(i),
     #             'count_of_something': i*i
     #         }
     #         file.write(json.dumps(obj)+'\n')
+
+
     data = []
     with open(DICT_SETTINGS_VIEWER['data_path'], 'r') as file:
         for row in file:
@@ -106,3 +118,10 @@ def set_session_from_url(request, key, default, is_json=False):
     else:
         if sessionkey not in request.session:
             request.session[sessionkey] = default
+
+def get_setting(key):
+    if key in DICT_SETTINGS_VIEWER:
+        return DICT_SETTINGS_VIEWER[key]
+
+    if key == 'use_cache':
+        return False;

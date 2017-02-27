@@ -1,6 +1,6 @@
 DICT_SETTINGS_VIEWER = {
 	# possible values: 'database', 'csv-file', 'ldjson-file'
-	'data_type': 'database',
+	'data_type': 'ldjson-file',
 		# only necessary if data_type is '*-file'
 			# path to file,
 			'data_path': 'file.ldjson',
@@ -12,6 +12,7 @@ DICT_SETTINGS_VIEWER = {
 			'app_label': 'example_app',
 			# name of the model
 			'model_name': 'Example_Model',
+	'use_cache': True,
 	'data_fields': {
 		'id': {
 			'name': 'id',
