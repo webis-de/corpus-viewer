@@ -74,6 +74,22 @@ def index_example_data():
 
     model_custom.objects.bulk_create(list_entries)
 
+def set_sessions(request):
+    set_session(request, 'is_collapsed_div_filters', default=True)
+    set_session(request, 'is_collapsed_div_tags', default=True)
+    set_session(request, 'viewer__selected_tags', default=[])
+
+    set_session_from_url(request, 'viewer__page', default=1)
+
+    set_session_from_url(request, 'viewer__columns', default=DICT_SETTINGS_VIEWER['displayed_fields'] + ['viewer__item_selection', 'viewer__tags'], is_json=True)
+    set_session_from_url(request, 'viewer__filter_tags', default=[], is_json=True)
+
+    set_session_from_url(request, 'viewer__filter_custom', default={obj_filter['data_field']:obj_filter['default_value'] for obj_filter in DICT_SETTINGS_VIEWER['filters']}, is_json=True)
+    # in case of newly added filters add them
+    dict_tmp = {obj_filter['data_field']:obj_filter['default_value'] for obj_filter in DICT_SETTINGS_VIEWER['filters']}
+    dict_tmp.update(request.session['viewer__viewer__filter_custom'])
+    request.session['viewer__viewer__filter_custom'] = dict_tmp.copy()
+
 def set_session(request, key, default):
     sessionkey = 'viewer__'+key
     if sessionkey not in request.session:

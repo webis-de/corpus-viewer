@@ -11,7 +11,7 @@ $(document).ready(function()
     $(document).on('change', '.column_tag_color input', function() { save_new_color($(this)) });
 
     $(document).on('click', '.column_delete_tag i', function() { request_delete_tag($(this).parent().parent().data('id_tag'), $(this).parent().parent().data('tag_name')) });
-}); 
+});
 
 function export_tags(modal)
 {
@@ -25,9 +25,9 @@ function export_tags(modal)
         headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
         data: JSON.stringify(data),
         success: function(result) {
-            // modal.modal('hide');
+            modal.modal('hide');
         },
-    }); 
+    });
 }
 
 function import_tags(modal)
@@ -42,9 +42,9 @@ function import_tags(modal)
         headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
         data: JSON.stringify(data),
         success: function(result) {
-            // modal.modal('hide');
+            modal.modal('hide');
         },
-    }); 
+    });
 }
 
 function request_delete_tag(id_tag, tag_name)
@@ -71,7 +71,7 @@ function delete_tag(modal)
             $('tr[data-id_tag="'+data.id_tag+'"]').remove();
             modal.modal('hide');
         },
-    }); 
+    });
 }
 
 function save_new_color(input)
@@ -97,7 +97,7 @@ function save_new_color(input)
         success: function(result) {
             td.data('original_value', new_color);
         },
-    }); 
+    });
 }
 
 function merge_tags(modal)
@@ -117,10 +117,10 @@ function merge_tags(modal)
             $('tr[data-id_tag="'+data.id_tag+'"]').remove();
             modal.modal('hide');
         },
-    }); 
+    });
 }
 
-function save_new_name(input) 
+function save_new_name(input)
 {
     let td = input.parent();
     let new_name = input.val().trim();
@@ -159,13 +159,13 @@ function save_new_name(input)
             }
         },
     });
-}   
+}
 
 function revert_input_field(input)
 {
     let td = input.parent();
     td.html(td.data('original_value'));
-}   
+}
 
 function remove_input_field(input)
 {
@@ -173,7 +173,7 @@ function remove_input_field(input)
     let new_name = input.val().trim().replace(/ /g, '-');
     td.data('original_value', new_name);
     td.html(new_name);
-}   
+}
 
 function make_text_input(column)
 {

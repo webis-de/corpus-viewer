@@ -9,13 +9,7 @@ def get_page(request):
     # request.session.flush()
 ##### handle session entries
     # this seems to be redundant
-    set_session_from_url(request, 'viewer__page', 1)
-    set_session_from_url(request, 'viewer__filter_tags', [], is_json=True)
-    set_session_from_url(request, 'viewer__filter_custom', {obj_filter['data_field']:obj_filter['default_value'] for obj_filter in DICT_SETTINGS_VIEWER['filters']}, is_json=True)
-
-    dict_tmp = {obj_filter['data_field']:obj_filter['default_value'] for obj_filter in DICT_SETTINGS_VIEWER['filters']}
-    dict_tmp.update(request.session['viewer__viewer__filter_custom'])
-    request.session['viewer__viewer__filter_custom'] = dict_tmp.copy()
+    set_sessions(request)
     # for viewer__filter in  DICT_SETTINGS_VIEWER['filters']:
     #     if viewer__filter['type'] == 'text':
     #         set_session_from_url(request, 'filter_'+viewer__filter['data_field'], viewer__filter['default_value'])
@@ -70,9 +64,9 @@ def get_page(request):
 
 def get_filtered_data(request):
     data, data_only_ids, dict_ids = load_data()
-    # 
+    #
     # FILTER BY TAGS
-    # 
+    #
     if len(request.session['viewer__viewer__filter_tags']) > 0:
         if DICT_SETTINGS_VIEWER['data_type'] == 'database':
 
@@ -80,14 +74,14 @@ def get_filtered_data(request):
                 data = data.filter(viewer_tags__name=tag)
         else:
             data = filter_data_tags(data, request.session['viewer__viewer__filter_tags'])
-    # 
+    #
     # FILTERS
-    # 
+    #
     for obj_filter in DICT_SETTINGS_VIEWER['filters']:
         data = filter_data(request, data, obj_filter)
-    # 
+    #
     # UPDATE data_only_ids
-    #     
+    #
     if DICT_SETTINGS_VIEWER['data_type'] == 'database':
         data_only_ids = [item.id for item in data]
     else:
@@ -111,7 +105,7 @@ def filter_data_tags(data, list_tags):
     for db_obj_tag in queryset_tags:
         list_ids = [entity.id_item for entity in db_obj_tag.m2m_entity.all()]
         data = [item for item in data if str(item[DICT_SETTINGS_VIEWER['id']]) in list_ids]
-        
+
     return data
 
 def add_tag(obj, data):

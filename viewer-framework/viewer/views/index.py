@@ -4,6 +4,9 @@ from django.shortcuts import render
 
 
 def index(request):
+##### set sessions
+    # request.session.flush()
+    set_sessions(request)
 ##### handle post requests
     if request.method == 'POST':
         response = {}
@@ -16,31 +19,10 @@ def index(request):
             response['status'] = 'success'
             response['data'] = {'array_recommendations':array_tag_recommendations}
         return JsonResponse(response)
-        
+
     # index_example_data()
-    # request.session.flush()
 
-    set_session(request, 'is_collapsed_div_filters', True)
-    set_session(request, 'is_collapsed_div_tags', True)
-    set_session(request, 'viewer__selected_tags', [])
-    set_session_from_url(request, 'viewer__filter_custom', {obj_filter['data_field']:obj_filter['default_value'] for obj_filter in DICT_SETTINGS_VIEWER['filters']}, is_json=True)
 
-    dict_tmp = {obj_filter['data_field']:obj_filter['default_value'] for obj_filter in DICT_SETTINGS_VIEWER['filters']}
-    dict_tmp.update(request.session['viewer__viewer__filter_custom'])
-    request.session['viewer__viewer__filter_custom'] = dict_tmp.copy()
-    # for key, value in request.session['viewer__viewer__filter_custom'].items():
-    #     print(key, value)
-
-    # this seems to be redundant
-    set_session_from_url(request, 'viewer__page', 1)
-    set_session_from_url(request, 'viewer__columns', DICT_SETTINGS_VIEWER['displayed_fields'] + ['viewer__item_selection', 'viewer__tags'], is_json=True)
-    set_session_from_url(request, 'viewer__filter_tags', [], is_json=True)
-
-    # for obj_filter in DICT_SETTINGS_VIEWER['filters']:
-    #     set_session_from_url(request, 'viewer__filter_custom_'+obj_filter['data_field'], obj_filter['default_value'])
-
-    # for key, value in request.session.items():
-    #     print(key, value)
 
     context = {}
     context['json_url_params'] = json.dumps(get_url_params(request))
