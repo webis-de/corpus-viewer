@@ -13,9 +13,9 @@
     </thead>
     <tbody>
     {% for item in data %}
-        <tr class="row_viewer__item" data-id_item="{{ item.id }}">
+        <tr class="row_viewer__item" data-id_item="{{ item|get:settings.id }}">
             <td class="column_viewer__item_selection" {% if not "viewer__item_selection" in request.session.viewer__viewer__columns %}style="display: none"{% endif %}>
-                <input data-id_item="{{item.id}}" class="input_select_item" type="checkbox">
+                <input data-id_item="{{item|get:settings.id}}" class="input_select_item" type="checkbox">
             </td>
             {% for field in settings.displayed_fields %}
                 {% if not field == "viewer__item_selection" and not field == "viewer__tags" %}
@@ -24,7 +24,7 @@
             {% endfor %}
             <td class="column_viewer__tags" {% if not "viewer__tags" in request.session.viewer__viewer__columns %}style="display: none"{% endif %}>
                 <div class="wrapper_tags {{ item.viewer_tags|display_as_tag_classes }}"></div>
-                <a class="link_add_tag" data-id_item="{{item.id}}" href="#"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                <a class="link_add_tag" data-id_item="{{item|get:settings.id}}" href="#"><i class="fa fa-plus" aria-hidden="true"></i></a>
             </td>
         </tr>
     {% endfor %}

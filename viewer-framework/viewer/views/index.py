@@ -18,6 +18,9 @@ def index(request):
             array_tag_recommendations = get_tag_recommendations(request, obj)
             response['status'] = 'success'
             response['data'] = {'array_recommendations':array_tag_recommendations}
+        elif obj['task'] == 'delete_tag_from_item':
+            response = delete_tag_from_item(obj)
+
         return JsonResponse(response)
 
     # index_example_data()
@@ -30,6 +33,19 @@ def index(request):
     context['settings'] = DICT_SETTINGS_VIEWER
     return render(request, 'viewer/index.html', context)
 
+def delete_tag_from_item(obj):
+    response = {}
+
+    db_obj_tag = m_Tag.objects.get(id=obj['id_tag'])
+    if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+        db_obj_item = model_custom.objects.get(**{DICT_SETTINGS_VIEWER['id']: obj['id_item']})
+        db_obj_tag.m2m_custom_model.remove(db_obj_item)
+        response['status'] = 'success'
+    else:
+        print('TO BE IMPLEMENTED')
+
+
+    return response
 
 def get_tag_recommendations(request, obj):
     array_tag_recommendations = []

@@ -32,6 +32,38 @@ $(document).ready(function()
     $(document).on('change', '#input_select_all_items', function(e) { handle_selection_all_items($(this)) });
     $(document).on('change', '.input_select_item', function(e) { handle_select_item($(this)) });
     $(document).on('click', '#link_deselect_all_items', function(e) { handle_deselect_all_items(e) });
+
+    //
+    // popover-handling for tag-deletion
+    //
+    // write id of item into popover-link
+    $(document).on('shown.bs.popover', '.wrapper_tags .tag_marker', function(e) {
+        $('.link_delete_tag').data('id_item', $(this).parent().parent().parent().data('id_item'))
+        $('.link_delete_tag').data('id_tag', $('.link_delete_tag .fa').data('id_tag'))
+    });
+    // trigger tag-deletion
+    $(document).on('click', '.link_delete_tag', function(e) { delete_tag_from_item($(this).data('id_item'), $(this).data('id_tag')); });
+    // stop propagation of click event
+    $(document).on('click', '.wrapper_tags .tag_marker', function(e) { return false });
+    // hide popovers on click anywhere
+    $(document).on('click', 'body', function(e) { $('.tag_marker').popover('hide') });
+    $(document).on('show.bs.popover', '.tag_marker', function(e) { $('.tag_marker').popover('hide') });
+
+    $('body').tooltip({
+        selector: '.tag_marker',
+        placement: 'top',
+        animation: false,
+        container: 'body',
+    })
+    $('body').popover({
+        selector: '.tag_marker',
+        placement: 'bottom',
+        animation: false,
+        container: 'body',
+        html: true,
+        template: '<div class="popover link_delete_tag" style="cursor:pointer" role="tooltip"><div class="popover-content" style="padding: 3px 5px"></div></div>'
+    })
+
     $(document).on('contextmenu', '.row_viewer__item', function(e) {handle_rightclick_on_tr(e, $(this))})
 
     $(document).on('click', '.link_add_tag', function(e) { handle_click_link_add_tag(e, $(this)) });

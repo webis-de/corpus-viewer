@@ -180,6 +180,30 @@ function handle_deselect_all_items(event)
     update_info_selected_items()
 }
 
+function delete_tag_from_item(id_item, id_tag)
+{
+    let data = {}
+    data.task = 'delete_tag_from_item'
+    data.id_item = id_item
+    data.id_tag = id_tag
+
+    $.ajax({
+        url: '',
+        method: 'POST',
+        contentType: 'application/json',
+        headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+        data: JSON.stringify(data),
+        success: function(result) {
+            if(result.status == 'success')
+            {
+                let wrapper_tags = $('tr[data-id_item="'+id_item+'"] .wrapper_tags')
+                wrapper_tags.removeClass('tag_'+id_tag)
+                wrapper_tags.find('.tag_marker[data-id_tag="'+id_tag+'"]').remove()
+            }
+        }
+    })
+}
+
 function handle_rightclick_on_tr(event, tr)
 {
     event.preventDefault();

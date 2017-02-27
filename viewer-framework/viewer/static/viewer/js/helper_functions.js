@@ -130,17 +130,18 @@ function remove_element_from_array(array, element)
     }
 }
 
-function add_tag_marker(tag_id, tag_name, tag_color)
+function add_tag_marker(id_tag, tag_name, tag_color)
 {
-    remove_tag_marker(tag_id)
-    $('.wrapper_tags.tag_'+tag_id).append(function() {
-        return '<div class="tag_marker" data-tag_id="'+tag_id+'" style="background-color: '+tag_color+'" data-toggle="tooltip" title="'+tag_name+'"></div>'
+    remove_tag_marker(id_tag)
+    $('.wrapper_tags.tag_'+id_tag).append(function() {
+        return '<div class="tag_marker" data-id_tag="'+id_tag+'" style="background-color: '+tag_color+'" data-title="'+tag_name+'" data-content="<i class=&quot;fa fa-times text-danger&quot; data-id_tag=&quot;'+id_tag+'&quot;></i>" title="'+tag_name+'"></div>'
+        // return '<div class="tag_marker" data-id_tag="'+id_tag+'" style="background-color: '+tag_color+'" data-title="'+tag_name+'" data-content="<i class=&quot;fa fa-times text-danger link_delete_tag&quot; data-id_tag=&quot;'+id_tag+'&quot;></i>" title="'+tag_name+'"></div>'
     });
 }
 
-function remove_tag_marker(tag_id)
+function remove_tag_marker(id_tag)
 {
-    $('.tag_marker[data-tag_id="'+tag_id+'"]').remove();
+    $('.tag_marker[data-id_tag="'+id_tag+'"]').remove();
 }
 
 function add_tag_to_tags_list(id, name, color)
@@ -149,7 +150,7 @@ function add_tag_to_tags_list(id, name, color)
     $('#wrapper_tags_filtered_items input').each(function(index, element) {
         let elem = $(element)
         let is_selected = elem.prop('checked')
-        list_tags.push({id: elem.data('tag_id'), name: elem.data('tag_name'), color: elem.data('tag_color'), is_selected: is_selected})
+        list_tags.push({id: elem.data('id_tag'), name: elem.data('tag_name'), color: elem.data('tag_color'), is_selected: is_selected})
     })
 
     list_tags.push({id: id, name: name, color: color, is_selected: true})
@@ -183,12 +184,12 @@ function update_tags_list(tags, update_session=true)
 
         content +=  '<tr class="tr_tag">'+
                         '<td>'+
-                            '<input type="checkbox" class="checkbox_tag_selection" '+checked+' data-tag_id="'+tag.id+'" data-tag_name="'+tag.name+'" data-tag_color="'+tag.color+'">'+
+                            '<input type="checkbox" class="checkbox_tag_selection" '+checked+' data-id_tag="'+tag.id+'" data-tag_name="'+tag.name+'" data-tag_color="'+tag.color+'">'+
                         '</td>'+
-                        '<td class="td_tag_selection" data-tag_id="'+tag.id+'">'+
+                        '<td class="td_tag_selection" data-id_tag="'+tag.id+'">'+
                             '<div class="tag_marker" style="background-color: '+tag.color+'"></div>'+
                         '</td>'+
-                        '<td data-tag_id="'+tag.id+'">'+
+                        '<td data-id_tag="'+tag.id+'">'+
                             '<span class="label label-default">'+tag.name+'</span>'+
                         '</td>'+
                     '</tr>';

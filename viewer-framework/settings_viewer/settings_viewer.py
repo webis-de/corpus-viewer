@@ -31,7 +31,7 @@ DICT_SETTINGS_VIEWER = {
 	},
 	'id': 'id',
 	'displayed_fields': [
-		'id', 'name', 'count_of_something'
+		'id', 'count_of_something', 'name',
 	],
 	'page_size': 25,
 	# Possible filter types: 'text', 'checkbox'
@@ -52,13 +52,13 @@ DICT_SETTINGS_VIEWER = {
 			'default_value': '',
 			'event': 'input'
 		},
-		# {
-		# 	'type': 'text',
-		# 	'data_field': 'count_of_something',
-		# 	'description': 'Some Text Input',
-		# 	'placeholder': 'Text Input',
-		# 	'default_value': '',
-		# 	'event': 'change'
-		# },
+		{
+			'type': 'text',
+			'data_field': 'count_of_something',
+			'description': 'Some Text Input',
+			'placeholder': 'Text Input',
+			'default_value': '',
+			'event': 'change'
+		},
 	],
 }
