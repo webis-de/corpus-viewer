@@ -37,12 +37,90 @@ def load_data():
             data = load_file_ldjson()
             data_only_ids = [str(item[DICT_SETTINGS_VIEWER['id']]) for item in data]
             dict_ids = {str(item[DICT_SETTINGS_VIEWER['id']]):index for index, item in enumerate(data)}
+        elif DICT_SETTINGS_VIEWER['data_type'] == 'directory':
+            data = load_directory()
+            data_only_ids = [str(item[DICT_SETTINGS_VIEWER['id']]) for item in data]
+            dict_ids = {str(item[DICT_SETTINGS_VIEWER['id']]):index for index, item in enumerate(data)}
         cache.set('data', (data, data_only_ids, dict_ids))
     else:
         print('using cache')
         data, data_only_ids, dict_ids = cache.get('data')
 
     return data, data_only_ids, dict_ids
+
+def load_directory():
+    data = []
+    
+    for entry in DICT_SETTINGS_VIEWER['data_structure']:
+        entry['path'] = DICT_SETTINGS_VIEWER['data_path'] 
+        data = load_entry(entry)
+
+    # print(data)
+
+    return data
+
+def load_entry(entry_input):
+    data_result = []
+
+    # entry_type = entry_input['type'][0]
+    # entry_count_min = entry_input['type'][1]
+    # entry_count_max = entry_input['type'][2]
+    # entry_name = entry_input['name']
+    entry_is_item = entry_input['is_item'] if 'is_item' in entry_input else False
+    # entry_path = entry_input['path']
+
+    if entry_is_item:
+        data_result += load_item(entry_input)
+    else:
+        data_result += load_no_item(entry_input)
+    return data_result
+
+def load_no_item(entry_input):
+    data_result = []
+
+    entry_type = entry_input['type'][0]
+    entry_name = entry_input['name']
+
+    if entry_type == 'folder':
+        for entry in entry_input['content']:
+            entry['path'] = os.path.join(entry_input['path'], entry_name)
+            data_result += load_entry(entry)
+
+    return data_result
+
+def load_item(entry_input):
+    data_result = []
+    
+    entry_type = entry_input['type'][0]
+    entry_count_max = entry_input['type'][2]
+    entry_name = entry_input['name']
+    entry_path = entry_input['path']
+
+    if entry_type == 'folder':
+        for entry in entry_input['content']:
+            if entry_count_max == '*':
+
+                for folder in os.listdir(entry_path):
+
+                    tmp_path = os.path.join(entry_input['path'], folder)
+                    tmp_dict = {'id': folder, 'count_of_something': 1, 'name': folder}
+                    for entry1 in entry_input['content']:
+                        if entry1['type'][0] == 'file-json':
+                            entry1['path'] = os.path.join(tmp_path, folder+'.json')
+
+                            with open(entry1['path'], 'r') as file:
+                                obj_json = json.loads(file.read())
+                                for key in entry1['keys']:
+                                    tmp_dict[key[1]] = obj_json[key[0]]
+
+                        # print(entry1['path'])
+                        # load_entry(entry1)
+                    data_result.append(tmp_dict)
+
+    elif entry_type == 'file-json':
+        pass
+   
+    return data_result
 
 def load_file_csv():
     data = []

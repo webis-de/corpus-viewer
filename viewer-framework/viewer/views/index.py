@@ -25,8 +25,6 @@ def index(request):
 
     # index_example_data()
 
-
-
     context = {}
     context['json_url_params'] = json.dumps(get_url_params(request))
     context['json_filters'] = json.dumps(DICT_SETTINGS_VIEWER['filters'])
