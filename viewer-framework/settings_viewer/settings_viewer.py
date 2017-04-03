@@ -1,6 +1,6 @@
 DICT_SETTINGS_VIEWER = {
 	# possible values: 'database', 'csv-file', 'ldjson-file', 'directory'
-	'data_type': 'directory',
+	'data_type': 'database',
 		# only necessary if data_type is '*-file'
 			# path to data,
 			'data_path': '../corpora/webis-cbc-16',
@@ -9,58 +9,32 @@ DICT_SETTINGS_VIEWER = {
 			# 'data_structure': ['name', 'count_of_something', 'id'],
 
 
-			 'data_structure': [
-			 	{
-					'type': ('folder', 1, 1), 
-					'name': 'problems', 
-					'content': [
-						{
-							'type': ('folder', 0, '*'),
-							'name': 'viewer__field__id',
-							'is_item': True,
-							'content': [
-								{
-									'type': ('file-json', 1, 1),
-									'name': 'viewer__field__id',
-									'keys': [
-										('id', 'id'),
-										('text', 'text'),
-										('retweet_count', 'retweet_count')
-									]
-								}
-							]
-						}
-					]
-				}
-			],
-
-
 		# only necessary if data_type is 'database'
 			# name of the app where the model is located
 			'app_label': 'example_app',
 			# name of the model
 			'model_name': 'Example_Model',
-	'use_cache': True,
+	'use_cache': False,
 	'data_fields': {
 		'id': {
 			'name': 'id',
 			'type': 'int',
 			'display_name': 'ID'
 		},
-		'text': {
+		'name': {
 			'name': 'name',
 			'type': 'string',
 			'display_name': 'Text'
 		},
-		'retweet_count': {
-			'name': 'retweet_count',
+		'count_of_something': {
+			'name': 'count_of_something',
 			'type': 'int',
 			'display_name': 'Retweets'
 		}
 	},
 	'id': 'id',
 	'displayed_fields': [
-		'id', 'retweet_count', 'text',
+		'id', 'count_of_something', 'name',
 	],
 	'page_size': 25,
 	# Possible filter types: 'text', 'checkbox'

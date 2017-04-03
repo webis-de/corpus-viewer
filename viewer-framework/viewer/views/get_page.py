@@ -8,19 +8,10 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 def get_page(request):
     # request.session.flush()
 ##### handle session entries
-    # this seems to be redundant
     set_sessions(request)
-    # for viewer__filter in  DICT_SETTINGS_VIEWER['filters']:
-    #     if viewer__filter['type'] == 'text':
-    #         set_session_from_url(request, 'filter_'+viewer__filter['data_field'], viewer__filter['default_value'])
-    #     elif viewer__filter['type'] == 'checkbox':
-    #         set_session_from_url(request, 'filter_'+viewer__filter['data_field'], True if viewer__filter['default_value'] == 'checked' else False)
-
 ##### load data and apply filters
     data, data_only_ids = get_filtered_data(request)
-
     list_tags = get_set_tags_filtered_items(data_only_ids, request)
-
 ##### handle post requests
     if request.method == 'POST':
         response = {}
@@ -28,9 +19,8 @@ def get_page(request):
         if obj['task'] == 'add_tag':
             response['data'] = add_tag(obj, data)
         return JsonResponse(response)
-
 ##### page the dataset
-    paginator = Paginator(data, DICT_SETTINGS_VIEWER['page_size'])
+    paginator = Paginator(data, get_setting('page_size'))
     try:
         data = paginator.page(request.session['viewer__viewer__page'])
     except PageNotAnInteger:
@@ -39,7 +29,7 @@ def get_page(request):
     except EmptyPage:
         # If page is out of range (e.g. 9999), deliver last page of results.
         data = paginator.page(paginator.num_pages)
-
+##### add tags to the dataset
     add_tags(data)
 ##### handle post requests
     context = {}

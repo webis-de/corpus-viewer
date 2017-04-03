@@ -55,8 +55,6 @@ def load_directory():
         entry['path'] = DICT_SETTINGS_VIEWER['data_path'] 
         data = load_entry(entry)
 
-    # print(data)
-
     return data
 
 def load_entry(entry_input):
@@ -72,6 +70,7 @@ def load_entry(entry_input):
     if entry_is_item:
         data_result += load_item(entry_input)
     else:
+        print('data_result')
         data_result += load_no_item(entry_input)
     return data_result
 
@@ -101,7 +100,6 @@ def load_item(entry_input):
             if entry_count_max == '*':
 
                 for folder in os.listdir(entry_path):
-
                     tmp_path = os.path.join(entry_input['path'], folder)
                     tmp_dict = {'id': folder, 'count_of_something': 1, 'name': folder}
                     for entry1 in entry_input['content']:
@@ -203,3 +201,7 @@ def get_setting(key):
 
     if key == 'use_cache':
         return False;
+    elif key == 'page_size':
+        return 45;
+
+    raise ValueError('setting-key not found')
