@@ -202,6 +202,6 @@ def get_setting(key):
     if key == 'use_cache':
         return False;
     elif key == 'page_size':
-        return 45;
+        return 25;
 
-    raise ValueError('setting-key not found')
+    raise ValueError('setting-key \''+key+'\' not found')
