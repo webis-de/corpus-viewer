@@ -1,13 +1,38 @@
+import os
+import csv
+import json
+
 def load_data():
 	data = []
 	
-	data.append({'id': 1, 'name': 'test', 'count_of_something': 2})
+	path_corpora = '../corpora/webis-cbc-16'
+	path_truth = os.path.join(path_corpora, 'truth')
+	path_problems = os.path.join(path_corpora, 'problems')
+
+	with open(os.path.join(path_truth, 'annotatorA.csv'), 'r') as f:
+		for line in f:
+			pass
+
+	for folder in os.listdir(path_problems):
+		path_problem = os.path.join(path_problems, folder)
+		for file in os.listdir(path_problem):
+			path_file = os.path.join(path_problem, file)
+			if file.endswith('.json'):
+				with open(path_file, 'r') as f:
+					obj_json = json.loads(f.read())
+					obj_tweet = {}
+					obj_tweet['id'] = obj_json['id']
+					obj_tweet['name'] = obj_json['text']
+					obj_tweet['count_of_something'] = obj_json['retweet_count']
+					data.append(obj_tweet)
+		# break 
+
 
 	return data
 
 DICT_SETTINGS_VIEWER = {
 	# possible values: 'csv-file', 'ldjson-file', 'custom', 'database'
-	'data_type': 'ldjson-file',
+	'data_type': 'custom',
 		# only necessary if data_type is '*-file' or 'custom'
 			# path to data,
 			# 'data_path': '../corpora/webis-cbc-16',
