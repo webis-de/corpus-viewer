@@ -6,12 +6,12 @@ from django.template.loader import get_template
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def get_page(request):
-    # request.session.flush()
 ##### handle session entries
     set_sessions(request)
 ##### load data and apply filters
     data, data_only_ids = get_filtered_data(request)
-    list_tags = get_set_tags_filtered_items(data_only_ids, request)
+    # list_tags = get_tags_filtered_items(data_only_ids, request)
+    list_tags = []
 ##### handle post requests
     if request.method == 'POST':
         response = {}
@@ -138,7 +138,7 @@ def index_missing_entities(entities):
         m_Entity.objects.bulk_create([m_Entity(id_item=entity) for entity in set_new_entities])
 
 
-def get_set_tags_filtered_items(list_ids, request):
+def get_tags_filtered_items(list_ids, request):
     if DICT_SETTINGS_VIEWER['data_type'] == 'database':
         list_tags = []
         n = 900

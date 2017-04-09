@@ -17,6 +17,7 @@ def get_or_create_tag(name, defaults={}):
     name = name.strip()
     name = name.replace(' ', '-')
     db_obj_tag = m_Tag.objects.get_or_create(name=name, defaults=defaults)
+
     return db_obj_tag
 
 def load_data():
@@ -25,36 +26,37 @@ def load_data():
     dict_ids = {}
 
     data_cached = cache.get('data')
-    print(data_cached)
     use_cache = False
     if data_cached != None:
         if len(data_cached) != 0 and get_setting('use_cache'):
             use_cache = True
         
-    
     if use_cache:
         print('using cache')
         data, data_only_ids, dict_ids = data_cached
+
+        return data, data_only_ids, dict_ids
     else:
         print('not using cache')
         if DICT_SETTINGS_VIEWER['data_type'] == 'database':
             data = model_custom.objects.all()
             data_only_ids = [str(getattr(entity, DICT_SETTINGS_VIEWER['id'])) for entity in model_custom.objects.all().only(DICT_SETTINGS_VIEWER['id'])]
+
+            return data, data_only_ids, dict_ids
         elif DICT_SETTINGS_VIEWER['data_type'] == 'csv-file':
             data = load_file_csv()
-            data_only_ids = [str(item[DICT_SETTINGS_VIEWER['id']]) for item in data]
-            dict_ids = {str(item[DICT_SETTINGS_VIEWER['id']]):index for index, item in enumerate(data)}
         elif DICT_SETTINGS_VIEWER['data_type'] == 'ldjson-file':
             data = load_file_ldjson()
-            data_only_ids = [str(item[DICT_SETTINGS_VIEWER['id']]) for item in data]
-            dict_ids = {str(item[DICT_SETTINGS_VIEWER['id']]):index for index, item in enumerate(data)}
-        elif DICT_SETTINGS_VIEWER['data_type'] == 'directory':
-            data = load_directory()
-            data_only_ids = [str(item[DICT_SETTINGS_VIEWER['id']]) for item in data]
-            dict_ids = {str(item[DICT_SETTINGS_VIEWER['id']]):index for index, item in enumerate(data)}
-        cache.set('data', (data, data_only_ids, dict_ids))
+        elif DICT_SETTINGS_VIEWER['data_type'] == 'custom':
+            data = DICT_SETTINGS_VIEWER['load_data_function']()
 
-    return data, data_only_ids, dict_ids
+        data_only_ids = [str(item[DICT_SETTINGS_VIEWER['id']]) for item in data]
+        dict_ids = {str(item[DICT_SETTINGS_VIEWER['id']]):index for index, item in enumerate(data)}
+        
+        if get_setting('use_cache'):
+            cache.set('data', (data, data_only_ids, dict_ids))
+
+        return data, data_only_ids, dict_ids
 
 def load_directory():
     data = []
@@ -181,6 +183,7 @@ def set_sessions(request):
     set_session_from_url(request, 'viewer__filter_tags', default=[], is_json=True)
 
     set_session_from_url(request, 'viewer__filter_custom', default={obj_filter['data_field']:obj_filter['default_value'] for obj_filter in DICT_SETTINGS_VIEWER['filters']}, is_json=True)
+    
     # in case of newly added filters add them
     dict_tmp = {obj_filter['data_field']:obj_filter['default_value'] for obj_filter in DICT_SETTINGS_VIEWER['filters']}
     dict_tmp.update(request.session['viewer__viewer__filter_custom'])

@@ -1,14 +1,24 @@
+def load_data():
+	data = []
+	
+	data.append({'id': 1, 'name': 'test', 'count_of_something': 2})
+
+	return data
+
 DICT_SETTINGS_VIEWER = {
-	# possible values: 'database', 'csv-file', 'ldjson-file', 'directory'
-	'data_type': 'database',
-		# only necessary if data_type is '*-file'
+	# possible values: 'csv-file', 'ldjson-file', 'custom', 'database'
+	'data_type': 'ldjson-file',
+		# only necessary if data_type is '*-file' or 'custom'
 			# path to data,
-			'data_path': '../corpora/webis-cbc-16',
-			# 'data_path': 'file.csv',
+			# 'data_path': '../corpora/webis-cbc-16',
+			'data_path': '../corpora/file.ldjson',
 			# structure of data in file
-			# 'data_structure': ['name', 'count_of_something', 'id'],
+			'data_structure': ['name', 'count_of_something', 'id'],
 
 
+		# only necessary if data_type is 'custom'
+			# function to load the data
+			'load_data_function': load_data,
 		# only necessary if data_type is 'database'
 			# name of the app where the model is located
 			'app_label': 'example_app',
@@ -17,17 +27,14 @@ DICT_SETTINGS_VIEWER = {
 	'use_cache': False,
 	'data_fields': {
 		'id': {
-			'name': 'id',
 			'type': 'int',
 			'display_name': 'ID'
 		},
 		'name': {
-			'name': 'name',
 			'type': 'string',
 			'display_name': 'Text'
 		},
 		'count_of_something': {
-			'name': 'count_of_something',
 			'type': 'int',
 			'display_name': 'Retweets'
 		}
