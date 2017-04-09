@@ -105,7 +105,7 @@ def add_tag(obj, data):
     if obj['ids'] == 'all':
         entities = data
     else:
-        entities = obj['ids']
+        entities = list(model_custom.objects.filter(post_id_str__in=obj['ids']))
 
     if DICT_SETTINGS_VIEWER['data_type'] == 'database':
         n = 900

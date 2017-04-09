@@ -25,7 +25,18 @@ def load_data():
     dict_ids = {}
 
     data_cached = cache.get('data')
-    if len(data_cached) == 0 or not get_setting('use_cache'):
+    print(data_cached)
+    use_cache = False
+    if data_cached != None:
+        if len(data_cached) != 0 and get_setting('use_cache'):
+            use_cache = True
+        
+    
+    if use_cache:
+        print('using cache')
+        data, data_only_ids, dict_ids = data_cached
+    else:
+        print('not using cache')
         if DICT_SETTINGS_VIEWER['data_type'] == 'database':
             data = model_custom.objects.all()
             data_only_ids = [str(getattr(entity, DICT_SETTINGS_VIEWER['id'])) for entity in model_custom.objects.all().only(DICT_SETTINGS_VIEWER['id'])]
@@ -42,9 +53,6 @@ def load_data():
             data_only_ids = [str(item[DICT_SETTINGS_VIEWER['id']]) for item in data]
             dict_ids = {str(item[DICT_SETTINGS_VIEWER['id']]):index for index, item in enumerate(data)}
         cache.set('data', (data, data_only_ids, dict_ids))
-    else:
-        print('using cache')
-        data, data_only_ids, dict_ids = cache.get('data')
 
     return data, data_only_ids, dict_ids
 
