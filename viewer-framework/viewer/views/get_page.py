@@ -85,7 +85,7 @@ def filter_data(request, data, obj_filter):
         if DICT_SETTINGS_VIEWER['data_type'] == 'database':
             data = data.filter(**{obj_filter['data_field']+'__icontains': value})
         else:
-            pass
+            data = [item for item in data if value in item[obj_filter['data_field']]]
 
     return data
 
