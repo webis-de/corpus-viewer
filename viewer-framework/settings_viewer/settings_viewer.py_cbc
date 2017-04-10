@@ -130,13 +130,5 @@ DICT_SETTINGS_VIEWER = {
             'default_value': '',
             'event': 'change'
         },
-        {
-            'type': 'text',
-            'data_field': 'majority',
-            'description': 'Clickbait',
-            'placeholder': 'no-clickbait|clickbait',
-            'default_value': '',
-            'event': 'change'
-        },
     ],
 }
