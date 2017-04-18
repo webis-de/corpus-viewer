@@ -5,6 +5,22 @@ from django.template import Engine, Context
 from django.template.loader import get_template
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
+regex_filter_numbers_lt = re.compile('< {0,1}([0-9]+)')
+regex_filter_numbers_gt = re.compile('> {0,1}([0-9]+)')
+regex_filter_numbers_lte = re.compile('<= {0,1}([0-9]+)')
+regex_filter_numbers_ge = re.compile('>= {0,1}([0-9]+)')
+
+result = regex_filter_numbers_lt.search(' <343s >54')
+if result != None:
+    print(result.group(1))
+else:
+    print('NOT FOUND')
+result = regex_filter_numbers_gt.search(' <343s >54')
+if result != None:
+    print(result.group(1))
+else:
+    print('NOT FOUND')
+
 def get_page(request):
 ##### handle session entries
     start = time.perf_counter()
@@ -94,7 +110,7 @@ def filter_data(request, data, obj_filter):
                 elif type_data_field == 'list':
                     raise ValueError('NOT IMPLEMENTED')
             elif obj_filter['type'] == 'number':
-                
+                pass
                 # data = [item for item in data if value in str(item[obj_filter['data_field']])]
 
 
