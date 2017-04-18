@@ -27,7 +27,7 @@ def load_data():
                         obj_tweet = {}
                         obj_tweet['id'] = obj_json['id']
                         obj_tweet['text'] = obj_json['text']
-                        obj_tweet['retweet_count'] = obj_json['retweet_count']
+                        obj_tweet['retweet_count'] = int(obj_json['retweet_count'])
                         obj_tweet['annotatorA'] = dict_annotations_annotatorA[obj_json['id']]
                         obj_tweet['annotatorB'] = dict_annotations_annotatorB[obj_json['id']]
                         obj_tweet['annotatorC'] = dict_annotations_annotatorC[obj_json['id']]

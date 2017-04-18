@@ -5,21 +5,11 @@ from django.template import Engine, Context
 from django.template.loader import get_template
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
+regex_filter_numbers = re.compile('([0-9]+)')
 regex_filter_numbers_lt = re.compile('< {0,1}([0-9]+)')
-regex_filter_numbers_gt = re.compile('> {0,1}([0-9]+)')
 regex_filter_numbers_lte = re.compile('<= {0,1}([0-9]+)')
-regex_filter_numbers_ge = re.compile('>= {0,1}([0-9]+)')
-
-result = regex_filter_numbers_lt.search(' <343s >54')
-if result != None:
-    print(result.group(1))
-else:
-    print('NOT FOUND')
-result = regex_filter_numbers_gt.search(' <343s >54')
-if result != None:
-    print(result.group(1))
-else:
-    print('NOT FOUND')
+regex_filter_numbers_gt = re.compile('> {0,1}([0-9]+)')
+regex_filter_numbers_gte = re.compile('>= {0,1}([0-9]+)')
 
 def get_page(request):
 ##### handle session entries
@@ -110,7 +100,31 @@ def filter_data(request, data, obj_filter):
                 elif type_data_field == 'list':
                     raise ValueError('NOT IMPLEMENTED')
             elif obj_filter['type'] == 'number':
-                pass
+                result_lt = regex_filter_numbers_lt.search(value)
+                if result_lt != None:
+                    number = float(result_lt.group(1))
+                    data = [item for item in data if item[obj_filter['data_field']] < number]
+
+                result_lte = regex_filter_numbers_lte.search(value)
+                if result_lte != None:
+                    number = float(result_lte.group(1))
+                    data = [item for item in data if item[obj_filter['data_field']] <= number]
+
+                result_gt = regex_filter_numbers_gt.search(value)
+                if result_gt != None:
+                    number = float(result_gt.group(1))
+                    data = [item for item in data if item[obj_filter['data_field']] > number]
+                
+                result_gte = regex_filter_numbers_gte.search(value)
+                if result_gte != None:
+                    number = float(result_gte.group(1))
+                    data = [item for item in data if item[obj_filter['data_field']] >= number]
+
+                result = regex_filter_numbers.search(value)
+                if result != None:
+                    number = float(result.group(1))
+                    print(number)
+                    # data = [item for item in data if item[obj_filter['data_field']] >= number]
                 # data = [item for item in data if value in str(item[obj_filter['data_field']])]
 
 
