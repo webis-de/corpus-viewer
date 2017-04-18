@@ -7,6 +7,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def get_page(request):
 ##### handle session entries
+    start = time.perf_counter()
     set_sessions(request)
 ##### load data and apply filters
     data, data_only_ids = get_filtered_data(request)
@@ -42,8 +43,9 @@ def get_page(request):
         previous_page_number = data.previous_page_number()
     if data.has_next():
         next_page_number = data.next_page_number()
-
     template = get_template('viewer/table.html')
+    end = round(float(time.perf_counter()-start) * 1000, 2)
+    print('TIME: '+str(end)+'ms')
     return JsonResponse({'content':template.render(context, request),
             'tags_filtered_items': list_tags,
             'count_pages': data.paginator.num_pages,
