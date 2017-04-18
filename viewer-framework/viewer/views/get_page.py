@@ -87,7 +87,16 @@ def filter_data(request, data, obj_filter):
         if DICT_SETTINGS_VIEWER['data_type'] == 'database':
             data = data.filter(**{obj_filter['data_field']+'__icontains': value})
         else:
-            data = [item for item in data if value in item[obj_filter['data_field']]]
+            if obj_filter['type'] == 'contains':
+                type_data_field = DICT_SETTINGS_VIEWER['data_fields'][obj_filter['data_field']]['type']
+                if type_data_field == 'string':
+                    data = [item for item in data if value in str(item[obj_filter['data_field']])]
+                elif type_data_field == 'list':
+                    raise ValueError('NOT IMPLEMENTED')
+            elif obj_filter['type'] == 'number':
+                
+                # data = [item for item in data if value in str(item[obj_filter['data_field']])]
+
 
     return data
 

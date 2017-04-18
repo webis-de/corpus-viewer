@@ -26,8 +26,8 @@ def load_data():
                         obj_json = json.loads(f.read())
                         obj_tweet = {}
                         obj_tweet['id'] = obj_json['id']
-                        obj_tweet['name'] = obj_json['text']
-                        obj_tweet['count_of_something'] = obj_json['retweet_count']
+                        obj_tweet['text'] = obj_json['text']
+                        obj_tweet['retweet_count'] = obj_json['retweet_count']
                         obj_tweet['annotatorA'] = dict_annotations_annotatorA[obj_json['id']]
                         obj_tweet['annotatorB'] = dict_annotations_annotatorB[obj_json['id']]
                         obj_tweet['annotatorC'] = dict_annotations_annotatorC[obj_json['id']]
@@ -57,7 +57,7 @@ DICT_SETTINGS_VIEWER = {
             # 'data_path': '../corpora/webis-cbc-16',
             'data_path': '../corpora/file.ldjson',
             # structure of data in file
-            'data_structure': ['name', 'count_of_something', 'id'],
+            'data_structure': ['name', 'retweet_count', 'id'],
 
 
         # only necessary if data_type is 'custom'
@@ -74,11 +74,11 @@ DICT_SETTINGS_VIEWER = {
             'type': 'int',
             'display_name': 'ID'
         },
-        'name': {
+        'text': {
             'type': 'string',
             'display_name': 'Text'
         },
-        'count_of_something': {
+        'retweet_count': {
             'type': 'int',
             'display_name': 'Retweets'
         },
@@ -101,7 +101,7 @@ DICT_SETTINGS_VIEWER = {
     },
     'id': 'id',
     'displayed_fields': [
-        'id', 'count_of_something', 'name', 'annotatorA', 'annotatorB', 'annotatorC', 'majority'
+        'id', 'retweet_count', 'text', 'annotatorA', 'annotatorB', 'annotatorC', 'majority'
     ],
     'page_size': 25,
     # Possible filter types: 'text', 'checkbox'
@@ -109,21 +109,21 @@ DICT_SETTINGS_VIEWER = {
     'filters': [
         # {
         #   'type': 'checkbox',
-        #   'data_field_name': 'count_of_something',
+        #   'data_field_name': 'retweet_count',
         #   'description': 'Some Checkbox',
         #   'default_value': False,
         #   'event': 'change'
         # },
         {
-            'type': 'text',
+            'type': 'contains',
             'data_field': 'text',
             'description': 'Tweet Text',
             'placeholder': 'Text Input',
             'default_value': '',
-            'event': 'input'
+            'event': 'change'
         },
         {
-            'type': 'text',
+            'type': 'number',
             'data_field': 'retweet_count',
             'description': 'Count Retweets',
             'placeholder': 'Count Input',

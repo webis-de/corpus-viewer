@@ -3,6 +3,7 @@ import json
 import csv
 import importlib
 import os
+import re
 from collections import OrderedDict
 from django.core.cache import cache
 from settings_viewer import DICT_SETTINGS_VIEWER
