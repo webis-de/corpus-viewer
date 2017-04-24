@@ -169,7 +169,10 @@ def add_tag(obj, data):
 
     entities = []
     if obj['ids'] == 'all':
-        entities = data
+        if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+            entities = data
+        else:
+            entities = [str(item[DICT_SETTINGS_VIEWER['id']]) for item in data]
     else:
         if DICT_SETTINGS_VIEWER['data_type'] == 'database':
             entities = list(model_custom.objects.filter(post_id_str__in=obj['ids']))
