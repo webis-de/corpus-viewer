@@ -249,6 +249,7 @@ function export_data(modal)
 {
     let data = {}
     data.task = 'export_data'
+    data.key_tag = $('#input_name_tag_field').val()
     
     let url_params = refresh_url();
 

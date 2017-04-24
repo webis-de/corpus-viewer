@@ -74,16 +74,20 @@ def export_data(obj, data):
         db_obj_entities = m_Entity.objects.all().prefetch_related('viewer_tags')
         dict_entities = {entity.id_item: entity for entity in db_obj_entities}
 
+        key_tag = obj['key_tag']
+
         for item in data:
             try:
-                item['viewer_tags'] = dict_entities[str(item[DICT_SETTINGS_VIEWER['id']])].viewer_tags.all()
+                item[key_tag] = dict_entities[str(item[DICT_SETTINGS_VIEWER['id']])].viewer_tags.all()
             except KeyError:
                 # if there is no entity entry in the database
-                item['viewer_tags'] = []
+                item[key_tag] = []
 
         data_export = data
 
-    print(len(data_export))
+    with open('exported_data.ldjson', 'w') as f:
+        for line in data_export:
+            f.write(json.dumps(line)+'\n')
 
     return response
 
