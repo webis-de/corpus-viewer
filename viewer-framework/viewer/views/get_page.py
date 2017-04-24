@@ -17,8 +17,7 @@ def get_page(request):
     set_sessions(request)
 ##### load data and apply filters
     data, data_only_ids = get_filtered_data(request)
-    # list_tags = get_tags_filtered_items(data_only_ids, request)
-    list_tags = []
+    list_tags = get_tags_filtered_items(data_only_ids, request)
 ##### handle post requests
     if request.method == 'POST':
         response = {}
@@ -78,7 +77,7 @@ def export_data(obj, data):
 
         for item in data:
             try:
-                item[key_tag] = dict_entities[str(item[DICT_SETTINGS_VIEWER['id']])].viewer_tags.all()
+                item[key_tag] = [{'id': tag.id, 'name': tag.name, 'color': tag.color} for tag in dict_entities[str(item[DICT_SETTINGS_VIEWER['id']])].viewer_tags.all()]
             except KeyError:
                 # if there is no entity entry in the database
                 item[key_tag] = []
@@ -114,8 +113,7 @@ def get_filtered_data(request):
     if DICT_SETTINGS_VIEWER['data_type'] == 'database':
         data_only_ids = [item.id for item in data]
     else:
-        data_only_ids = [item[DICT_SETTINGS_VIEWER['id']] for item in data]
-
+        data_only_ids = [str(item[DICT_SETTINGS_VIEWER['id']]) for item in data]
     return data, data_only_ids
 
 def filter_data(request, data, obj_filter):
@@ -173,7 +171,10 @@ def add_tag(obj, data):
     if obj['ids'] == 'all':
         entities = data
     else:
-        entities = list(model_custom.objects.filter(post_id_str__in=obj['ids']))
+        if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+            entities = list(model_custom.objects.filter(post_id_str__in=obj['ids']))
+        else:
+            entities = obj['ids']
 
     if DICT_SETTINGS_VIEWER['data_type'] == 'database':
         n = 900
@@ -181,7 +182,6 @@ def add_tag(obj, data):
         for chunk in chunks:
             db_obj_tag.m2m_custom_model.add(*chunk)
     else:
-
         index_missing_entities(entities)
 
         n = 900
@@ -226,7 +226,7 @@ def get_tags_filtered_items(list_ids, request):
 
         list_tags = []
         for chunk in chunks:
-            list_tags += m_Tag.objects.filter(m2m_entity__in=chunk).distinct()
+            list_tags += m_Tag.objects.filter(m2m_entity__id_item__in=chunk).distinct()
 
         dict_ordered_tags = OrderedDict()
         for tag in list_tags:
