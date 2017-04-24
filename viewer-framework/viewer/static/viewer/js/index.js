@@ -72,6 +72,8 @@ $(document).ready(function()
     $(document).on('hide.bs.modal', '#modal_add_tag', function(e) { handle_hide_modal(e, $(this)) });
     $(document).on('click', '#submit_add_tag', function(e) { add_tag($('#modal_add_tag')) });
     $(document).on('change', '#input_add_to_all_filtered_items', function(e) { handle_change_add_to_all_filtered_items($(this)) });
+    
+    $(document).on('click', '#submit_export_data', function(e) { export_data($('#modal_export_data')) });
 
     $(document).on('change', '#checkbox_tag_selection_all', function(e) { handle_change_displayed_tag_all($(this)) });
     $(document).on('change', '.checkbox_tag_selection', function(e) { handle_change_displayed_tag($(this)) });

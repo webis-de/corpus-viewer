@@ -245,6 +245,26 @@ function handle_hide_modal(event, modal)
     modal.removeData('id_item');
 }
 
+function export_data(modal)
+{
+    let data = {}
+    data.task = 'export_data'
+    
+    let url_params = refresh_url();
+
+    $.ajax({
+        url: 'get_page?'+url_params,
+        method: 'POST',
+        contentType: 'application/json',
+        headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+        data: JSON.stringify(data),
+        success: function(result) {
+
+            modal.modal('hide');
+        }
+    })
+}
+
 function add_tag(modal)
 {
     const id_item = modal.data('id_item');

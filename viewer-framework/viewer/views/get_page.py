@@ -25,6 +25,9 @@ def get_page(request):
         obj = json.loads(request.body.decode("utf-8"))
         if obj['task'] == 'add_tag':
             response['data'] = add_tag(obj, data)
+        elif obj['task'] == 'export_data':
+            response = export_data(obj, data)
+
         return JsonResponse(response)
 ##### page the dataset
     paginator = Paginator(data, get_setting('page_size'))
@@ -59,6 +62,30 @@ def get_page(request):
             'previous_page_number': previous_page_number,
             'next_page_number': next_page_number
         })
+
+def export_data(obj, data):
+    response = {}
+
+    data_export = []
+
+    if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+        raise NotImplementedError("export for database")
+    else:
+        db_obj_entities = m_Entity.objects.all().prefetch_related('viewer_tags')
+        dict_entities = {entity.id_item: entity for entity in db_obj_entities}
+
+        for item in data:
+            try:
+                item['viewer_tags'] = dict_entities[str(item[DICT_SETTINGS_VIEWER['id']])].viewer_tags.all()
+            except KeyError:
+                # if there is no entity entry in the database
+                item['viewer_tags'] = []
+
+        data_export = data
+
+    print(len(data_export))
+
+    return response
 
 def get_filtered_data(request):
     data, data_only_ids, dict_ids = load_data()
