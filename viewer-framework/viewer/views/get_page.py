@@ -93,19 +93,21 @@ def export_data(obj, data):
 def get_filtered_data(request):
     data, data_only_ids, dict_ids = load_data()
     #
-    # FILTER BY TAGS
+    # FILTER BY TAGS 
     #
     if len(request.session['viewer__viewer__filter_tags']) > 0:
         if DICT_SETTINGS_VIEWER['data_type'] == 'database':
-
+            # iterate over tag and return only items tagged with them
             for tag in request.session['viewer__viewer__filter_tags']:
                 data = data.filter(viewer_tags__name=tag)
         else:
+            # filter the data by tags
             data = filter_data_tags(data, request.session['viewer__viewer__filter_tags'])
     #
     # FILTERS
     #
     for obj_filter in DICT_SETTINGS_VIEWER['filters']:
+        # filter the data by the current filter
         data = filter_data(request, data, obj_filter)
     #
     # UPDATE data_only_ids
@@ -113,27 +115,37 @@ def get_filtered_data(request):
     if DICT_SETTINGS_VIEWER['data_type'] == 'database':
         data_only_ids = [item.id for item in data]
     else:
+        # update data_only_ids
         data_only_ids = [str(item[DICT_SETTINGS_VIEWER['id']]) for item in data]
     return data, data_only_ids
 
 def filter_data(request, data, obj_filter):
+    # get the value of the current filter
     value = request.session['viewer__viewer__filter_custom'][obj_filter['data_field']]
+    # if the value is not empty 
     if value != '':
         if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+            # TODO: make flexible filters for database
             data = data.filter(**{obj_filter['data_field']+'__icontains': value})
         else:
+            # if the filter is 'contains'
             if obj_filter['type'] == 'contains':
+                # get the type (string, list) of the data-field
                 type_data_field = DICT_SETTINGS_VIEWER['data_fields'][obj_filter['data_field']]['type']
                 if type_data_field == 'string':
+                    # return only items which contain the value
                     data = [item for item in data if value in str(item[obj_filter['data_field']])]
                 elif type_data_field == 'list':
                     raise ValueError('NOT IMPLEMENTED')
+            # if the filter is 'number'
             elif obj_filter['type'] == 'number':
+                # check if a specific number is requested
                 result = regex_filter_numbers.search(value)
                 if result != None:
                     number = float(result.group(1))
                     data = [item for item in data if item[obj_filter['data_field']] == number]
                 else:
+
                     result_lt = regex_filter_numbers_lt.search(value)
                     if result_lt != None:
                         number = float(result_lt.group(1))
@@ -156,10 +168,13 @@ def filter_data(request, data, obj_filter):
     return data
 
 def filter_data_tags(data, list_tags):
+    # get the database objects for each tag
     queryset_tags = m_Tag.objects.filter(name__in=list_tags).prefetch_related('m2m_entity')
-
+    # for each tag
     for db_obj_tag in queryset_tags:
+        # get all entities for the current tag 
         list_ids = [entity.id_item for entity in db_obj_tag.m2m_entity.all()]
+        # only keep items, which id is in the entities list
         data = [item for item in data if str(item[DICT_SETTINGS_VIEWER['id']]) in list_ids]
 
     return data

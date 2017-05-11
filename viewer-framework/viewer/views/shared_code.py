@@ -44,15 +44,17 @@ def load_data():
             data_only_ids = [str(getattr(entity, DICT_SETTINGS_VIEWER['id'])) for entity in model_custom.objects.all().only(DICT_SETTINGS_VIEWER['id'])]
 
             return data, data_only_ids, dict_ids
-        elif DICT_SETTINGS_VIEWER['data_type'] == 'csv-file':
-            data = load_file_csv()
-        elif DICT_SETTINGS_VIEWER['data_type'] == 'ldjson-file':
-            data = load_file_ldjson()
-        elif DICT_SETTINGS_VIEWER['data_type'] == 'custom':
-            data = DICT_SETTINGS_VIEWER['load_data_function']()
-
-        data_only_ids = [str(item[DICT_SETTINGS_VIEWER['id']]) for item in data]
-        dict_ids = {str(item[DICT_SETTINGS_VIEWER['id']]):index for index, item in enumerate(data)}
+        else:
+            if DICT_SETTINGS_VIEWER['data_type'] == 'csv-file':
+                data = load_file_csv()
+            elif DICT_SETTINGS_VIEWER['data_type'] == 'ldjson-file':
+                data = load_file_ldjson()
+            elif DICT_SETTINGS_VIEWER['data_type'] == 'custom':
+                data = DICT_SETTINGS_VIEWER['load_data_function']()
+            # list of ids
+            data_only_ids = [str(item[DICT_SETTINGS_VIEWER['id']]) for item in data]
+            # dictionary id:index in list
+            dict_ids = {str(item[DICT_SETTINGS_VIEWER['id']]):index for index, item in enumerate(data)}
         
         if get_setting('use_cache'):
             cache.set('data', (data, data_only_ids, dict_ids))

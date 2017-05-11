@@ -1,37 +1,40 @@
 import os
-import xmltodict
+import csv
 import json
 
 def load_data():
     data = []
     
-    path_corpus = '../corpora/dagstuhl-15512-argquality-corpus'
-    path_data = os.path.join(path_corpus, 'dagstuhl-15512-argquality-corpus-annotated-xmi')
+    path_corpora = '../corpora/webis-cbc-16'
+    path_truth = os.path.join(path_corpora, 'truth')
+    path_problems = os.path.join(path_corpora, 'problems')
 
-    counter_id = 0
-    for topic in os.listdir(path_data):
-        path_topic = os.path.join(path_data, topic)
-        if len(topic) > 30:
-            continue
-        for opinion in os.listdir(path_topic):
-            if opinion.endswith('DS_Store') or len(opinion) > 30:
-                continue
-            path_opinion = os.path.join(path_topic, opinion)
-            for annotation in os.listdir(path_opinion):
-                if annotation.endswith('DS_Store') or len(annotation) > 30:
-                    continue
 
-                with open(os.path.join(path_opinion, annotation), 'r') as f:
-                    dict_obj = xmltodict.parse(f.read())
-                    obj_data = {}
+    dict_annotations_annotatorA = load_annotations(path_truth, 'annotatorA')
+    dict_annotations_annotatorB = load_annotations(path_truth, 'annotatorB')
+    dict_annotations_annotatorC = load_annotations(path_truth, 'annotatorC')
+    dict_annotations_majority = load_annotations(path_truth, 'majority')
 
-                    obj_data['id'] = counter_id
-                    counter_id += 1
-                    obj_data['topic'] = topic
-                    obj_data['opinion'] = opinion
-                    obj_data['text'] = dict_obj['xmi:XMI']['cas:Sofa']['@sofaString']
-
-                    data.append(obj_data)
+    counter_error = 0
+    for folder in os.listdir(path_problems):
+        path_problem = os.path.join(path_problems, folder)
+        for file in os.listdir(path_problem):
+            path_file = os.path.join(path_problem, file)
+            if file.endswith('.json'):
+                with open(path_file, 'r') as f:
+                    try:
+                        obj_json = json.loads(f.read())
+                        obj_tweet = {}
+                        obj_tweet['id'] = obj_json['id']
+                        obj_tweet['text'] = obj_json['text']
+                        obj_tweet['retweet_count'] = int(obj_json['retweet_count'])
+                        obj_tweet['annotatorA'] = dict_annotations_annotatorA[obj_json['id']]
+                        obj_tweet['annotatorB'] = dict_annotations_annotatorB[obj_json['id']]
+                        obj_tweet['annotatorC'] = dict_annotations_annotatorC[obj_json['id']]
+                        obj_tweet['majority'] = dict_annotations_majority[obj_json['id']]
+                        data.append(obj_tweet)
+                    except (json.decoder.JSONDecodeError, UnicodeDecodeError):
+                        counter_error += 1
 
     return data
 
@@ -54,7 +57,7 @@ DICT_SETTINGS_VIEWER = {
             # 'data_path': '../corpora/webis-cbc-16',
             'data_path': '../corpora/file.ldjson',
             # structure of data in file
-            'data_structure': ['text', 'retweet_count', 'id'],
+            'data_structure': ['name', 'retweet_count', 'id'],
 
 
         # only necessary if data_type is 'custom'
@@ -65,28 +68,40 @@ DICT_SETTINGS_VIEWER = {
             'app_label': 'example_app',
             # name of the model
             'model_name': 'Example_Model',
-    'use_cache': False,
+    'use_cache': True,
     'data_fields': {
         'id': {
             'type': 'int',
             'display_name': 'ID'
         },
-        'topic': {
-            'type': 'string',
-            'display_name': 'Topic'
-        },
-        'opinion': {
-            'type': 'string',
-            'display_name': 'Opinion'
-        },
         'text': {
             'type': 'string',
             'display_name': 'Text'
+        },
+        'retweet_count': {
+            'type': 'int',
+            'display_name': 'Retweets'
+        },
+        'annotatorA': {
+            'type': 'string',
+            'display_name': 'A'
+        },
+        'annotatorB': {
+            'type': 'string',
+            'display_name': 'B'
+        },
+        'annotatorC': {
+            'type': 'string',
+            'display_name': 'C'
+        },
+        'majority': {
+            'type': 'string',
+            'display_name': 'majority'
         }
     },
     'id': 'id',
     'displayed_fields': [
-        'id', 'topic', 'opinion', 'text'
+        'id', 'retweet_count', 'text', 'annotatorA', 'annotatorB', 'annotatorC', 'majority'
     ],
     'page_size': 25,
     # Possible filter types: 'text', 'checkbox'
@@ -101,25 +116,25 @@ DICT_SETTINGS_VIEWER = {
         # },
         {
             'type': 'contains',
-            'data_field': 'topic',
-            'description': 'Topic',
-            'placeholder': 'Text Input',
-            'default_value': '',
-            'event': 'change'
-        },
-        {
-            'type': 'contains',
-            'data_field': 'opinion',
-            'description': 'Opinion',
-            'placeholder': 'Text Input',
-            'default_value': '',
-            'event': 'change'
-        },
-        {
-            'type': 'contains',
             'data_field': 'text',
-            'description': 'Text',
+            'description': 'Tweet Text',
             'placeholder': 'Text Input',
+            'default_value': '',
+            'event': 'change'
+        },
+        {
+            'type': 'contains',
+            'data_field': 'majority',
+            'description': 'Majority',
+            'placeholder': 'Text Input',
+            'default_value': '',
+            'event': 'change'
+        },
+        {
+            'type': 'number',
+            'data_field': 'retweet_count',
+            'description': 'Count Retweets',
+            'placeholder': 'Count Input',
             'default_value': '',
             'event': 'change'
         },
