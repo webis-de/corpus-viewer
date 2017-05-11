@@ -347,7 +347,6 @@ function handle_change_displayed_tag_all(input)
             let tag_color = checkbox.data('tag_color');
             glob_selected_tags[id_tag] = id_tag;
             add_tag_marker(id_tag, tag_name, tag_color);
-            set_session_entry('viewer__selected_tags', glob_selected_tags)
             checkbox.prop('checked', true)
         })
     } else {
@@ -355,11 +354,12 @@ function handle_change_displayed_tag_all(input)
             let checkbox = $(element)
             let id_tag = checkbox.data('id_tag');
             delete glob_selected_tags[id_tag];
-            set_session_entry('viewer__selected_tags', glob_selected_tags)
+            // set_session_entry('viewer__selected_tags', glob_selected_tags)
             remove_tag_marker(id_tag);
             checkbox.prop('checked', false)
         })
     }
+    set_session_entry('viewer__selected_tags', glob_selected_tags);
 }
 
 function handle_change_displayed_tag(checkbox)
