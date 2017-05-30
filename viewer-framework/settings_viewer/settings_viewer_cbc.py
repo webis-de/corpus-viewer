@@ -123,6 +123,14 @@ DICT_SETTINGS_VIEWER = {
             'event': 'change'
         },
         {
+            'type': 'contains',
+            'data_field': 'majority',
+            'description': 'Majority',
+            'placeholder': 'Text Input',
+            'default_value': '',
+            'event': 'change'
+        },
+        {
             'type': 'number',
             'data_field': 'retweet_count',
             'description': 'Count Retweets',

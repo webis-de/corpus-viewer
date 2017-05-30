@@ -49,7 +49,7 @@ function handle_remove_tag_from_filter(tag)
     })
 }
 
-function handle_recommendation_filter(input, wrapper_recommendation, func)
+function handle_recommendation_filter(input, wrapper_recommendation)
 {
     let tag_name = input.val();
     if(tag_name == '')
@@ -77,6 +77,11 @@ function handle_click_on_recommendation_filter(recommendation, func)
     let wrapper_recommendation = recommendation.parent();
     let input_tag_names = wrapper_recommendation.parent().find('input');
     let tag_name = recommendation.data('tag_name');
+    let tag = {
+        id: recommendation.data('tag_id'),
+        name: recommendation.data('tag_name'),
+        color: recommendation.data('tag_color')
+    }
 
     input_tag_names.val('');
     remove_wrapper_recommendation(wrapper_recommendation);
@@ -84,7 +89,7 @@ function handle_click_on_recommendation_filter(recommendation, func)
 
     if(func)
     {
-        func(tag_name);
+        func(tag);
     }
 }
 
@@ -161,14 +166,24 @@ function handle_selection_all_items(input)
 
 function handle_select_item(input)
 {
-    if(input.prop('checked'))
+    if(glob_mode_add_tag.status == 'inactive')
     {
-        glob_selected_items[input.data('id_item')] = true;
+        if(input.prop('checked'))
+        {
+            glob_selected_items[input.data('id_item')] = true;
+        } else {
+            delete glob_selected_items[input.data('id_item')];
+        }
+        update_checkbox_select_all('input_select_item', 'input_select_all_items')
+        update_info_selected_items()
     } else {
-        delete glob_selected_items[input.data('id_item')];
+        if(input.prop('checked'))
+        {
+            input.prop('checked', false);
+        } else {
+            input.prop('checked', true);
+        }
     }
-    update_checkbox_select_all('input_select_item', 'input_select_all_items')
-    update_info_selected_items()
 }
 
 function handle_deselect_all_items(event)
@@ -205,7 +220,7 @@ function delete_tag_from_item(id_item, id_tag)
 }
 
 function handle_rightclick_on_tr(event, tr)
-{
+{   
     event.preventDefault();
     const id_item = tr.data('id_item')
     const elem = $('.input_select_item[data-id_item="'+id_item+'"]')
@@ -220,9 +235,12 @@ function handle_rightclick_on_tr(event, tr)
 
 function handle_click_link_add_tag(event, link)
 {
-    event.preventDefault();
-    $('#modal_add_tag').data('id_item', link.data('id_item'));
-    $('#modal_add_tag').modal('show')
+    if(glob_mode_add_tag.status == 'inactive')
+    {
+        event.preventDefault();
+        $('#modal_add_tag').data('id_item', link.data('id_item'));
+        $('#modal_add_tag').modal('show')
+    }
 }
 
 function handle_show_modal(event, modal)
@@ -334,6 +352,61 @@ function handle_change_add_to_all_filtered_items(input)
         }
     }
     $('#info_count_selected_items').text(count)
+}
+
+function handle_click_mode_add_tag(button)
+{
+    // if add-tag-mode was started
+    if(button.data('status') == 'inactive')
+    {
+        let tag = $('#input_add_tag').val().trim();
+        if(tag == '' || button.data('tag').name != tag)
+        {
+            return;
+        }
+
+        button.data('status', 'active');
+        button.text('Stop');
+
+        start_mode_add_tag(button.data('tag'));
+    } else {
+        end_mode_add_tag();
+    
+        button.data('status', 'inactive');
+        button.text('Start');
+    }
+}
+
+function handle_click_on_tr(event, tr)
+{
+    if(glob_mode_add_tag.status == 'active')
+    {
+        let tag  = glob_mode_add_tag.tag;
+        let id_item = tr.data('id_item')
+        let data = {}
+        data.task = 'toggle_item_to_tag'
+        data.id_tag = tag.id;
+        data.id_item = id_item;
+        console.log(data)
+
+        $.ajax({
+            url: '',
+            method: 'POST',
+            contentType: 'application/json',
+            headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+            data: JSON.stringify(data),
+            success: function(result) {
+                if(result.data.removed == true)
+                {
+                    $('#table_entities tr[data-id_item="'+id_item+'"] .wrapper_tags').removeClass('tag_'+tag.id)
+                    remove_tag_marker(tag.id, id_item);
+                } else {
+                    $('#table_entities tr[data-id_item="'+id_item+'"] .wrapper_tags').addClass('tag_'+tag.id)
+                    add_tag_marker(tag.id, tag.name, tag.color)
+                }
+            }
+        })
+    }
 }
 
 function handle_change_displayed_tag_all(input)

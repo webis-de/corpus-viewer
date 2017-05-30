@@ -11,13 +11,15 @@ let glob_next_page = undefined;
 let glob_count_pages = undefined;
 let glob_count_entries = undefined;
 
+let glob_mode_add_tag = {status: 'inactive', tag: {id: '', name: '', color: ''}};
+
 $(document).ready(function()
 {
     $(document).on('change', '#input_page', function() { handle_page_input($(this)) });
     $(document).on('click', '#info_paginator button', function(e) { e.preventDefault(); handle_pager_click($(this)) });
 
     $(document).on('click', '#list_filter_tags .badge .fa-times', function(){handle_remove_tag_from_filter($(this).parent().text().trim())});
-    $(document).on('input', '#input_filter_tags', function(){handle_recommendation_filter($(this), $('#wrapper_tag_recommendations_filter'), trigger_tag_filter_change)});
+    $(document).on('input', '#input_filter_tags', function(){handle_recommendation_filter($(this), $('#wrapper_tag_recommendations_filter'))});
     $(document).on('click', '#wrapper_tag_recommendations_filter .recommendation', function(){handle_click_on_recommendation_filter($(this), trigger_tag_filter_change)});
 
 
@@ -72,6 +74,12 @@ $(document).ready(function()
     $(document).on('hide.bs.modal', '#modal_add_tag', function(e) { handle_hide_modal(e, $(this)) });
     $(document).on('click', '#submit_add_tag', function(e) { add_tag($('#modal_add_tag')) });
     $(document).on('change', '#input_add_to_all_filtered_items', function(e) { handle_change_add_to_all_filtered_items($(this)) });
+
+    $(document).on('input', '#input_add_tag', function(){handle_recommendation_filter($(this), $('#wrapper_tag_recommendations_add_tag'))});
+    $(document).on('click', '#wrapper_tag_recommendations_add_tag .recommendation', function(){handle_click_on_recommendation_filter($(this), trigger_tag_add_change)});
+    $(document).on('click', '#button_start_mode_add_tag', function(){ handle_click_mode_add_tag($(this)) });
+    $(document).on('click', '.row_viewer__item', function(e) {handle_click_on_tr(e, $(this))})
+
     
     $(document).on('click', '#submit_export_data', function(e) { export_data($('#modal_export_data')) });
 

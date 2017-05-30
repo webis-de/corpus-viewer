@@ -20,6 +20,8 @@ def index(request):
             response['data'] = {'array_recommendations':array_tag_recommendations}
         elif obj['task'] == 'delete_tag_from_item':
             response = delete_tag_from_item(obj)
+        elif obj['task'] == 'toggle_item_to_tag':
+            response = toggle_item_to_tag(obj)
 
         return JsonResponse(response)
 
@@ -30,6 +32,30 @@ def index(request):
     context['json_filters'] = json.dumps(DICT_SETTINGS_VIEWER['filters'])
     context['settings'] = DICT_SETTINGS_VIEWER
     return render(request, 'viewer/index.html', context)
+
+def toggle_item_to_tag(obj):
+    response = {}
+    response['data'] = {}
+    db_obj_tag = m_Tag.objects.get(id=obj['id_tag'])
+
+    if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+        print('TO BE IMPLEMENTED')
+    else:
+        print(str(obj['id_item']))
+        try:
+            db_obj_entity = m_Entity.objects.get(id_item=str(obj['id_item']))
+            if m_Tag.objects.filter(pk=obj['id_tag'], m2m_entity__pk=db_obj_entity.pk).exists():
+                response['data']['removed'] = True
+                db_obj_tag.m2m_entity.remove(db_obj_entity)
+            else:
+                db_obj_tag.m2m_entity.add(db_obj_entity)
+                response['data']['removed'] = False
+        except m_Entity.DoesNotExist:
+            response['data']['removed'] = False
+            db_obj_entity = m_Entity.objects.create(id_item=str(obj['id_item']))
+            db_obj_tag.m2m_entity.add(db_obj_entity)
+
+    return response
 
 def delete_tag_from_item(obj):
     response = {}
@@ -50,7 +76,7 @@ def get_tag_recommendations(request, obj):
     array_tags = m_Tag.objects.filter(name__contains=obj['tag_name'])
 
     for tag in array_tags:
-        array_tag_recommendations.append({'name':tag.name, 'color':tag.color});
+        array_tag_recommendations.append({'id':tag.id ,'name':tag.name, 'color':tag.color});
 
     return array_tag_recommendations
 

@@ -1,8 +1,14 @@
 // recommendations ////////////////////////////////////////////////////////////////////////////
+function trigger_tag_add_change(tag)
+{
+    $('#input_add_tag').val(tag.name);
+    $('#button_start_mode_add_tag').data('tag', tag);
+
+}
 function trigger_tag_filter_change(tag)
 {
-    $('#list_filter_tags').append('<li data-tag="' + tag + '"><span class="badge badge-default">' + tag + ' <span class="fa fa-times"></span></span></li>')
-    glob_filter_tags.push(tag);
+    $('#list_filter_tags').append('<li data-tag="' + tag.name + '"><span class="badge badge-default">' + tag.name + ' <span class="fa fa-times"></span></span></li>')
+    glob_filter_tags.push(tag.name);
     set_session_entry('viewer__filter_tags', glob_filter_tags, function() {
         glob_current_page = 1;
         load_current_page();
@@ -58,7 +64,7 @@ function set_recommendations(wrapper_recommendation, array_recommendations)
 
     array_recommendations.each(function() {
         wrapper_recommendation.append(
-            '<div class="recommendation" data-tag_name="'+this.name+'" data-tag_color="'+this.color+'">'+
+            '<div class="recommendation" data-tag_id="'+this.id+'" data-tag_name="'+this.name+'" data-tag_color="'+this.color+'">'+
                 '<div class="tag_marker_recommendation" style="background-color: '+this.color+';"></div>'+
             this.name+'</div>');
     });
@@ -109,6 +115,25 @@ function refresh_url()
 
     return url_params
 }
+function start_mode_add_tag(tag)
+{
+    $('#alert_mode_add_tag').removeClass('hidden-xs-up');
+
+    glob_mode_add_tag.status = 'active';
+    glob_mode_add_tag.tag.id = tag.id;
+    glob_mode_add_tag.tag.name = tag.name;
+    glob_mode_add_tag.tag.color = tag.color;
+}
+function end_mode_add_tag()
+{
+    $('#alert_mode_add_tag').addClass('hidden-xs-up');
+
+    glob_mode_add_tag.status = 'inactive';
+    glob_mode_add_tag.tag.id = '';
+    glob_mode_add_tag.tag.name = '';
+    glob_mode_add_tag.tag.color = '';
+}
+
 function start_loading()
 {
     $('#wrapper_loading').show();
@@ -139,9 +164,14 @@ function add_tag_marker(id_tag, tag_name, tag_color)
     });
 }
 
-function remove_tag_marker(id_tag)
+function remove_tag_marker(id_tag, id_item = undefined)
 {
-    $('.tag_marker[data-id_tag="'+id_tag+'"]').remove();
+    if(id_item == undefined)
+    {
+        $('.tag_marker[data-id_tag="'+id_tag+'"]').remove();
+    } else {
+        $('#table_entities tr[data-id_item="'+id_item+'"] .tag_marker[data-id_tag="'+id_tag+'"]').remove();
+    }
 }
 
 function add_tag_to_tags_list(id, name, color)
