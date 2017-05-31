@@ -29,8 +29,8 @@ def index(request):
 
     context = {}
     context['json_url_params'] = json.dumps(get_url_params(request))
-    context['json_filters'] = json.dumps(DICT_SETTINGS_VIEWER['filters'])
-    context['settings'] = DICT_SETTINGS_VIEWER
+    context['json_filters'] = json.dumps(get_setting('filters'))
+    context['settings'] = get_setting()
     return render(request, 'viewer/index.html', context)
 
 def toggle_item_to_tag(obj):
@@ -38,7 +38,7 @@ def toggle_item_to_tag(obj):
     response['data'] = {}
     db_obj_tag = m_Tag.objects.get(id=obj['id_tag'])
 
-    if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+    if get_setting('data_type') == 'database':
         print('TO BE IMPLEMENTED')
     else:
         print(str(obj['id_item']))
@@ -61,8 +61,8 @@ def delete_tag_from_item(obj):
     response = {}
 
     db_obj_tag = m_Tag.objects.get(id=obj['id_tag'])
-    if DICT_SETTINGS_VIEWER['data_type'] == 'database':
-        db_obj_item = model_custom.objects.get(**{DICT_SETTINGS_VIEWER['id']: obj['id_item']})
+    if get_setting('data_type') == 'database':
+        db_obj_item = model_custom.objects.get(**{get_setting('id'): obj['id_item']})
         db_obj_tag.m2m_custom_model.remove(db_obj_item)
         response['status'] = 'success'
     else:

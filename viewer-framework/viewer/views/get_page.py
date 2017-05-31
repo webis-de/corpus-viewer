@@ -42,7 +42,7 @@ def get_page(request):
     add_tags(data)
 ##### handle post requests
     context = {}
-    context['settings'] = DICT_SETTINGS_VIEWER
+    context['settings'] = get_setting()
     context['data'] = data
 
     previous_page_number = None
@@ -67,7 +67,7 @@ def export_data(obj, data):
 
     data_export = []
 
-    if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+    if get_setting('data_type') == 'database':
         raise NotImplementedError("export for database")
     else:
         db_obj_entities = m_Entity.objects.all().prefetch_related('viewer_tags')
@@ -77,7 +77,7 @@ def export_data(obj, data):
 
         for item in data:
             try:
-                item[key_tag] = [{'id': tag.id, 'name': tag.name, 'color': tag.color} for tag in dict_entities[str(item[DICT_SETTINGS_VIEWER['id']])].viewer_tags.all()]
+                item[key_tag] = [{'id': tag.id, 'name': tag.name, 'color': tag.color} for tag in dict_entities[str(item[get_setting('id')])].viewer_tags.all()]
             except KeyError:
                 # if there is no entity entry in the database
                 item[key_tag] = []
@@ -96,7 +96,7 @@ def get_filtered_data(request):
     # FILTER BY TAGS 
     #
     if len(request.session['viewer__viewer__filter_tags']) > 0:
-        if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+        if get_setting('data_type') == 'database':
             # iterate over tag and return only items tagged with them
             for tag in request.session['viewer__viewer__filter_tags']:
                 data = data.filter(viewer_tags__name=tag)
@@ -106,17 +106,17 @@ def get_filtered_data(request):
     #
     # FILTERS
     #
-    for obj_filter in DICT_SETTINGS_VIEWER['filters']:
+    for obj_filter in get_setting('filters'):
         # filter the data by the current filter
         data = filter_data(request, data, obj_filter)
     #
     # UPDATE data_only_ids
     #
-    if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+    if get_setting('data_type') == 'database':
         data_only_ids = [item.id for item in data]
     else:
         # update data_only_ids
-        data_only_ids = [str(item[DICT_SETTINGS_VIEWER['id']]) for item in data]
+        data_only_ids = [str(item[get_setting('id')]) for item in data]
     return data, data_only_ids
 
 def filter_data(request, data, obj_filter):
@@ -124,14 +124,14 @@ def filter_data(request, data, obj_filter):
     value = request.session['viewer__viewer__filter_custom'][obj_filter['data_field']]
     # if the value is not empty 
     if value != '':
-        if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+        if get_setting('data_type') == 'database':
             # TODO: make flexible filters for database
             data = data.filter(**{obj_filter['data_field']+'__icontains': value})
         else:
             # if the filter is 'contains'
             if obj_filter['type'] == 'contains':
                 # get the type (string, list) of the data-field
-                type_data_field = DICT_SETTINGS_VIEWER['data_fields'][obj_filter['data_field']]['type']
+                type_data_field = get_setting('data_fields')[obj_filter['data_field']]['type']
                 if type_data_field == 'string':
                     # return only items which contain the value
                     data = [item for item in data if value in str(item[obj_filter['data_field']])]
@@ -175,7 +175,7 @@ def filter_data_tags(data, list_tags):
         # get all entities for the current tag 
         list_ids = [entity.id_item for entity in db_obj_tag.m2m_entity.all()]
         # only keep items, which id is in the entities list
-        data = [item for item in data if str(item[DICT_SETTINGS_VIEWER['id']]) in list_ids]
+        data = [item for item in data if str(item[get_setting('id')]) in list_ids]
 
     return data
 
@@ -184,17 +184,17 @@ def add_tag(obj, data):
 
     entities = []
     if obj['ids'] == 'all':
-        if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+        if get_setting('data_type') == 'database':
             entities = data
         else:
-            entities = [str(item[DICT_SETTINGS_VIEWER['id']]) for item in data]
+            entities = [str(item[get_setting('id')]) for item in data]
     else:
-        if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+        if get_setting('data_type') == 'database':
             entities = list(model_custom.objects.filter(post_id_str__in=obj['ids']))
         else:
             entities = obj['ids']
 
-    if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+    if get_setting('data_type') == 'database':
         n = 900
         chunks = [entities[x:x+n] for x in range(0, len(entities), n)]
         for chunk in chunks:
@@ -225,7 +225,7 @@ def index_missing_entities(entities):
 
 
 def get_tags_filtered_items(list_ids, request):
-    if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+    if get_setting('data_type') == 'database':
         list_tags = []
         n = 900
         chunks = [list_ids[x:x+n] for x in range(0, len(list_ids), n)]
@@ -254,14 +254,14 @@ def get_tags_filtered_items(list_ids, request):
         return list(dict_ordered_tags.values())
 
 def add_tags(data):
-    if DICT_SETTINGS_VIEWER['data_type'] != 'database':
-        list_ids = [item[DICT_SETTINGS_VIEWER['id']] for item in data]
+    if get_setting('data_type') != 'database':
+        list_ids = [item[get_setting('id')] for item in data]
         db_obj_entities = m_Entity.objects.filter(id_item__in=list_ids).prefetch_related('viewer_tags')
         dict_entities = {entity.id_item: entity for entity in db_obj_entities}
 
         for item in data:
             try:
-                item['viewer_tags'] = dict_entities[str(item[DICT_SETTINGS_VIEWER['id']])].viewer_tags.all()
+                item['viewer_tags'] = dict_entities[str(item[get_setting('id')])].viewer_tags.all()
             except KeyError:
                 # if there is no entity entry in the database
                 item['viewer_tags'] = []

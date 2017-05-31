@@ -6,11 +6,17 @@ import os
 import re
 from collections import OrderedDict
 from django.core.cache import cache
-from settings_viewer import DICT_SETTINGS_VIEWER
+
+from django.conf import settings
+# print(settings.CORPORA)
+glob_settings = {}
+glob_current_key = 'arg'
+for corpus in settings.CORPORA:
+    module_settings = importlib.import_module('settings_viewer.'+corpus['settings_file'])
+    glob_settings[corpus['key']] = module_settings.DICT_SETTINGS_VIEWER
+
 from viewer.models import m_Tag, m_Entity
 from django.apps import apps
-module_custom = importlib.import_module(DICT_SETTINGS_VIEWER['app_label']+'.models')
-model_custom = getattr(module_custom, DICT_SETTINGS_VIEWER['model_name'])
 
 cache.set('data', {})
 
@@ -39,22 +45,22 @@ def load_data():
         return data, data_only_ids, dict_ids
     else:
         print('not using cache')
-        if DICT_SETTINGS_VIEWER['data_type'] == 'database':
+        if get_setting('data_type') == 'database':
             data = model_custom.objects.all()
-            data_only_ids = [str(getattr(entity, DICT_SETTINGS_VIEWER['id'])) for entity in model_custom.objects.all().only(DICT_SETTINGS_VIEWER['id'])]
+            data_only_ids = [str(getattr(entity, get_setting('id'))) for entity in model_custom.objects.all().only(get_setting('id'))]
 
             return data, data_only_ids, dict_ids
         else:
-            if DICT_SETTINGS_VIEWER['data_type'] == 'csv-file':
+            if get_setting('data_type') == 'csv-file':
                 data = load_file_csv()
-            elif DICT_SETTINGS_VIEWER['data_type'] == 'ldjson-file':
+            elif get_setting('data_type') == 'ldjson-file':
                 data = load_file_ldjson()
-            elif DICT_SETTINGS_VIEWER['data_type'] == 'custom':
-                data = DICT_SETTINGS_VIEWER['load_data_function']()
+            elif get_setting('data_type') == 'custom':
+                data = get_setting('load_data_function')()
             # list of ids
-            data_only_ids = [str(item[DICT_SETTINGS_VIEWER['id']]) for item in data]
+            data_only_ids = [str(item[get_setting('id')]) for item in data]
             # dictionary id:index in list
-            dict_ids = {str(item[DICT_SETTINGS_VIEWER['id']]):index for index, item in enumerate(data)}
+            dict_ids = {str(item[get_setting('id')]):index for index, item in enumerate(data)}
         
         if get_setting('use_cache'):
             cache.set('data', (data, data_only_ids, dict_ids))
@@ -64,8 +70,8 @@ def load_data():
 def load_directory():
     data = []
     
-    for entry in DICT_SETTINGS_VIEWER['data_structure']:
-        entry['path'] = DICT_SETTINGS_VIEWER['data_path'] 
+    for entry in get_setting('data_structure'):
+        entry['path'] = get_setting('data_path') 
         data = load_entry(entry)
 
     return data
@@ -135,17 +141,17 @@ def load_item(entry_input):
 
 def load_file_csv():
     data = []
-    with open(DICT_SETTINGS_VIEWER['data_path'], newline='') as file:
+    with open(get_setting('data_path'), newline='') as file:
         reader = csv.reader(file)
         for row in reader:
             tmp = {}
-            for index, field in enumerate(DICT_SETTINGS_VIEWER['data_structure']):
+            for index, field in enumerate(get_setting('data_structure')):
                 tmp[field] = row[index]
             data.append(tmp)
     return data
 
 def load_file_ldjson():
-    # with open(DICT_SETTINGS_VIEWER['data_path'], 'w') as file:
+    # with open(get_setting('data_path'), 'w') as file:
     #     for i in range(100000):
     #         obj = {
     #             'id': str(i),
@@ -156,11 +162,11 @@ def load_file_ldjson():
 
 
     data = []
-    with open(DICT_SETTINGS_VIEWER['data_path'], 'r') as file:
+    with open(get_setting('data_path'), 'r') as file:
         for row in file:
             obj = json.loads(row)
             tmp = {}
-            for field in DICT_SETTINGS_VIEWER['data_structure']:
+            for field in get_setting('data_structure'):
                 tmp[field] = obj[field]
             data.append(tmp)
     return data
@@ -183,13 +189,13 @@ def set_sessions(request):
 
     set_session_from_url(request, 'viewer__page', default=1)
 
-    set_session_from_url(request, 'viewer__columns', default=DICT_SETTINGS_VIEWER['displayed_fields'] + ['viewer__item_selection', 'viewer__tags'], is_json=True)
+    set_session_from_url(request, 'viewer__columns', default=get_setting('displayed_fields') + ['viewer__item_selection', 'viewer__tags'], is_json=True)
     set_session_from_url(request, 'viewer__filter_tags', default=[], is_json=True)
 
-    set_session_from_url(request, 'viewer__filter_custom', default={obj_filter['data_field']:obj_filter['default_value'] for obj_filter in DICT_SETTINGS_VIEWER['filters']}, is_json=True)
+    set_session_from_url(request, 'viewer__filter_custom', default={obj_filter['data_field']:obj_filter['default_value'] for obj_filter in get_setting('filters')}, is_json=True)
     
     # in case of newly added filters add them
-    dict_tmp = {obj_filter['data_field']:obj_filter['default_value'] for obj_filter in DICT_SETTINGS_VIEWER['filters']}
+    dict_tmp = {obj_filter['data_field']:obj_filter['default_value'] for obj_filter in get_setting('filters')}
     dict_tmp.update(request.session['viewer__viewer__filter_custom'])
     request.session['viewer__viewer__filter_custom'] = dict_tmp.copy()
 
@@ -211,9 +217,12 @@ def set_session_from_url(request, key, default, is_json=False):
         if sessionkey not in request.session:
             request.session[sessionkey] = default
 
-def get_setting(key):
-    if key in DICT_SETTINGS_VIEWER:
-        return DICT_SETTINGS_VIEWER[key]
+def get_setting(key = None):
+    if key == None:
+        return glob_settings[glob_current_key]
+
+    if key in glob_settings[glob_current_key]:
+        return glob_settings[glob_current_key][key]
 
     if key == 'use_cache':
         return False;
@@ -221,3 +230,6 @@ def get_setting(key):
         return 25;
 
     raise ValueError('setting-key \''+key+'\' not found')
+
+module_custom = importlib.import_module(get_setting('app_label')+'.models')
+model_custom = getattr(module_custom, get_setting('model_name'))
