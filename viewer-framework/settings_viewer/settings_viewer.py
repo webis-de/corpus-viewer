@@ -51,13 +51,13 @@ def load_annotations(path_truth, annotator):
 
 DICT_SETTINGS_VIEWER = {
     # possible values: 'csv-file', 'ldjson-file', 'custom', 'database'
-    'data_type': 'ldjson-file',
+    'data_type': 'custom',
         # only necessary if data_type is '*-file' or 'custom'
             # path to data,
             # 'data_path': '../corpora/webis-cbc-16',
             'data_path': '../corpora/file.ldjson',
             # structure of data in file
-            'data_structure': ['text', 'retweet_count', 'id'],
+            'data_structure': ['name', 'retweet_count', 'id'],
 
 
         # only necessary if data_type is 'custom'
@@ -68,7 +68,7 @@ DICT_SETTINGS_VIEWER = {
             'app_label': 'example_app',
             # name of the model
             'model_name': 'Example_Model',
-    'use_cache': False,
+    'use_cache': True,
     'data_fields': {
         'id': {
             'type': 'int',
@@ -82,10 +82,26 @@ DICT_SETTINGS_VIEWER = {
             'type': 'int',
             'display_name': 'Retweets'
         },
+        'annotatorA': {
+            'type': 'string',
+            'display_name': 'A'
+        },
+        'annotatorB': {
+            'type': 'string',
+            'display_name': 'B'
+        },
+        'annotatorC': {
+            'type': 'string',
+            'display_name': 'C'
+        },
+        'majority': {
+            'type': 'string',
+            'display_name': 'majority'
+        }
     },
     'id': 'id',
     'displayed_fields': [
-        'id', 'retweet_count', 'text'
+        'id', 'retweet_count', 'text', 'annotatorA', 'annotatorB', 'annotatorC', 'majority'
     ],
     'page_size': 25,
     # Possible filter types: 'text', 'checkbox'
@@ -102,6 +118,14 @@ DICT_SETTINGS_VIEWER = {
             'type': 'contains',
             'data_field': 'text',
             'description': 'Tweet Text',
+            'placeholder': 'Text Input',
+            'default_value': '',
+            'event': 'change'
+        },
+        {
+            'type': 'contains',
+            'data_field': 'majority',
+            'description': 'Majority',
             'placeholder': 'Text Input',
             'default_value': '',
             'event': 'change'
