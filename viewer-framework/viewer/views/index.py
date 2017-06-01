@@ -90,6 +90,11 @@ def get_url_params(request):
     else:
         dict_url_params['viewer__page'] = request.session['viewer__viewer__page']
 
+    if 'viewer__current_corpus' in dict_url_params:
+        dict_url_params['viewer__current_corpus'] = dict_url_params['viewer__current_corpus']
+    else:
+        dict_url_params['viewer__current_corpus'] = request.session['viewer__viewer__current_corpus']
+
     if 'viewer__columns' in dict_url_params:
         dict_url_params['viewer__columns'] = json.loads(dict_url_params['viewer__columns'])
     else:
