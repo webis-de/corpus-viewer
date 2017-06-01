@@ -494,6 +494,8 @@ function load_page_parameters()
             if(key == 'viewer__page')
             {
                 glob_current_page = parseInt(value)
+            } else if(key == 'viewer__current_corpus') {
+                glob_current_corpus = value
             } else if(key == 'viewer__columns') {
                 glob_columns = value
             } else if(key == 'viewer__filter_tags') {

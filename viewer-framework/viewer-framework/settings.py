@@ -31,8 +31,8 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'dashboard.apps.DashboardConfig',
     'viewer.apps.ViewerConfig',
+    'dashboard.apps.DashboardConfig',
     'example_app.apps.ExampleAppConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -131,13 +131,13 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-CORPORA = [
-    {
-        'key': 'cbc',
-        'settings_file': 'settings_viewer_cbc'
-    },
-    {
-        'key': 'arg',
-        'settings_file': 'settings_viewer_arg'
-    }
-]
+# CORPORA = [
+#     {
+#         'key': 'cbc',
+#         'settings_file': 'settings_viewer_cbc'
+#     },
+#     {
+#         'key': 'arg',
+#         'settings_file': 'settings_viewer_arg'
+#     }
+# ]

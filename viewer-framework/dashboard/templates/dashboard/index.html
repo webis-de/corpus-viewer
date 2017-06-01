@@ -1,9 +1,27 @@
 {% include "dashboard/header.html" %}
-{% load staticfiles %}
+{% load static %}
 <div class="row">
 	<div class="col">
 		<h1>Dashboard</h1>
-
+        <div class="row">
+        {% for key, settings in corpora.items %}
+            <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
+                <div class="card card_corpus" data-key="{{ key }}">
+                    <h3 class="card-header">
+                        {{ settings.name }}
+                    </h3>                
+                    <div class="card-block">
+                        <p class="card-text">
+                            {{ settings.description }}
+                        </p>
+                    </div>
+                    <!-- <div class="card-footer">
+                        <small class="text-muted">Last updated 3 mins ago</small>
+                    </div> -->
+                </div>
+            </div>
+        {% endfor %}
+        </div>
     </div>
 </div>
 {% csrf_token %}
@@ -14,7 +32,5 @@
 
 <script src="{% static 'viewer/js/tether.js' %}"></script>
 <script src="{% static 'viewer/js/bootstrap.js' %}"></script>
-<!-- <script src="{% static 'viewer/js/helper_functions.js' %}"></script>
-<script src="{% static 'viewer/js/index_functions.js' %}"></script>
-<script src="{% static 'viewer/js/index.js' %}"></script> -->
+<script src="{% static 'dashboard/js/index.js' %}"></script>
 {% include "viewer/footer.html" %}

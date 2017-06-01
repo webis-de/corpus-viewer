@@ -48,6 +48,8 @@ def load_annotations(path_truth, annotator):
 
 DICT_SETTINGS_VIEWER = {
     # possible values: 'csv-file', 'ldjson-file', 'custom', 'database'
+    'name': 'tripadvisor',
+    'description': 'Description of the tripadvisor corpus',
     'data_type': 'custom',
         # only necessary if data_type is '*-file' or 'custom'
             # path to data,

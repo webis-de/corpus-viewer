@@ -99,6 +99,7 @@ function update_checkbox_select_all(checkbox_class, checkbox_id)
 function refresh_url()
 {
     let data = {};
+    data.viewer__current_corpus = glob_current_corpus;
     data.viewer__page = glob_current_page;
     data.viewer__columns = JSON.stringify(glob_columns);
     data.viewer__filter_tags = JSON.stringify(glob_filter_tags);

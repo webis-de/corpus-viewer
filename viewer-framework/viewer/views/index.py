@@ -1,6 +1,8 @@
-from .shared_code import *
+from .shared_code import get_setting, set_sessions
 from django.http import JsonResponse
 from django.shortcuts import render
+from viewer.models import m_Tag, m_Entity
+import json
 
 
 def index(request):
@@ -29,8 +31,8 @@ def index(request):
 
     context = {}
     context['json_url_params'] = json.dumps(get_url_params(request))
-    context['json_filters'] = json.dumps(get_setting('filters'))
-    context['settings'] = get_setting()
+    context['json_filters'] = json.dumps(get_setting('filters', request=request))
+    context['settings'] = get_setting(request=request)
     return render(request, 'viewer/index.html', context)
 
 def toggle_item_to_tag(obj):
@@ -38,7 +40,7 @@ def toggle_item_to_tag(obj):
     response['data'] = {}
     db_obj_tag = m_Tag.objects.get(id=obj['id_tag'])
 
-    if get_setting('data_type') == 'database':
+    if get_setting('data_type', request=request) == 'database':
         print('TO BE IMPLEMENTED')
     else:
         print(str(obj['id_item']))
@@ -61,8 +63,8 @@ def delete_tag_from_item(obj):
     response = {}
 
     db_obj_tag = m_Tag.objects.get(id=obj['id_tag'])
-    if get_setting('data_type') == 'database':
-        db_obj_item = model_custom.objects.get(**{get_setting('id'): obj['id_item']})
+    if get_setting('data_type', request=request) == 'database':
+        db_obj_item = model_custom.objects.get(**{get_setting('id', request=request): obj['id_item']})
         db_obj_tag.m2m_custom_model.remove(db_obj_item)
         response['status'] = 'success'
     else:

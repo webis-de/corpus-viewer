@@ -1,22 +1,17 @@
-import time
 import json
 import csv
-import importlib
 import os
-import re
-from collections import OrderedDict
+import importlib
+import glob
 from django.core.cache import cache
-
-from django.conf import settings
-# print(settings.CORPORA)
-glob_settings = {}
-glob_current_key = 'arg'
-for corpus in settings.CORPORA:
-    module_settings = importlib.import_module('settings_viewer.'+corpus['settings_file'])
-    glob_settings[corpus['key']] = module_settings.DICT_SETTINGS_VIEWER
-
 from viewer.models import m_Tag, m_Entity
-from django.apps import apps
+
+modules = glob.glob('settings_viewer/*.py')
+__all__ = [os.path.basename(f)[:-3] for f in modules if os.path.isfile(f) and not f.endswith('__init__.py')]
+glob_settings = {}
+for corpus in __all__:
+    module_settings = importlib.import_module('settings_viewer.'+corpus)
+    glob_settings[corpus] = module_settings.DICT_SETTINGS_VIEWER
 
 cache.set('data', {})
 
@@ -27,7 +22,7 @@ def get_or_create_tag(name, defaults={}):
 
     return db_obj_tag
 
-def load_data():
+def load_data(request):
     data = []
     data_only_ids = []
     dict_ids = {}
@@ -35,7 +30,7 @@ def load_data():
     data_cached = cache.get('data')
     use_cache = False
     if data_cached != None:
-        if len(data_cached) != 0 and get_setting('use_cache'):
+        if len(data_cached) != 0 and get_setting('use_cache', request=request):
             use_cache = True
         
     if use_cache:
@@ -45,112 +40,40 @@ def load_data():
         return data, data_only_ids, dict_ids
     else:
         print('not using cache')
-        if get_setting('data_type') == 'database':
+        if get_setting('data_type', request=request) == 'database':
             data = model_custom.objects.all()
-            data_only_ids = [str(getattr(entity, get_setting('id'))) for entity in model_custom.objects.all().only(get_setting('id'))]
+            data_only_ids = [str(getattr(entity, get_setting('id', request=request))) for entity in model_custom.objects.all().only(get_setting('id', request=request))]
 
             return data, data_only_ids, dict_ids
         else:
-            if get_setting('data_type') == 'csv-file':
-                data = load_file_csv()
-            elif get_setting('data_type') == 'ldjson-file':
-                data = load_file_ldjson()
-            elif get_setting('data_type') == 'custom':
-                data = get_setting('load_data_function')()
+            if get_setting('data_type', request=request) == 'csv-file':
+                data = load_file_csv(request)
+            elif get_setting('data_type', request=request) == 'ldjson-file':
+                data = load_file_ldjson(request)
+            elif get_setting('data_type', request=request) == 'custom':
+                data = get_setting('load_data_function', request=request)()
             # list of ids
-            data_only_ids = [str(item[get_setting('id')]) for item in data]
+            data_only_ids = [str(item[get_setting('id', request=request)]) for item in data]
             # dictionary id:index in list
-            dict_ids = {str(item[get_setting('id')]):index for index, item in enumerate(data)}
+            dict_ids = {str(item[get_setting('id', request=request)]):index for index, item in enumerate(data)}
         
-        if get_setting('use_cache'):
+        if get_setting('use_cache', request=request):
             cache.set('data', (data, data_only_ids, dict_ids))
 
         return data, data_only_ids, dict_ids
 
-def load_directory():
+def load_file_csv(request):
     data = []
-    
-    for entry in get_setting('data_structure'):
-        entry['path'] = get_setting('data_path') 
-        data = load_entry(entry)
-
-    return data
-
-def load_entry(entry_input):
-    data_result = []
-
-    # entry_type = entry_input['type'][0]
-    # entry_count_min = entry_input['type'][1]
-    # entry_count_max = entry_input['type'][2]
-    # entry_name = entry_input['name']
-    entry_is_item = entry_input['is_item'] if 'is_item' in entry_input else False
-    # entry_path = entry_input['path']
-
-    if entry_is_item:
-        data_result += load_item(entry_input)
-    else:
-        print('data_result')
-        data_result += load_no_item(entry_input)
-    return data_result
-
-def load_no_item(entry_input):
-    data_result = []
-
-    entry_type = entry_input['type'][0]
-    entry_name = entry_input['name']
-
-    if entry_type == 'folder':
-        for entry in entry_input['content']:
-            entry['path'] = os.path.join(entry_input['path'], entry_name)
-            data_result += load_entry(entry)
-
-    return data_result
-
-def load_item(entry_input):
-    data_result = []
-    
-    entry_type = entry_input['type'][0]
-    entry_count_max = entry_input['type'][2]
-    entry_name = entry_input['name']
-    entry_path = entry_input['path']
-
-    if entry_type == 'folder':
-        for entry in entry_input['content']:
-            if entry_count_max == '*':
-
-                for folder in os.listdir(entry_path):
-                    tmp_path = os.path.join(entry_input['path'], folder)
-                    tmp_dict = {'id': folder, 'count_of_something': 1, 'name': folder}
-                    for entry1 in entry_input['content']:
-                        if entry1['type'][0] == 'file-json':
-                            entry1['path'] = os.path.join(tmp_path, folder+'.json')
-
-                            with open(entry1['path'], 'r') as file:
-                                obj_json = json.loads(file.read())
-                                for key in entry1['keys']:
-                                    tmp_dict[key[1]] = obj_json[key[0]]
-
-                        # print(entry1['path'])
-                        # load_entry(entry1)
-                    data_result.append(tmp_dict)
-
-    elif entry_type == 'file-json':
-        pass
-   
-    return data_result
-
-def load_file_csv():
-    data = []
-    with open(get_setting('data_path'), newline='') as file:
+    with open(get_setting('data_path', request=request), newline='') as file:
         reader = csv.reader(file)
         for row in reader:
             tmp = {}
-            for index, field in enumerate(get_setting('data_structure')):
+            for index, field in enumerate(get_setting('data_structure', request=request)):
                 tmp[field] = row[index]
             data.append(tmp)
     return data
 
-def load_file_ldjson():
+def load_file_ldjson(request):
     # with open(get_setting('data_path'), 'w') as file:
     #     for i in range(100000):
     #         obj = {
@@ -162,11 +85,11 @@ def load_file_ldjson():
 
 
     data = []
-    with open(get_setting('data_path'), 'r') as file:
+    with open(get_setting('data_path', request=request), 'r') as file:
         for row in file:
             obj = json.loads(row)
             tmp = {}
-            for field in get_setting('data_structure'):
+            for field in get_setting('data_structure', request=request):
                 tmp[field] = obj[field]
             data.append(tmp)
     return data
@@ -182,6 +105,8 @@ def index_example_data():
     model_custom.objects.bulk_create(list_entries)
 
 def set_sessions(request):
+    set_session_from_url(request, 'viewer__current_corpus', default=list(glob_settings.keys())[0])
+        
     set_session(request, 'is_collapsed_div_filters', default=True)
     set_session(request, 'is_collapsed_div_tags', default=True)
     set_session(request, 'is_collapsed_div_settings', default=True)
@@ -189,13 +114,13 @@ def set_sessions(request):
 
     set_session_from_url(request, 'viewer__page', default=1)
 
-    set_session_from_url(request, 'viewer__columns', default=get_setting('displayed_fields') + ['viewer__item_selection', 'viewer__tags'], is_json=True)
+    set_session_from_url(request, 'viewer__columns', default=get_setting('displayed_fields', request=request) + ['viewer__item_selection', 'viewer__tags'], is_json=True)
     set_session_from_url(request, 'viewer__filter_tags', default=[], is_json=True)
 
-    set_session_from_url(request, 'viewer__filter_custom', default={obj_filter['data_field']:obj_filter['default_value'] for obj_filter in get_setting('filters')}, is_json=True)
+    set_session_from_url(request, 'viewer__filter_custom', default={obj_filter['data_field']:obj_filter['default_value'] for obj_filter in get_setting('filters', request=request)}, is_json=True)
     
     # in case of newly added filters add them
-    dict_tmp = {obj_filter['data_field']:obj_filter['default_value'] for obj_filter in get_setting('filters')}
+    dict_tmp = {obj_filter['data_field']:obj_filter['default_value'] for obj_filter in get_setting('filters', request=request)}
     dict_tmp.update(request.session['viewer__viewer__filter_custom'])
     request.session['viewer__viewer__filter_custom'] = dict_tmp.copy()
 
@@ -217,12 +142,12 @@ def set_session_from_url(request, key, default, is_json=False):
         if sessionkey not in request.session:
             request.session[sessionkey] = default
 
-def get_setting(key = None):
+def get_setting(key = None, request = None):
     if key == None:
-        return glob_settings[glob_current_key]
+        return glob_settings[request.session['viewer__viewer__current_corpus']]
 
-    if key in glob_settings[glob_current_key]:
-        return glob_settings[glob_current_key][key]
+    if key in glob_settings[request.session['viewer__viewer__current_corpus']]:
+        return glob_settings[request.session['viewer__viewer__current_corpus']][key]
 
     if key == 'use_cache':
         return False;
@@ -231,5 +156,5 @@ def get_setting(key = None):
 
     raise ValueError('setting-key \''+key+'\' not found')
 
-module_custom = importlib.import_module(get_setting('app_label')+'.models')
-model_custom = getattr(module_custom, get_setting('model_name'))
+# module_custom = importlib.import_module(get_setting('app_label')+'.models')
+# model_custom = getattr(module_custom, get_setting('model_name'))

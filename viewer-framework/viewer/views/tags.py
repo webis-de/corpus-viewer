@@ -1,7 +1,8 @@
-from .shared_code import *
+from .shared_code import get_setting
 from django.http import JsonResponse
 from django.shortcuts import render
-
+from viewer.models import m_Tag, m_Entity
+import json
 
 def tags(request):
     tags = m_Tag.objects.all()
@@ -30,7 +31,7 @@ def tags(request):
         return JsonResponse(response)
 
     context = {}
-    context['settings'] = get_setting()
+    context['settings'] = get_setting(request=request)
     context['tags'] = tags
     if request.is_ajax():
         return render(request, 'viewer/tags.html', context)
@@ -47,7 +48,7 @@ def import_tags(obj):
 
                 obj_tag = m_Tag.objects.create(name = obj_json['name'], color = obj_json['color'])
 
-                if get_setting('data_type') == 'database':
+                if get_setting('data_type', request=request) == 'database':
                     ThroughModel = m_Tag.m2m_custom_model.through
                     list_tmp = []
 
@@ -55,7 +56,7 @@ def import_tags(obj):
                         obj_db_entity = model_custom.objects.get(id_item=id_item)
                         list_tmp.append(ThroughModel(**{
                             'm_tag_id': obj_tag.pk, 
-                            get_setting('model_name').lower()+'_id': obj_db_entity.pk
+                            get_setting('model_name', request=request).lower()+'_id': obj_db_entity.pk
                         }))
 
                     ThroughModel.objects.bulk_create(list_tmp)
@@ -84,7 +85,7 @@ def export_tags(obj):
 
     with open(path_file, 'w') as f:
         queryset_tags = m_Tag.objects.all()
-        if get_setting('data_type') == 'database':
+        if get_setting('data_type', request=request) == 'database':
             queryset_tags = queryset_tags.prefetch_related('m2m_custom_model')
         else:
             queryset_tags = queryset_tags.prefetch_related('m2m_entity')
@@ -93,7 +94,7 @@ def export_tags(obj):
             obj_tag['name'] = tag.name
             obj_tag['color'] = tag.color
             list_ids = []
-            if get_setting('data_type') == 'database':
+            if get_setting('data_type', request=request) == 'database':
                 for entity in tag.m2m_custom_model.all():
                     list_ids.append(entity.id)
             else:

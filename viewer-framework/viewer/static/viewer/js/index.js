@@ -6,6 +6,7 @@ let glob_filter_custom = {}
 let glob_columns = []
 
 let glob_current_page = 1;
+let glob_current_corpus = '';
 let glob_prev_page = undefined;
 let glob_next_page = undefined;
 let glob_count_pages = undefined;

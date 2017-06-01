@@ -1,0 +1,9 @@
+html {
+  overflow-y: scroll;
+}
+.card.card_corpus {
+	cursor: pointer;
+}
+.card.card_corpus:hover {
+	filter: brightness(90%);
+}

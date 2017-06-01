@@ -1,9 +1,13 @@
-from .shared_code import *
+from .shared_code import set_sessions, load_data, get_setting
+import collections
+import re
+import time
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.template import Engine, Context
 from django.template.loader import get_template
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from viewer.models import m_Tag, m_Entity
 
 regex_filter_numbers = re.compile('(?<![>|>=|<=|<|0|1|2|3|4|5|6|7|8|9|0])([0-9]+)')
 regex_filter_numbers_lt = re.compile('<([0-9]+)')
@@ -23,13 +27,13 @@ def get_page(request):
         response = {}
         obj = json.loads(request.body.decode("utf-8"))
         if obj['task'] == 'add_tag':
-            response['data'] = add_tag(obj, data)
+            response['data'] = add_tag(obj, data, request)
         elif obj['task'] == 'export_data':
-            response = export_data(obj, data)
+            response = export_data(obj, data, request)
 
         return JsonResponse(response)
 ##### page the dataset
-    paginator = Paginator(data, get_setting('page_size'))
+    paginator = Paginator(data, get_setting('page_size', request=request))
     try:
         data = paginator.page(request.session['viewer__viewer__page'])
     except PageNotAnInteger:
@@ -39,10 +43,10 @@ def get_page(request):
         # If page is out of range (e.g. 9999), deliver last page of results.
         data = paginator.page(paginator.num_pages)
 ##### add tags to the dataset
-    add_tags(data)
+    add_tags(data, request)
 ##### handle post requests
     context = {}
-    context['settings'] = get_setting()
+    context['settings'] = get_setting(request=request)
     context['data'] = data
 
     previous_page_number = None
@@ -62,12 +66,12 @@ def get_page(request):
             'next_page_number': next_page_number
         })
 
-def export_data(obj, data):
+def export_data(obj, data, request):
     response = {}
 
     data_export = []
 
-    if get_setting('data_type') == 'database':
+    if get_setting('data_type', request=request) == 'database':
         raise NotImplementedError("export for database")
     else:
         db_obj_entities = m_Entity.objects.all().prefetch_related('viewer_tags')
@@ -77,7 +81,7 @@ def export_data(obj, data):
 
         for item in data:
             try:
-                item[key_tag] = [{'id': tag.id, 'name': tag.name, 'color': tag.color} for tag in dict_entities[str(item[get_setting('id')])].viewer_tags.all()]
+                item[key_tag] = [{'id': tag.id, 'name': tag.name, 'color': tag.color} for tag in dict_entities[str(item[get_setting('id', request=request)])].viewer_tags.all()]
             except KeyError:
                 # if there is no entity entry in the database
                 item[key_tag] = []
@@ -91,32 +95,32 @@ def export_data(obj, data):
     return response
 
 def get_filtered_data(request):
-    data, data_only_ids, dict_ids = load_data()
+    data, data_only_ids, dict_ids = load_data(request)
     #
     # FILTER BY TAGS 
     #
     if len(request.session['viewer__viewer__filter_tags']) > 0:
-        if get_setting('data_type') == 'database':
+        if get_setting('data_type', request=request) == 'database':
             # iterate over tag and return only items tagged with them
             for tag in request.session['viewer__viewer__filter_tags']:
                 data = data.filter(viewer_tags__name=tag)
         else:
             # filter the data by tags
-            data = filter_data_tags(data, request.session['viewer__viewer__filter_tags'])
+            data = filter_data_tags(data, request.session['viewer__viewer__filter_tags'], request)
     #
     # FILTERS
     #
-    for obj_filter in get_setting('filters'):
+    for obj_filter in get_setting('filters', request=request):
         # filter the data by the current filter
         data = filter_data(request, data, obj_filter)
     #
     # UPDATE data_only_ids
     #
-    if get_setting('data_type') == 'database':
+    if get_setting('data_type', request=request) == 'database':
         data_only_ids = [item.id for item in data]
     else:
         # update data_only_ids
-        data_only_ids = [str(item[get_setting('id')]) for item in data]
+        data_only_ids = [str(item[get_setting('id', request=request)]) for item in data]
     return data, data_only_ids
 
 def filter_data(request, data, obj_filter):
@@ -124,14 +128,14 @@ def filter_data(request, data, obj_filter):
     value = request.session['viewer__viewer__filter_custom'][obj_filter['data_field']]
     # if the value is not empty 
     if value != '':
-        if get_setting('data_type') == 'database':
+        if get_setting('data_type', request=request) == 'database':
             # TODO: make flexible filters for database
             data = data.filter(**{obj_filter['data_field']+'__icontains': value})
         else:
             # if the filter is 'contains'
             if obj_filter['type'] == 'contains':
                 # get the type (string, list) of the data-field
-                type_data_field = get_setting('data_fields')[obj_filter['data_field']]['type']
+                type_data_field = get_setting('data_fields', request=request)[obj_filter['data_field']]['type']
                 if type_data_field == 'string':
                     # return only items which contain the value
                     data = [item for item in data if value in str(item[obj_filter['data_field']])]
@@ -167,7 +171,7 @@ def filter_data(request, data, obj_filter):
                         data = [item for item in data if item[obj_filter['data_field']] >= number]
     return data
 
-def filter_data_tags(data, list_tags):
+def filter_data_tags(data, list_tags, request):
     # get the database objects for each tag
     queryset_tags = m_Tag.objects.filter(name__in=list_tags).prefetch_related('m2m_entity')
     # for each tag
@@ -175,26 +179,26 @@ def filter_data_tags(data, list_tags):
         # get all entities for the current tag 
         list_ids = [entity.id_item for entity in db_obj_tag.m2m_entity.all()]
         # only keep items, which id is in the entities list
-        data = [item for item in data if str(item[get_setting('id')]) in list_ids]
+        data = [item for item in data if str(item[get_setting('id', request=request)]) in list_ids]
 
     return data
 
-def add_tag(obj, data):
+def add_tag(obj, data, request):
     [db_obj_tag, created_tag] = get_or_create_tag(obj['tag'], defaults={'color': obj['color']})
 
     entities = []
     if obj['ids'] == 'all':
-        if get_setting('data_type') == 'database':
+        if get_setting('data_type', request=request) == 'database':
             entities = data
         else:
-            entities = [str(item[get_setting('id')]) for item in data]
+            entities = [str(item[get_setting('id', request=request)]) for item in data]
     else:
-        if get_setting('data_type') == 'database':
+        if get_setting('data_type', request=request) == 'database':
             entities = list(model_custom.objects.filter(post_id_str__in=obj['ids']))
         else:
             entities = obj['ids']
 
-    if get_setting('data_type') == 'database':
+    if get_setting('data_type', request=request) == 'database':
         n = 900
         chunks = [entities[x:x+n] for x in range(0, len(entities), n)]
         for chunk in chunks:
@@ -225,7 +229,7 @@ def index_missing_entities(entities):
 
 
 def get_tags_filtered_items(list_ids, request):
-    if get_setting('data_type') == 'database':
+    if get_setting('data_type', request=request) == 'database':
         list_tags = []
         n = 900
         chunks = [list_ids[x:x+n] for x in range(0, len(list_ids), n)]
@@ -233,7 +237,7 @@ def get_tags_filtered_items(list_ids, request):
             list_tags += m_Tag.objects.filter(m2m_custom_model__in=chunk).distinct()
 
 
-        dict_ordered_tags = OrderedDict()
+        dict_ordered_tags = collections.OrderedDict()
         for tag in list_tags:
             if tag.name not in dict_ordered_tags:
                 dict_ordered_tags[tag.name] = {'id': tag.id, 'name': tag.name, 'color': tag.color, 'is_selected': str(tag.id) in request.session['viewer__viewer__selected_tags']}
@@ -246,22 +250,22 @@ def get_tags_filtered_items(list_ids, request):
         for chunk in chunks:
             list_tags += m_Tag.objects.filter(m2m_entity__id_item__in=chunk).distinct()
 
-        dict_ordered_tags = OrderedDict()
+        dict_ordered_tags = collections.OrderedDict()
         for tag in list_tags:
             if tag.name not in dict_ordered_tags:
                 dict_ordered_tags[tag.name] = {'id': tag.id, 'name': tag.name, 'color': tag.color, 'is_selected': str(tag.id) in request.session['viewer__viewer__selected_tags']}
 
         return list(dict_ordered_tags.values())
 
-def add_tags(data):
-    if get_setting('data_type') != 'database':
-        list_ids = [item[get_setting('id')] for item in data]
+def add_tags(data, request):
+    if get_setting('data_type', request=request) != 'database':
+        list_ids = [item[get_setting('id', request=request)] for item in data]
         db_obj_entities = m_Entity.objects.filter(id_item__in=list_ids).prefetch_related('viewer_tags')
         dict_entities = {entity.id_item: entity for entity in db_obj_entities}
 
         for item in data:
             try:
-                item['viewer_tags'] = dict_entities[str(item[get_setting('id')])].viewer_tags.all()
+                item['viewer_tags'] = dict_entities[str(item[get_setting('id', request=request)])].viewer_tags.all()
             except KeyError:
                 # if there is no entity entry in the database
                 item['viewer_tags'] = []
