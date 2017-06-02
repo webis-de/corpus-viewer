@@ -1,11 +1,11 @@
-from .shared_code import get_setting
+from .shared_code import get_setting, get_current_corpus
 from django.http import JsonResponse
 from django.shortcuts import render
 from viewer.models import m_Tag, m_Entity
 import json
 
 def tags(request):
-    tags = m_Tag.objects.all()
+    tags = m_Tag.objects.filter(key_corpus=get_current_corpus(request))
 
     if request.method == 'POST':
         cookie_id = request.COOKIES['csrftoken']
@@ -46,7 +46,7 @@ def import_tags(obj):
             for line in f:
                 obj_json = json.loads(line)
 
-                obj_tag = m_Tag.objects.create(name = obj_json['name'], color = obj_json['color'])
+                obj_tag = m_Tag.objects.create(name = obj_json['name'], key_corpus=get_current_corpus(request), color = obj_json['color'])
 
                 if get_setting('data_type', request=request) == 'database':
                     ThroughModel = m_Tag.m2m_custom_model.through
@@ -65,7 +65,7 @@ def import_tags(obj):
                     list_tmp = []
 
                     for id_item in obj_json['ids']:
-                        obj_db_entity = m_Entity.objects.get(id_item=id_item)
+                        obj_db_entity = m_Entity.objects.get(id_item=id_item, key_corpus=get_current_corpus(request))
                         list_tmp.append(ThroughModel(m_tag_id=obj_tag.pk, m_entity_id=obj_db_entity.pk))
 
                     ThroughModel.objects.bulk_create(list_tmp)
@@ -84,7 +84,7 @@ def export_tags(obj):
 
 
     with open(path_file, 'w') as f:
-        queryset_tags = m_Tag.objects.all()
+        queryset_tags = m_Tag.objects.filter(key_corpus=get_current_corpus(request))
         if get_setting('data_type', request=request) == 'database':
             queryset_tags = queryset_tags.prefetch_related('m2m_custom_model')
         else:
@@ -148,7 +148,7 @@ def update_name(obj):
         response['status'] = 'success'
     except:
         print('non unique name')
-        existing_tag = m_Tag.objects.get(name=new_name)
+        existing_tag = m_Tag.objects.get(name=new_name, key_corpus=get_current_corpus(request))
         response['status'] = 'error'
         response['data'] = {'id_tag': tag[0].id, 'id_tag_name': tag[0].name, 'existing_tag': existing_tag.id, 'existing_tag_name': existing_tag.name}
 

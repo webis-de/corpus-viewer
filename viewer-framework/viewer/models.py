@@ -6,13 +6,19 @@ from django.db import models
 # model_custom = getattr(module_custom, DICT_SETTINGS_VIEWER['model_name'])
 
 class m_Entity(models.Model):
-    id_item = models.CharField(max_length=200, unique=True, db_index=True)
+    class Meta:
+        unique_together = ('key_corpus', 'id_item')
+        
+    key_corpus = models.CharField(max_length=200)
+    id_item = models.CharField(max_length=200, db_index=True)
 
 class m_Tag(models.Model):
     class Meta:
+        unique_together = ('key_corpus', 'name')
         ordering = ['name']
 
-    name = models.CharField(max_length=100, unique=True)
+    key_corpus = models.CharField(max_length=200)
+    name = models.CharField(max_length=100)
     color = models.CharField(max_length=7, default="#000000")
     # m2m_custom_model = models.ManyToManyField(model_custom, related_name='viewer_tags')
     m2m_entity = models.ManyToManyField(m_Entity, related_name='viewer_tags')

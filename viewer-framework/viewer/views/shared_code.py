@@ -15,10 +15,10 @@ for corpus in __all__:
 
 cache.set('data', {})
 
-def get_or_create_tag(name, defaults={}):
+def get_or_create_tag(name, request, defaults={}):
     name = name.strip()
     name = name.replace(' ', '-')
-    db_obj_tag = m_Tag.objects.get_or_create(name=name, defaults=defaults)
+    db_obj_tag = m_Tag.objects.get_or_create(name=name, key_corpus=get_current_corpus(request), defaults=defaults)
 
     return db_obj_tag
 
@@ -94,15 +94,15 @@ def load_file_ldjson(request):
             data.append(tmp)
     return data
 
-def index_example_data():
-    model_custom.objects.all().delete()
-    m_Entity.objects.all().delete()
-    m_Tag.objects.all().delete()
-    list_entries = []
-    for i in range(2000):
-        list_entries.append(model_custom(name='name'+str(i), count_of_something=i))
+# def index_example_data():
+#     model_custom.objects.all().delete()
+#     m_Entity.objects.all().delete()
+#     m_Tag.objects.all().delete()
+#     list_entries = []
+#     for i in range(2000):
+#         list_entries.append(model_custom(name='name'+str(i), count_of_something=i))
 
-    model_custom.objects.bulk_create(list_entries)
+#     model_custom.objects.bulk_create(list_entries)
 
 def set_sessions(request):
     set_session_from_url(request, 'viewer__current_corpus', default=list(glob_settings.keys())[0])
@@ -141,13 +141,16 @@ def set_session_from_url(request, key, default, is_json=False):
     else:
         if sessionkey not in request.session:
             request.session[sessionkey] = default
+            
+def get_current_corpus(request):
+    return request.session['viewer__viewer__current_corpus']
 
 def get_setting(key = None, request = None):
     if key == None:
-        return glob_settings[request.session['viewer__viewer__current_corpus']]
+        return glob_settings[get_current_corpus(request)]
 
-    if key in glob_settings[request.session['viewer__viewer__current_corpus']]:
-        return glob_settings[request.session['viewer__viewer__current_corpus']][key]
+    if key in glob_settings[get_current_corpus(request)]:
+        return glob_settings[get_current_corpus(request)][key]
 
     if key == 'use_cache':
         return False;

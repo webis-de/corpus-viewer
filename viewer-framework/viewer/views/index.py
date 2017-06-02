@@ -1,4 +1,4 @@
-from .shared_code import get_setting, set_sessions
+from .shared_code import get_setting, set_sessions, get_current_corpus
 from django.http import JsonResponse
 from django.shortcuts import render
 from viewer.models import m_Tag, m_Entity
@@ -21,9 +21,9 @@ def index(request):
             response['status'] = 'success'
             response['data'] = {'array_recommendations':array_tag_recommendations}
         elif obj['task'] == 'delete_tag_from_item':
-            response = delete_tag_from_item(obj)
+            response = delete_tag_from_item(obj, request)
         elif obj['task'] == 'toggle_item_to_tag':
-            response = toggle_item_to_tag(obj)
+            response = toggle_item_to_tag(obj, request)
 
         return JsonResponse(response)
 
@@ -35,7 +35,7 @@ def index(request):
     context['settings'] = get_setting(request=request)
     return render(request, 'viewer/index.html', context)
 
-def toggle_item_to_tag(obj):
+def toggle_item_to_tag(obj, request):
     response = {}
     response['data'] = {}
     db_obj_tag = m_Tag.objects.get(id=obj['id_tag'])
@@ -45,7 +45,8 @@ def toggle_item_to_tag(obj):
     else:
         print(str(obj['id_item']))
         try:
-            db_obj_entity = m_Entity.objects.get(id_item=str(obj['id_item']))
+            db_obj_entity = m_Entity.objects.get(id_item=str(obj['id_item']), key_corpus=get_current_corpus(request))
+            
             if m_Tag.objects.filter(pk=obj['id_tag'], m2m_entity__pk=db_obj_entity.pk).exists():
                 response['data']['removed'] = True
                 db_obj_tag.m2m_entity.remove(db_obj_entity)
@@ -54,12 +55,12 @@ def toggle_item_to_tag(obj):
                 response['data']['removed'] = False
         except m_Entity.DoesNotExist:
             response['data']['removed'] = False
-            db_obj_entity = m_Entity.objects.create(id_item=str(obj['id_item']))
+            db_obj_entity = m_Entity.objects.create(id_item=str(obj['id_item']), key_corpus=get_current_corpus(request))
             db_obj_tag.m2m_entity.add(db_obj_entity)
 
     return response
 
-def delete_tag_from_item(obj):
+def delete_tag_from_item(obj, request):
     response = {}
 
     db_obj_tag = m_Tag.objects.get(id=obj['id_tag'])
@@ -75,7 +76,7 @@ def delete_tag_from_item(obj):
 
 def get_tag_recommendations(request, obj):
     array_tag_recommendations = []
-    array_tags = m_Tag.objects.filter(name__contains=obj['tag_name'])
+    array_tags = m_Tag.objects.filter(name__contains=obj['tag_name'], key_corpus=get_current_corpus(request))
 
     for tag in array_tags:
         array_tag_recommendations.append({'id':tag.id ,'name':tag.name, 'color':tag.color});

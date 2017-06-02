@@ -1,7 +1,8 @@
-from .shared_code import set_sessions, load_data, get_setting
+from .shared_code import set_sessions, load_data, get_setting, get_or_create_tag, get_current_corpus
 import collections
 import re
 import time
+import json
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.template import Engine, Context
@@ -58,7 +59,7 @@ def get_page(request):
     template = get_template('viewer/table.html')
     end = round(float(time.perf_counter()-start) * 1000, 2)
     print('TIME: '+str(end)+'ms')
-    return JsonResponse({'content':template.render(context, request),
+    return JsonResponse({'content': template.render(context, request),
             'tags_filtered_items': list_tags,
             'count_pages': data.paginator.num_pages,
             'count_entries': data.paginator.count,
@@ -74,7 +75,7 @@ def export_data(obj, data, request):
     if get_setting('data_type', request=request) == 'database':
         raise NotImplementedError("export for database")
     else:
-        db_obj_entities = m_Entity.objects.all().prefetch_related('viewer_tags')
+        db_obj_entities = m_Entity.objects.filter(key_corpus=get_current_corpus(request)).prefetch_related('viewer_tags')
         dict_entities = {entity.id_item: entity for entity in db_obj_entities}
 
         key_tag = obj['key_tag']
@@ -173,7 +174,7 @@ def filter_data(request, data, obj_filter):
 
 def filter_data_tags(data, list_tags, request):
     # get the database objects for each tag
-    queryset_tags = m_Tag.objects.filter(name__in=list_tags).prefetch_related('m2m_entity')
+    queryset_tags = m_Tag.objects.filter(name__in=list_tags, key_corpus=get_current_corpus(request)).prefetch_related('m2m_entity')
     # for each tag
     for db_obj_tag in queryset_tags:
         # get all entities for the current tag 
@@ -184,7 +185,7 @@ def filter_data_tags(data, list_tags, request):
     return data
 
 def add_tag(obj, data, request):
-    [db_obj_tag, created_tag] = get_or_create_tag(obj['tag'], defaults={'color': obj['color']})
+    [db_obj_tag, created_tag] = get_or_create_tag(obj['tag'], defaults={'color': obj['color']}, request=request)
 
     entities = []
     if obj['ids'] == 'all':
@@ -204,12 +205,12 @@ def add_tag(obj, data, request):
         for chunk in chunks:
             db_obj_tag.m2m_custom_model.add(*chunk)
     else:
-        index_missing_entities(entities)
+        index_missing_entities(entities, request)
 
         n = 900
         chunks = [entities[x:x+n] for x in range(0, len(entities), n)]
         for chunk in chunks:
-            db_obj_entities = m_Entity.objects.filter(id_item__in=chunk)
+            db_obj_entities = m_Entity.objects.filter(id_item__in=chunk, key_corpus=get_current_corpus(request))
             db_obj_tag.m2m_entity.add(*db_obj_entities)
 
     if db_obj_tag.color != obj['color']:
@@ -218,14 +219,14 @@ def add_tag(obj, data, request):
 
     return {'created_tag': created_tag, 'tag': {'id': db_obj_tag.id, 'name': db_obj_tag.name, 'color': db_obj_tag.color} }
 
-def index_missing_entities(entities):
-    queryset = m_Entity.objects.all()
+def index_missing_entities(entities, request):
+    queryset = m_Entity.objects.filter(key_corpus=get_current_corpus(request))
     set_new_entities = set(entities)
 
     set_new_entities.difference_update({entity.id_item for entity in queryset})
 
     if len(set_new_entities) > 0:
-        m_Entity.objects.bulk_create([m_Entity(id_item=entity) for entity in set_new_entities])
+        m_Entity.objects.bulk_create([m_Entity(id_item=entity, key_corpus=get_current_corpus(request)) for entity in set_new_entities])
 
 
 def get_tags_filtered_items(list_ids, request):
@@ -234,8 +235,7 @@ def get_tags_filtered_items(list_ids, request):
         n = 900
         chunks = [list_ids[x:x+n] for x in range(0, len(list_ids), n)]
         for chunk in chunks:
-            list_tags += m_Tag.objects.filter(m2m_custom_model__in=chunk).distinct()
-
+            list_tags += m_Tag.objects.filter(m2m_custom_model__in=chunk, key_corpus=get_current_corpus(request)).distinct()
 
         dict_ordered_tags = collections.OrderedDict()
         for tag in list_tags:
@@ -248,7 +248,7 @@ def get_tags_filtered_items(list_ids, request):
 
         list_tags = []
         for chunk in chunks:
-            list_tags += m_Tag.objects.filter(m2m_entity__id_item__in=chunk).distinct()
+            list_tags += m_Tag.objects.filter(m2m_entity__id_item__in=chunk, key_corpus=get_current_corpus(request)).distinct()
 
         dict_ordered_tags = collections.OrderedDict()
         for tag in list_tags:
@@ -260,7 +260,7 @@ def get_tags_filtered_items(list_ids, request):
 def add_tags(data, request):
     if get_setting('data_type', request=request) != 'database':
         list_ids = [item[get_setting('id', request=request)] for item in data]
-        db_obj_entities = m_Entity.objects.filter(id_item__in=list_ids).prefetch_related('viewer_tags')
+        db_obj_entities = m_Entity.objects.filter(id_item__in=list_ids, key_corpus=get_current_corpus(request)).prefetch_related('viewer_tags')
         dict_entities = {entity.id_item: entity for entity in db_obj_entities}
 
         for item in data:
