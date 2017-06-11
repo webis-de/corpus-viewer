@@ -24,6 +24,8 @@ def index(request):
             response = delete_tag_from_item(obj, request)
         elif obj['task'] == 'toggle_item_to_tag':
             response = toggle_item_to_tag(obj, request)
+        elif obj['task'] == 'check_if_tag_exists':
+            response = check_if_tag_exists(obj, request)
 
         return JsonResponse(response)
 
@@ -34,6 +36,19 @@ def index(request):
     context['json_filters'] = json.dumps(get_setting('filters', request=request))
     context['settings'] = get_setting(request=request)
     return render(request, 'viewer/index.html', context)
+
+def check_if_tag_exists(obj, request):
+    response = {}
+    response['data'] = {}
+
+    try:
+        db_obj_tag = m_Tag.objects.get(name=obj['name'], key_corpus=get_current_corpus(request))
+        response['data']['tag'] = {'id':db_obj_tag.id ,'name':db_obj_tag.name, 'color':db_obj_tag.color}
+        response['data']['exists'] = True
+    except:
+        response['data']['exists'] = False
+
+    return response
 
 def toggle_item_to_tag(obj, request):
     response = {}

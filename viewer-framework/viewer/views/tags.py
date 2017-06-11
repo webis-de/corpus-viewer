@@ -16,7 +16,7 @@ def tags(request):
             request.session['index__'+obj['session_key']] = obj['session_value']
             response['status'] = 'success'
         elif obj['task'] == 'update_name':
-            response = update_name(obj)
+            response = update_name(obj, request)
         elif obj['task'] == 'merge_tags':
             response['data'] = merge_tags(obj)
         elif obj['task'] == 'update_color':
@@ -24,9 +24,9 @@ def tags(request):
         elif obj['task'] == 'delete_tag':
             response = delete_tag(obj)
         elif obj['task'] == 'export_tags':
-            response = export_tags(obj)
+            response = export_tags(obj, request)
         elif obj['task'] == 'import_tags':
-            response = import_tags(obj)
+            response = import_tags(obj, request)
 
         return JsonResponse(response)
 
@@ -38,7 +38,7 @@ def tags(request):
     else:
         return render(request, 'viewer/tags.html', context)
 
-def import_tags(obj):
+def import_tags(obj, request):
     response = {}
 
     if os.path.isfile(obj['path']):
@@ -72,7 +72,7 @@ def import_tags(obj):
 
     return response
 
-def export_tags(obj):
+def export_tags(obj, request):
     response = {}
 
     if obj['path'].strip() != '':
@@ -138,7 +138,7 @@ def update_color(obj):
 
     return response
 
-def update_name(obj):
+def update_name(obj, request):
     response = {}
     tag = m_Tag.objects.filter(id=obj['id_tag'])
     new_name = obj['new_name'].strip().replace(' ', '-')

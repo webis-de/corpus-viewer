@@ -2,6 +2,7 @@ import json
 import csv
 import os
 import importlib
+import time
 import glob
 from django.core.cache import cache
 from viewer.models import m_Tag, m_Entity
@@ -13,7 +14,8 @@ for corpus in __all__:
     module_settings = importlib.import_module('settings_viewer.'+corpus)
     glob_settings[corpus] = module_settings.DICT_SETTINGS_VIEWER
 
-cache.set('data', {})
+glob_cache = {}
+# cache.set('data_', {})
 
 def get_or_create_tag(name, request, defaults={}):
     name = name.strip()
@@ -27,7 +29,14 @@ def load_data(request):
     data_only_ids = []
     dict_ids = {}
 
-    data_cached = cache.get('data')
+    key_cache = 'data_' + get_current_corpus(request)
+    start = time.perf_counter()
+    try:
+        data_cached = glob_cache[key_cache]
+    except KeyError:
+        data_cached = None
+    # data_cached = cache.get(key_cache)
+    print('time for loading data from cache: '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
     use_cache = False
     if data_cached != None:
         if len(data_cached) != 0 and get_setting('use_cache', request=request):
@@ -58,7 +67,8 @@ def load_data(request):
             dict_ids = {str(item[get_setting('id', request=request)]):index for index, item in enumerate(data)}
         
         if get_setting('use_cache', request=request):
-            cache.set('data', (data, data_only_ids, dict_ids))
+            glob_cache[key_cache] = (data, data_only_ids, dict_ids)
+            # cache.set(key_cache, (data, data_only_ids, dict_ids))
 
         return data, data_only_ids, dict_ids
 

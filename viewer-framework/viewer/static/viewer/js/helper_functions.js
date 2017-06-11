@@ -272,7 +272,7 @@ function update_ui()
     }
 
     $('#input_page').val(glob_current_page)
-    $('#info_number_of_items').text('filtered items: '+glob_count_entries.toLocaleString()+' ('+glob_count_pages.toLocaleString()+' page(s))');
+    $('#info_number_of_items').text('Filtered items: '+glob_count_entries.toLocaleString()+' ('+glob_count_pages.toLocaleString()+' page(s))');
 
     $('#list_filter_tags').html('');
     for (let i = 0; i < glob_filter_tags.length; i++) {

@@ -239,27 +239,68 @@ function handle_click_link_add_tag(event, link)
     {
         event.preventDefault();
         $('#modal_add_tag').data('id_item', link.data('id_item'));
+        glob_trigger_modal = 'link';
         $('#modal_add_tag').modal('show')
     }
 }
-
 function handle_show_modal(event, modal)
 {
-    let count = 1
-    if(modal.data('id_item') == undefined)
+    switch(glob_trigger_modal) 
     {
-        count = Object.keys(glob_selected_items).length
+        case undefined:
+            // $('#info_count_selected_items').parent().removeClass('text-muted');
+            // $('#input_add_to_all_filtered_items').parent().removeClass('text-muted');
+            // $('#label_for_input_name_new_tag').removeClass('text-muted');
+            let count = 1
+            if(modal.data('id_item') == undefined)
+            {
+                count = Object.keys(glob_selected_items).length
+            }
+            $('#info_count_selected_items').text(count)
+            $('#input_name_new_tag').val('');
+
+            break;
+        case 'link':
+            // $('#info_count_selected_items').parent().addClass('text-muted');
+            // $('#input_add_to_all_filtered_items').parent().addClass('text-muted');
+            // $('#label_for_input_name_new_tag').removeClass('text-muted');
+            $('#input_name_new_tag').val('');
+            break;
+        case 'mode_add_tag':
+            // $('#info_count_selected_items').parent().css("visibility", "hidden");
+            // $('#input_add_to_all_filtered_items').css("visibility", "hidden");
+            // $('#label_for_input_name_new_tag').css("visibility", "hidden");
+
+            $('#input_name_new_tag').val($('#input_add_tag').val().trim());
+            break;
     }
-    $('#info_count_selected_items').text(count)
+    // input the count of selected rows into the modal
 }
 
 function handle_shown_modal(event, modal)
 {
-    $('#input_name_new_tag').focus()
+    switch(glob_trigger_modal) 
+    {
+        case undefined:
+            $('#input_name_new_tag').focus();
+
+            break;
+        case 'link':
+            $('#input_name_new_tag').focus();
+
+            break;
+        case 'mode_add_tag':
+            $('#input_color_tag').focus();
+
+            break;
+    }
+    // focus the name field
 }
 
 function handle_hide_modal(event, modal)
 {
+    glob_trigger_modal = undefined;
+    // remove the associated data
     modal.removeData('id_item');
 }
 
@@ -315,16 +356,26 @@ function add_tag(modal)
         headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
         data: JSON.stringify(data),
         success: function(result) {
-            if(data.ids == 'all')
+
+            if(glob_trigger_modal == 'mode_add_tag')
             {
-                $('#table_entities .wrapper_tags').each(function(index, element) {
-                    $(element).addClass('tag_'+result.data.tag.id)
-                })
+                let button = $('button_start_mode_add_tag');
+                button.data('status', 'active');
+                button.text('Stop');
+
+                start_mode_add_tag(result.data.tag);
             } else {
-                $.each(data.ids, function(index, id_item) {
-                    $('#table_entities tr[data-id_item="'+id_item+'"] .wrapper_tags').addClass('tag_'+result.data.tag.id)
-                })
-                add_tag_marker(result.data.tag.id, result.data.tag.name, result.data.tag.color)
+                if(data.ids == 'all')
+                {
+                    $('#table_entities .wrapper_tags').each(function(index, element) {
+                        $(element).addClass('tag_'+result.data.tag.id)
+                    })
+                } else {
+                    $.each(data.ids, function(index, id_item) {
+                        $('#table_entities tr[data-id_item="'+id_item+'"] .wrapper_tags').addClass('tag_'+result.data.tag.id)
+                    })
+                    add_tag_marker(result.data.tag.id, result.data.tag.name, result.data.tag.color)
+                }  
             }
 
             if(result.data.created_tag)
@@ -359,16 +410,37 @@ function handle_click_mode_add_tag(button)
     // if add-tag-mode was started
     if(button.data('status') == 'inactive')
     {
-        let tag = $('#input_add_tag').val().trim();
-        if(tag == '' || button.data('tag').name != tag)
+        let tag_name = $('#input_add_tag').val().trim();
+
+        if(tag_name == '')
         {
             return;
         }
 
-        button.data('status', 'active');
-        button.text('Stop');
+        let data = {};
+        data.task = 'check_if_tag_exists';
+        data.name = tag_name;
 
-        start_mode_add_tag(button.data('tag'));
+        $.ajax({
+            url: '',
+            method: 'POST',
+            contentType: 'application/json',
+            headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+            data: JSON.stringify(data),
+            success: function(result) {
+                if(result.data.exists == true)
+                {
+                    button.data('status', 'active');
+                    button.text('Stop');
+
+                    start_mode_add_tag(result.data.tag);
+                } else {
+                    glob_trigger_modal = 'mode_add_tag';
+                    $('#modal_add_tag').modal('show');
+                }
+            }
+        })
+
     } else {
         end_mode_add_tag();
     

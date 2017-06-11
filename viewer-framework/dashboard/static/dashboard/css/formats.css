@@ -3,6 +3,7 @@ html {
 }
 .card.card_corpus {
 	cursor: pointer;
+	height: 100%;
 }
 .card.card_corpus:hover {
 	filter: brightness(90%);

@@ -13,6 +13,7 @@ let glob_count_pages = undefined;
 let glob_count_entries = undefined;
 
 let glob_mode_add_tag = {status: 'inactive', tag: {id: '', name: '', color: ''}};
+let glob_trigger_modal = undefined;
 
 $(document).ready(function()
 {

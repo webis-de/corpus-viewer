@@ -57,8 +57,8 @@ def get_page(request):
     if data.has_next():
         next_page_number = data.next_page_number()
     template = get_template('viewer/table.html')
-    end = round(float(time.perf_counter()-start) * 1000, 2)
-    print('TIME: '+str(end)+'ms')
+    duration = round(float(time.perf_counter()-start) * 1000, 2)
+    print('TIME: '+str(duration)+'ms')
     return JsonResponse({'content': template.render(context, request),
             'tags_filtered_items': list_tags,
             'count_pages': data.paginator.num_pages,
@@ -96,7 +96,9 @@ def export_data(obj, data, request):
     return response
 
 def get_filtered_data(request):
+    start = time.perf_counter()
     data, data_only_ids, dict_ids = load_data(request)
+    print('time for loading all data: '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
     #
     # FILTER BY TAGS 
     #
