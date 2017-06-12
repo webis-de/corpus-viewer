@@ -37,6 +37,18 @@ $(document).ready(function()
     $(document).on('change', '.input_select_item', function(e) { handle_select_item($(this)) });
     $(document).on('click', '#link_deselect_all_items', function(e) { handle_deselect_all_items(e) });
 
+    $(document).on('click', '.viewer__column_type_text .fixed_table', function(e) { handle_toggle_container_text($(this)) });
+    $(document).on('mouseover', '.viewer__column_type_text .fixed_table', function(e) { handle_mouseover_popover_text($(this)) });
+    $(document).on('mouseout', '.viewer__column_type_text .fixed_table', function(e) { handle_mouseout_popover_text($(this)) });
+    // $('body').popover({
+    //     selector: '.fixed_table',
+    //     placement: 'bottom',
+    //     animation: false,
+    //     html: true,
+    //     template: '<div class="popover popover_text" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>',
+    //     container: 'body',
+    //     trigger: 'manual',
+    // })
     //
     // popover-handling for tag-deletion
     //

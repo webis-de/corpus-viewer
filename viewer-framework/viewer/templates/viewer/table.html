@@ -1,5 +1,5 @@
 {% load tags_custom %}
-<table class="table table-sm table-striped">
+<table class="table table-sm table-hover table-striped">
     <thead>
         <tr>
             <th class="column_viewer__item_selection" {% if not "viewer__item_selection" in request.session.viewer__viewer__columns %}style="display: none"{% endif %}><input id="input_select_all_items" type="checkbox"></th>
@@ -19,7 +19,17 @@
             </td>
             {% for field in settings.displayed_fields %}
                 {% if not field == "viewer__item_selection" and not field == "viewer__tags" %}
-                <td class="column_{{ field }}" {% if not field in request.session.viewer__viewer__columns %}style="display: none"{% endif %}>{{ item|get:field }}</td>
+                <td class="column_{{ field }} {% if field|get_type_field:settings == 'text' %}viewer__column_type_text{% endif %}" style="{% if not field in request.session.viewer__viewer__columns %}display: none;{% endif %}">
+                {% if field|get_type_field:settings == 'text' %}
+                    <table class="fixed_table" data-content="{{ item|get:field }}" data-id_item="{{ item|get:settings.id }}">
+                        <tr>
+                            <td>{{ item|get:field }}</td>
+                        </tr>
+                    </table>
+                {% else %}
+                    <span class="{% if field|get_type_field:settings == 'string' %}text-truncate{% endif %}">{{ item|get:field }}</span>
+                {% endif %}
+                </td>
                 {% endif %}
             {% endfor %}
             <td class="column_viewer__tags" {% if not "viewer__tags" in request.session.viewer__viewer__columns %}style="display: none"{% endif %}>
@@ -27,6 +37,14 @@
                 <a class="link_add_tag" data-id_item="{{item|get:settings.id}}" href="#"><i class="fa fa-plus" aria-hidden="true"></i></a>
             </td>
         </tr>
+        <tr style="display: none"></tr>
+        <tr style="display: none" class="tr_container_text" data-id_item="{{ item|get:settings.id }}">
+            <td class="p-3" colspan="{{ settings.displayed_fields|length|add:2 }}">
+                <div class="p-1"></div>
+            </td>
+        </tr>
+        <tr style="display: none"></tr>
+        <tr style="display: none"></tr>
     {% endfor %}
     </tbody>
 </table>

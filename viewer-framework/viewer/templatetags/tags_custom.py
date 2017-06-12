@@ -10,6 +10,10 @@ def get(item, field):
         return getattr(item, field)
 
 @register.filter
+def get_type_field(field, settings):
+    return settings['data_fields'][field]['type'].lower()
+
+@register.filter
 def get_display_name(field, settings):
     return settings['data_fields'][field]['display_name']
 

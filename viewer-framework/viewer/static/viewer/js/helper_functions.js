@@ -290,6 +290,7 @@ function update_ui()
         if(elem.data('id_item') in glob_selected_items)
         {
             elem.prop('checked', true)
+            $('.row_viewer__item[data-id_item="'+elem.data('id_item')+'"]').addClass('table-info');
         }
     });
     update_checkbox_select_all('input_select_item', 'input_select_all_items')

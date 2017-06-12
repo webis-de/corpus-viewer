@@ -171,7 +171,10 @@ function handle_select_item(input)
         if(input.prop('checked'))
         {
             glob_selected_items[input.data('id_item')] = true;
+            $('.row_viewer__item[data-id_item="'+input.data('id_item')+'"]').addClass('table-info');
+            input.data('id_item')
         } else {
+            $('.row_viewer__item[data-id_item="'+input.data('id_item')+'"]').removeClass('table-info');
             delete glob_selected_items[input.data('id_item')];
         }
         update_checkbox_select_all('input_select_item', 'input_select_all_items')
@@ -191,8 +194,44 @@ function handle_deselect_all_items(event)
     event.preventDefault()
     glob_selected_items = {}
     $('.input_select_item').prop('checked', false);
+    $('.row_viewer__item').removeClass('table-info');
     update_checkbox_select_all('input_select_item', 'input_select_all_items')
     update_info_selected_items()
+}
+
+function handle_toggle_container_text(table)
+{
+    var row = $('.tr_container_text[data-id_item="'+table.data('id_item')+'"]');
+    $('.popover_text').popover('hide');
+    if(row.is(':visible'))
+    {
+        row.hide();
+    } else {
+        row.find('td div').html(table.data('content'));
+        row.show();
+    }
+}
+
+function handle_mouseover_popover_text(table)
+{
+    var row = $('.tr_container_text[data-id_item="'+table.data('id_item')+'"]');
+    if(!row.is(':visible'))
+    {
+        table.popover({
+            // selector: '.fixed_table',
+            placement: 'bottom',
+            animation: false,
+            html: true,
+            template: '<div class="popover popover_text" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>',
+            container: 'body',
+            // trigger: 'manual',
+        }).popover('show');
+    }
+}
+
+function handle_mouseout_popover_text(table)
+{
+    table.popover('dispose');
 }
 
 function delete_tag_from_item(id_item, id_tag)

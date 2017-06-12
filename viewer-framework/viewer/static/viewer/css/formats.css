@@ -8,6 +8,9 @@ html {
 #table_entities .content {
     position: relative;
 }
+#table_entities .tr_container_text td div {
+    border: 1px solid grey;
+}
 #table_entities .content .overlay {
     position: absolute;
     width: 100%;
@@ -15,6 +18,56 @@ html {
     z-index:9999;
     background-color:rgba(255, 255, 255, 0.8);
 }
+.viewer__column_type_text {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+.fixed_table {
+    /* magic */
+    width: 100%;
+    table-layout: fixed;
+    
+    /*not really necessary, removes extra white space */
+    border-collapse: collapse;
+    border-spacing: 0;
+    border: 0;
+}
+    .fixed_table tr {
+        background-color: transparent !important;
+    }
+    .fixed_table td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .popover_text {
+        max-width: 80% !important;
+    }
+    @media (min-width: 992px) { 
+        .popover_text {
+            max-width: 60% !important;
+
+        }
+    }
+    @media (min-width: 1200px) { 
+        .popover_text {
+            max-width: 50% !important;
+        }
+    }
+/*.text-truncate {
+    width: 5;
+}*/
+/*.column_text {
+     width: 250px;
+    
+}
+.shortened_text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  /*max-width: 100%;*/
+}*/
 
 .column_viewer__item_selection {
     width: 3rem

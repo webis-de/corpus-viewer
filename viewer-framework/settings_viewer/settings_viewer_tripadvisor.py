@@ -78,15 +78,15 @@ DICT_SETTINGS_VIEWER = {
             'display_name': 'City'
         },
         'text': {
-            'type': 'string',
+            'type': 'text',
             'display_name': 'Text'
         },
         'author': {
-            'type': 'string',
+            'type': 'text',
             'display_name': 'Author'
         },
         'location': {
-            'type': 'string',
+            'type': 'int',
             'display_name': 'Location'
         }
     },
