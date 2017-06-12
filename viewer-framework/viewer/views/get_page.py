@@ -10,11 +10,12 @@ from django.template.loader import get_template
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from viewer.models import m_Tag, m_Entity
 
-regex_filter_numbers = re.compile('(?<![>|>=|<=|<|0|1|2|3|4|5|6|7|8|9|0])([0-9]+)')
-regex_filter_numbers_lt = re.compile('<([0-9]+)')
-regex_filter_numbers_lte = re.compile('<=([0-9]+)')
-regex_filter_numbers_gt = re.compile('>([0-9]+)')
-regex_filter_numbers_gte = re.compile('>=([0-9]+)')
+regex_filter_numbers_negative = re.compile('(?<![>|\.|>=|<=|<|<|0|1|2|3|4|5|6|7|8|9|0])(-[0-9]+\.?[0-9]*)')
+regex_filter_numbers_positive = re.compile('(?<![>|\.|>=|<=|<|<|0|1|2|3|4|5|6|7|8|9|0|-])([0-9]+\.?[0-9]*)')
+regex_filter_numbers_lt = re.compile('<(-?[0-9]+\.?[0-9]*)')
+regex_filter_numbers_lte = re.compile('<=(-?[0-9]+\.?[0-9]*)')
+regex_filter_numbers_gt = re.compile('>(-?[0-9]+\.?[0-9]*)')
+regex_filter_numbers_gte = re.compile('>=(-?[0-9]+\.?[0-9]*)')
 
 def get_page(request):
 ##### handle session entries
@@ -147,9 +148,13 @@ def filter_data(request, data, obj_filter):
             # if the filter is 'number'
             elif obj_filter['type'] == 'number':
                 # check if a specific number is requested
-                result = regex_filter_numbers.search(value)
-                if result != None:
-                    number = float(result.group(1))
+                result_positive = regex_filter_numbers_positive.search(value)
+                result_negative = regex_filter_numbers_negative.search(value)
+                if result_positive != None:
+                    number = float(result_positive.group(1))
+                    data = [item for item in data if item[obj_filter['data_field']] == number]
+                elif result_negative != None:
+                    number = float(result_negative.group(1))
                     data = [item for item in data if item[obj_filter['data_field']] == number]
                 else:
 
