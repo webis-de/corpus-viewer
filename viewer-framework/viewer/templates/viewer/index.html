@@ -1,6 +1,11 @@
 {% include "dashboard/header.html" %}
 {% load tags_custom %}
 {% load staticfiles %}
+
+{% get_is_collapsed_div_filters as is_collapsed_div_filters %}
+{% get_is_collapsed_div_tags as is_collapsed_div_tags %}
+{% get_is_collapsed_div_settings as is_collapsed_div_settings %}
+
 <div class="row">
 	<div class="col">
 		<h1>{{ settings.name }}</h1>
@@ -47,52 +52,54 @@
                         <a data-toggle="collapse" href="#div_filters" class="text-muted">Filters</a>
                         <a href="#" id="link_reset_filters" class="float-right">Reset filters</a>
                     </div>
-                    <div class="collapse {% if request.session.viewer__is_collapsed_div_filters == False %}show{% endif %}" id="div_filters">
+                    <div class="collapse {% if is_collapsed_div_filters == False %}show{% endif %}" id="div_filters">
                         <div class="card-block py-1 px-2">
                             <div class="form-group">
                                 <label for="input_filter_tags">Filter by tag(s)</label>
                                 <input name="tag" type="text" id="input_filter_tags" class="form-control form-control-sm" placeholder="Enter Tag-Name(s)" value="">
                                 <div id="wrapper_tag_recommendations_filter" class="wrapper_recommendation" style="display: none"></div>
                                 <ul id="list_filter_tags" class="list-unstyled">
-                                    {% for tag in request.session.viewer__viewer__filter_tags %}
+                                    {% get_tags as tags %}
+                                    {% for tag in tags %}
                                         <li data-tag="{{ tag }}"><span class="badge badge-default">{{ tag }} <i class="fa fa-times" aria-hidden="true"></i></span></li>
                                     {% endfor %}
                                 </ul>
                             </div>
-                        {% for filter in settings.filters %}
-                            {% if filter.type == 'checkbox' %}
+                        {% for filter_custom in settings.filters %}
+                            {% if filter_custom.type == 'checkbox' %}
                                 <!-- <div class="form-check mb-3">
                                     <label class="form-check-label">
-                                        <input name="{{ filter.data_field  }}" id="input_{{ filter.data_field  }}" type="checkbox" class="form-check-input" {{ filter.default_value }}²>
-                                        {{ filter.description }}
+                                        <input name="{{ filter_custom.data_field  }}" id="input_{{ filter_custom.data_field  }}" type="checkbox" class="form-check-input" {{ filter_custom.default_value }}²>
+                                        {{ filter_custom.description }}
                                     </label>
                                 </div> -->
-                            {% elif filter.type == 'contains' or filter.type == 'number' %}
+                            {% elif filter_custom.type == 'contains' or filter_custom.type == 'number' %}
                                 <div class="form-group">
-                                    <label for="input_{{ filter.data_field }}">{{ filter.description }}</label>
+                                    <label for="input_{{ filter_custom.data_field }}">{{ filter_custom.description }}</label>
                                     <div class="input-group input-group-sm">
                                         <input 
-                                            name="{{ filter.data_field }}" 
+                                            name="{{ filter_custom.data_field }}" 
                                             type="text" 
-                                            id="input_{{ filter.data_field }}" 
+                                            id="input_{{ filter_custom.data_field }}" 
                                             class="form-control" 
-                                            placeholder="{{ filter.placeholder }}" 
+                                            placeholder="{{ filter_custom.placeholder }}" 
                                         >
                                         <span class="input-group-btn">
                                             <button 
                                                 class="btn btn-secondary viewer__button_add_filter" 
-                                                data-data_field="{{ filter.data_field }}" 
+                                                data-data_field="{{ filter_custom.data_field }}" 
                                                 type="button">Add
                                             </button>
                                         </span>
                                     </div>
                                     <div class="row pl-1 pr-1">
-                                        <div class="col viewer__column_filter_active" data-data_field="{{ filter.data_field }}">
-                                        {% for value in request.session.viewer__viewer__filter_custom|get:filter.data_field %}
+                                        <div class="col viewer__column_filter_active" data-data_field="{{ filter_custom.data_field }}">
+                                        {% get_values_filter filter_custom as values_filter %}
+                                        {% for value in values_filter %}
                                             <div data-value="{{ value }}" class="pl-1 pr-1">
                                                 <span>{{ value }}</span>
                                                 <span class="float-right">
-                                                    <span class="fa fa-times" data-value="{{ value }}" data-data_field="{{ filter.data_field }}"></span>
+                                                    <span class="fa fa-times" data-value="{{ value }}" data-data_field="{{ filter_custom.data_field }}"></span>
                                                 </span>
                                             </div>
                                         {% endfor %}
@@ -110,7 +117,7 @@
                                 </label>
                             <div class="form-check mb-0">
                                 <label class="form-check-label">
-                                    <input type="checkbox" class="form-check-input input_toggle_columns" data-column="viewer__item_selection" {% if "viewer__item_selection" in request.session.viewer__viewer__columns %}checked{% endif %}>
+                                    <input type="checkbox" class="form-check-input input_toggle_columns" data-column="viewer__item_selection" {% if "viewer__item_selection"|in_columns_checked:request %}checked{% endif %}>
                                     Item selection
                                 </label>
                             </div>
@@ -118,7 +125,7 @@
                                 {% if not field == "viewer__item_selection" and not field == "viewer__tags" %}
                                 <div class="form-check mb-0">
                                     <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input input_toggle_columns" data-column="{{ field }}" {% if field in request.session.viewer__viewer__columns %}checked{% endif %}>
+                                        <input type="checkbox" class="form-check-input input_toggle_columns" data-column="{{ field }}" {% if field|in_columns_checked:request %}checked{% endif %}>
                                         {{ field|get_display_name:settings }}
                                     </label>
                                 </div>
@@ -126,7 +133,7 @@
                             {% endfor %}
                             <div class="form-check mb-0">
                                 <label class="form-check-label">
-                                    <input type="checkbox" class="form-check-input input_toggle_columns" data-column="viewer__tags" {% if "viewer__tags" in request.session.viewer__viewer__columns %}checked{% endif %}>
+                                    <input type="checkbox" class="form-check-input input_toggle_columns" data-column="viewer__tags" {% if "viewer__tags"|in_columns_checked:request %}checked{% endif %}>
                                     Tags
                                 </label>
                             </div>
@@ -144,7 +151,7 @@
                         <a data-toggle="collapse" href="#div_tags" class="text-muted">Tags</a>
                         <a href="{% url 'viewer:tags' %}" id="view_tags" class="float-right">View tags</a>
                     </div>
-                    <div class="collapse {% if request.session.viewer__is_collapsed_div_tags == False %}show{% endif %}" id="div_tags">
+                    <div class="collapse {% if is_collapsed_div_tags == False %}show{% endif %}" id="div_tags">
                         <div class="card-block py-1 px-2">
                             <div>
                                 <b>Add tags to selected items</b>
@@ -188,7 +195,7 @@
                     <div class="card-header py-1 px-2">
                         <a data-toggle="collapse" href="#div_settings" class="text-muted">Settings</a>
                     </div>
-                    <div class="collapse {% if request.session.viewer__is_collapsed_div_settings == False %}show{% endif %}" id="div_settings">
+                    <div class="collapse {% if is_collapsed_div_settings == False %}show{% endif %}" id="div_settings">
                         <div class="card-block py-2 px-2">
                             <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal_export_data">Export</button>
                             <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal_import_data">Import</button>

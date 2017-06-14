@@ -115,7 +115,7 @@ def load_file_ldjson(request):
 #     model_custom.objects.bulk_create(list_entries)
 
 def set_sessions(request):
-    set_session_from_url(request, 'viewer__current_corpus', default=list(glob_settings.keys())[0])
+    set_current_corpus(request)
         
     set_session(request, 'is_collapsed_div_filters', default=True)
     set_session(request, 'is_collapsed_div_tags', default=True)
@@ -132,27 +132,48 @@ def set_sessions(request):
     
     # in case of newly added filters add them
     dict_tmp = {obj_filter['data_field']:obj_filter['default_value'] for obj_filter in get_setting('filters', request=request)}
-    dict_tmp.update(request.session['viewer__viewer__filter_custom'])
-    request.session['viewer__viewer__filter_custom'] = dict_tmp.copy()
+    dict_tmp.update(request.session[get_current_corpus(request)]['viewer__viewer__filter_custom'])
+    request.session[get_current_corpus(request)]['viewer__viewer__filter_custom'] = dict_tmp.copy()
 
 def set_session(request, key, default):
     sessionkey = 'viewer__'+key
 
-    if sessionkey not in request.session:
-        request.session[sessionkey] = default
+    current_corpus = get_current_corpus(request)
+
+    if not current_corpus in request.session:
+        request.session[current_corpus] = {}
+
+    if sessionkey not in request.session[current_corpus]:
+        request.session[current_corpus][sessionkey] = default
 
 def set_session_from_url(request, key, default, is_json=False):
     sessionkey = 'viewer__'+key
 
+    current_corpus = get_current_corpus(request)
+    
+    if not current_corpus in request.session:
+        request.session[current_corpus] = {}
+
     if request.GET.get(key) != None:
         if is_json:
-            request.session[sessionkey] = json.loads(request.GET.get(key))
+            request.session[current_corpus][sessionkey] = json.loads(request.GET.get(key))
         else:
-            request.session[sessionkey] = request.GET.get(key)
+            request.session[current_corpus][sessionkey] = request.GET.get(key)
+    else:
+        if sessionkey not in request.session[current_corpus]:
+            request.session[current_corpus][sessionkey] = default
+            
+def set_current_corpus(request):
+    default = list(glob_settings.keys())[0]
+    key = 'viewer__current_corpus'
+    sessionkey = 'viewer__' + key
+
+    if request.GET.get(key) != None:
+        request.session[sessionkey] = request.GET.get(key)
     else:
         if sessionkey not in request.session:
             request.session[sessionkey] = default
-            
+
 def get_current_corpus(request):
     return request.session['viewer__viewer__current_corpus']
 

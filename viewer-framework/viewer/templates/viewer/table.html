@@ -2,24 +2,24 @@
 <table class="table table-sm table-hover table-striped">
     <thead>
         <tr>
-            <th class="column_viewer__item_selection" {% if not "viewer__item_selection" in request.session.viewer__viewer__columns %}style="display: none"{% endif %}><input id="input_select_all_items" type="checkbox"></th>
+            <th class="column_viewer__item_selection" {% if not "viewer__item_selection"|in_columns_checked:request %}style="display: none"{% endif %}><input id="input_select_all_items" type="checkbox"></th>
             {% for field in settings.displayed_fields %}
                 {% if not field == "viewer__item_selection" and not field == "viewer__tags" %}
-                <th class="column_{{ field }}" {% if not field in request.session.viewer__viewer__columns %}style="display: none"{% endif %}>{{ field|get_display_name:settings }}</th>
+                <th class="column_{{ field }}" {% if not field|in_columns_checked:request %}style="display: none"{% endif %}>{{ field|get_display_name:settings }}</th>
                 {% endif %}
             {% endfor %}
-            <th class="column_viewer__tags" {% if not "viewer__tags" in request.session.viewer__viewer__columns %}style="display: none"{% endif %}>Tags</th>
+            <th class="column_viewer__tags" {% if not "viewer__tags"|in_columns_checked:request %}style="display: none"{% endif %}>Tags</th>
         </tr>
     </thead>
     <tbody>
     {% for item in data %}
         <tr class="row_viewer__item" data-id_item="{{ item|get:settings.id }}">
-            <td class="column_viewer__item_selection" {% if not "viewer__item_selection" in request.session.viewer__viewer__columns %}style="display: none"{% endif %}>
+            <td class="column_viewer__item_selection" {% if not "viewer__item_selection"|in_columns_checked:request %}style="display: none"{% endif %}>
                 <input data-id_item="{{item|get:settings.id}}" class="input_select_item" type="checkbox">
             </td>
             {% for field in settings.displayed_fields %}
                 {% if not field == "viewer__item_selection" and not field == "viewer__tags" %}
-                <td class="column_{{ field }} {% if field|get_type_field:settings == 'text' %}viewer__column_type_text{% endif %}" style="{% if not field in request.session.viewer__viewer__columns %}display: none;{% endif %}">
+                <td class="column_{{ field }} {% if field|get_type_field:settings == 'text' %}viewer__column_type_text{% endif %}" style="{% if not field|in_columns_checked:request %}display: none;{% endif %}">
                 {% if field|get_type_field:settings == 'text' %}
                     <table class="fixed_table" data-content="{{ item|get:field }}" data-id_item="{{ item|get:settings.id }}">
                         <tr>
@@ -32,7 +32,7 @@
                 </td>
                 {% endif %}
             {% endfor %}
-            <td class="column_viewer__tags" {% if not "viewer__tags" in request.session.viewer__viewer__columns %}style="display: none"{% endif %}>
+            <td class="column_viewer__tags" {% if not "viewer__tags"|in_columns_checked:request %}style="display: none"{% endif %}>
                 <div class="wrapper_tags {{ item.viewer_tags|display_as_tag_classes }}"></div>
                 <a class="link_add_tag" data-id_item="{{item|get:settings.id}}" href="#"><i class="fa fa-plus" aria-hidden="true"></i></a>
             </td>

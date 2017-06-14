@@ -37,7 +37,7 @@ def get_page(request):
 ##### page the dataset
     paginator = Paginator(data, get_setting('page_size', request=request))
     try:
-        data = paginator.page(request.session['viewer__viewer__page'])
+        data = paginator.page(request.session[get_current_corpus(request)]['viewer__viewer__page'])
     except PageNotAnInteger:
         # If page is not an integer, deliver first page.
         data = paginator.page(1)
@@ -103,14 +103,14 @@ def get_filtered_data(request):
     #
     # FILTER BY TAGS 
     #
-    if len(request.session['viewer__viewer__filter_tags']) > 0:
+    if len(request.session[get_current_corpus(request)]['viewer__viewer__filter_tags']) > 0:
         if get_setting('data_type', request=request) == 'database':
             # iterate over tag and return only items tagged with them
-            for tag in request.session['viewer__viewer__filter_tags']:
+            for tag in request.session[get_current_corpus(request)]['viewer__viewer__filter_tags']:
                 data = data.filter(viewer_tags__name=tag)
         else:
             # filter the data by tags
-            data = filter_data_tags(data, request.session['viewer__viewer__filter_tags'], request)
+            data = filter_data_tags(data, request.session[get_current_corpus(request)]['viewer__viewer__filter_tags'], request)
     #
     # FILTERS
     #
@@ -129,7 +129,7 @@ def get_filtered_data(request):
 
 def filter_data(request, data, obj_filter):
     # get the value of the current filter
-    values = request.session['viewer__viewer__filter_custom'][obj_filter['data_field']]
+    values = request.session[get_current_corpus(request)]['viewer__viewer__filter_custom'][obj_filter['data_field']]
     # if the value is not empty 
     for value in values:
         if get_setting('data_type', request=request) == 'database':
@@ -246,7 +246,7 @@ def get_tags_filtered_items(list_ids, request):
         dict_ordered_tags = collections.OrderedDict()
         for tag in list_tags:
             if tag.name not in dict_ordered_tags:
-                dict_ordered_tags[tag.name] = {'id': tag.id, 'name': tag.name, 'color': tag.color, 'is_selected': str(tag.id) in request.session['viewer__viewer__selected_tags']}
+                dict_ordered_tags[tag.name] = {'id': tag.id, 'name': tag.name, 'color': tag.color, 'is_selected': str(tag.id) in request.session[get_current_corpus(request)]['viewer__viewer__selected_tags']}
         return list(dict_ordered_tags.values())
     else:
         n = 900
@@ -259,7 +259,7 @@ def get_tags_filtered_items(list_ids, request):
         dict_ordered_tags = collections.OrderedDict()
         for tag in list_tags:
             if tag.name not in dict_ordered_tags:
-                dict_ordered_tags[tag.name] = {'id': tag.id, 'name': tag.name, 'color': tag.color, 'is_selected': str(tag.id) in request.session['viewer__viewer__selected_tags']}
+                dict_ordered_tags[tag.name] = {'id': tag.id, 'name': tag.name, 'color': tag.color, 'is_selected': str(tag.id) in request.session[get_current_corpus(request)]['viewer__viewer__selected_tags']}
 
         return list(dict_ordered_tags.values())
 
