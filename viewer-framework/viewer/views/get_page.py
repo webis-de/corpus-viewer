@@ -129,9 +129,9 @@ def get_filtered_data(request):
 
 def filter_data(request, data, obj_filter):
     # get the value of the current filter
-    value = request.session['viewer__viewer__filter_custom'][obj_filter['data_field']]
+    values = request.session['viewer__viewer__filter_custom'][obj_filter['data_field']]
     # if the value is not empty 
-    if value != '':
+    for value in values:
         if get_setting('data_type', request=request) == 'database':
             # TODO: make flexible filters for database
             data = data.filter(**{obj_filter['data_field']+'__icontains': value})
@@ -140,8 +140,8 @@ def filter_data(request, data, obj_filter):
             if obj_filter['type'] == 'contains':
                 # get the type (string, list) of the data-field
                 type_data_field = get_setting('data_fields', request=request)[obj_filter['data_field']]['type']
-                if type_data_field == 'string':
-                    # return only items which contain the value
+                if type_data_field == 'string' or type_data_field == 'text':
+                    # return only items which contain all the values
                     data = [item for item in data if value in str(item[obj_filter['data_field']])]
                 elif type_data_field == 'list':
                     raise ValueError('NOT IMPLEMENTED')
@@ -157,7 +157,6 @@ def filter_data(request, data, obj_filter):
                     number = float(result_negative.group(1))
                     data = [item for item in data if item[obj_filter['data_field']] == number]
                 else:
-
                     result_lt = regex_filter_numbers_lt.search(value)
                     if result_lt != None:
                         number = float(result_lt.group(1))

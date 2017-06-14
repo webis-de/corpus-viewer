@@ -24,6 +24,8 @@ $(document).ready(function()
     $(document).on('input', '#input_filter_tags', function(){handle_recommendation_filter($(this), $('#wrapper_tag_recommendations_filter'))});
     $(document).on('click', '#wrapper_tag_recommendations_filter .recommendation', function(){handle_click_on_recommendation_filter($(this), trigger_tag_filter_change)});
 
+    $(document).on('click', '.viewer__button_add_filter', function(){ handle_click_on_button_add_filter($(this)) });
+    $(document).on('click', '.viewer__column_filter_active .fa-times', function(){ handle_click_on_remove_filter_value($(this)) });
 
     $(document).on('show.bs.collapse', '.card .collapse', function(e) { set_session_entry('is_collapsed_'+$(this).attr('id'), false) });
     $(document).on('hide.bs.collapse', '.card .collapse', function(e) { set_session_entry('is_collapsed_'+$(this).attr('id'), true) });
@@ -40,15 +42,6 @@ $(document).ready(function()
     $(document).on('click', '.viewer__column_type_text .fixed_table', function(e) { handle_toggle_container_text($(this)) });
     $(document).on('mouseover', '.viewer__column_type_text .fixed_table', function(e) { handle_mouseover_popover_text($(this)) });
     $(document).on('mouseout', '.viewer__column_type_text .fixed_table', function(e) { handle_mouseout_popover_text($(this)) });
-    // $('body').popover({
-    //     selector: '.fixed_table',
-    //     placement: 'bottom',
-    //     animation: false,
-    //     html: true,
-    //     template: '<div class="popover popover_text" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>',
-    //     container: 'body',
-    //     trigger: 'manual',
-    // })
     //
     // popover-handling for tag-deletion
     //
@@ -103,6 +96,6 @@ $(document).ready(function()
     load_page_parameters()
 
     // FILTERS
-    load_filters()
+    // load_filters()
     load_current_page();
 });

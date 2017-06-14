@@ -61,21 +61,43 @@
                             </div>
                         {% for filter in settings.filters %}
                             {% if filter.type == 'checkbox' %}
-                                <div class="form-check mb-3">
+                                <!-- <div class="form-check mb-3">
                                     <label class="form-check-label">
                                         <input name="{{ filter.data_field  }}" id="input_{{ filter.data_field  }}" type="checkbox" class="form-check-input" {{ filter.default_value }}²>
                                         {{ filter.description }}
                                     </label>
-                                </div>
-                            {% elif filter.type == 'contains'%}
+                                </div> -->
+                            {% elif filter.type == 'contains' or filter.type == 'number' %}
                                 <div class="form-group">
-                                    <label for="input_{{ filter.data_field  }}">{{ filter.description }}</label>
-                                    <input name="{{ filter.data_field  }}" type="text" id="input_{{ filter.data_field  }}" class="form-control form-control-sm" placeholder="{{ filter.placeholder }}" value="{{ request.session.viewer__viewer__filter_custom|get:filter.data_field }}">
-                                </div>
-                            {% elif filter.type == 'number'%}
-                                <div class="form-group">
-                                    <label for="input_{{ filter.data_field  }}">{{ filter.description }}</label>
-                                    <input name="{{ filter.data_field  }}" type="text" id="input_{{ filter.data_field  }}" class="form-control form-control-sm" placeholder="{{ filter.placeholder }}" value="{{ request.session.viewer__viewer__filter_custom|get:filter.data_field }}">
+                                    <label for="input_{{ filter.data_field }}">{{ filter.description }}</label>
+                                    <div class="input-group input-group-sm">
+                                        <input 
+                                            name="{{ filter.data_field }}" 
+                                            type="text" 
+                                            id="input_{{ filter.data_field }}" 
+                                            class="form-control" 
+                                            placeholder="{{ filter.placeholder }}" 
+                                        >
+                                        <span class="input-group-btn">
+                                            <button 
+                                                class="btn btn-secondary viewer__button_add_filter" 
+                                                data-data_field="{{ filter.data_field }}" 
+                                                type="button">Add
+                                            </button>
+                                        </span>
+                                    </div>
+                                    <div class="row pl-1 pr-1">
+                                        <div class="col viewer__column_filter_active" data-data_field="{{ filter.data_field }}">
+                                        {% for value in request.session.viewer__viewer__filter_custom|get:filter.data_field %}
+                                            <div data-value="{{ value }}" class="pl-1 pr-1">
+                                                <span>{{ value }}</span>
+                                                <span class="float-right">
+                                                    <span class="fa fa-times" data-value="{{ value }}" data-data_field="{{ filter.data_field }}"></span>
+                                                </span>
+                                            </div>
+                                        {% endfor %}
+                                        </div>
+                                    </div>
                                 </div>
                             {% endif %}
                         {% endfor %}

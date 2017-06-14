@@ -93,13 +93,59 @@ function handle_click_on_recommendation_filter(recommendation, func)
     }
 }
 
+function handle_click_on_button_add_filter(button)
+{
+    button.blur();
+    let data_field = button.data('data_field');
+    let input = $('#input_' + data_field);
+    let value = input.val().trim();
+
+    if(value == '') 
+    {
+        return;
+    }
+
+    let is_unique = true;
+    $.each($('.viewer__column_filter_active>div'), function(key, div){
+        if($(div).data('value') == value)
+        {
+            is_unique = false;
+            return false;
+        }
+    });
+
+    if(is_unique == true)
+    {
+        glob_filter_custom[data_field].push(value)
+        set_session_entry('viewer__filter_custom', glob_filter_custom, function() {
+            input.val('');
+            $('.viewer__column_filter_active[data-data_field="'+ data_field +'"]').append(create_filter_active(value, data_field));
+            glob_current_page = 1;
+            load_current_page();
+        })
+    }
+}
+
+function handle_click_on_remove_filter_value(cross)
+{
+    let data_field = cross.data('data_field')
+    let value = cross.data('value').toString();
+
+    remove_element_from_array(glob_filter_custom[data_field], value)
+    set_session_entry('viewer__filter_custom', glob_filter_custom, function() {
+        $('.viewer__column_filter_active[data-data_field="'+ data_field +'"] div[data-value="'+ value +'"]').remove();
+        glob_current_page = 1;
+        load_current_page();
+    })
+}
+
 function handle_reset_filters()
 {
     glob_current_page = 1;
     glob_filter_tags = [];
 
     $.each(glob_filter_custom, function(key, value){
-        glob_filter_custom[key] = ''
+        glob_filter_custom[key] = [];
     })
 
     let input_toggle_columns_all = $('#input_toggle_columns_all')

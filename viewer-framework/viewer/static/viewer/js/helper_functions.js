@@ -81,6 +81,11 @@ function reset_recommendations(wrapper_recommendation)
     wrapper_recommendation.find('.recommendation').remove();
 }
 
+function create_filter_active(value, data_field)
+{
+    return '<div data-value="'+value+'" class="pl-1 pr-1"><span>'+value+'</span><span class="float-right"><span class="fa fa-times" data-value="'+value+'" data-data_field="'+ data_field +'"></span></span></div>';
+}
+
 function update_info_selected_items()
 {
     $('#info_selected_items span').text(Object.keys(glob_selected_items).length)
@@ -274,13 +279,20 @@ function update_ui()
     $('#input_page').val(glob_current_page)
     $('#info_number_of_items').text('Filtered items: '+glob_count_entries.toLocaleString()+' ('+glob_count_pages.toLocaleString()+' page(s))');
 
+    // reset the tag filters
     $('#list_filter_tags').html('');
     for (let i = 0; i < glob_filter_tags.length; i++) {
         $('#list_filter_tags').append('<li data-tag="' + glob_filter_tags[i] + '"><span class="badge badge-default">' + glob_filter_tags[i] + ' <i class="fa fa-times" aria-hidden="true"></i></span></li>')
     }
 
+    // reset the custom filters
     $.each(glob_filter_custom, function(key, value) {
-        $('#input_'+key).val(value)
+        $('.viewer__column_filter_active[data-data_field="'+ key +'"]').html('');
+
+        $.each(value, function(index, element) {
+            $('.viewer__column_filter_active[data-data_field="'+ key +'"]').append(create_filter_active(element, key));
+
+        });
     })
 
     update_checkbox_select_all('input_toggle_columns', 'input_toggle_columns_all')

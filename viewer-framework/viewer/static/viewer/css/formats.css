@@ -5,6 +5,10 @@ html {
     padding-right: 0 !important
 }
 
+#info_number_of_items {
+    font-size: 0.8rem;
+}
+
 #table_entities .content {
     position: relative;
 }
@@ -95,7 +99,6 @@ html {
     width: 40%
 }
 
-
 .wrapper_recommendation {
     position: absolute;
     width: 100%;
@@ -122,3 +125,15 @@ html {
     .badge .fa-times {
         cursor: pointer;
     }
+
+.viewer__column_filter_active {
+    min-height: 0px;
+}
+.viewer__column_filter_active>div {
+    font-size: 0.8rem;
+    border: 1px solid rgba(0,0,0,.125);
+    margin-top: 0.1rem;
+}
+.viewer__column_filter_active .fa-times {
+    cursor: pointer;
+}

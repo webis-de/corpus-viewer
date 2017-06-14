@@ -77,7 +77,7 @@ DICT_SETTINGS_VIEWER = {
             'display_name': 'ID'
         },
         'text': {
-            'type': 'string',
+            'type': 'text',
             'display_name': 'Text'
         },
         'retweet_count': {

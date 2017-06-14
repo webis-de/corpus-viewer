@@ -152,7 +152,7 @@ DICT_SETTINGS_VIEWER = {
             'display_name': 'ID'
         },
         'comment': {
-            'type': 'string',
+            'type': 'text',
             'display_name': 'Comment'
         },
         'year': {

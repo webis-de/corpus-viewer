@@ -127,7 +127,8 @@ def set_sessions(request):
     set_session_from_url(request, 'viewer__columns', default=get_setting('displayed_fields', request=request) + ['viewer__item_selection', 'viewer__tags'], is_json=True)
     set_session_from_url(request, 'viewer__filter_tags', default=[], is_json=True)
 
-    set_session_from_url(request, 'viewer__filter_custom', default={obj_filter['data_field']:obj_filter['default_value'] for obj_filter in get_setting('filters', request=request)}, is_json=True)
+    set_session_from_url(request, 'viewer__filter_custom', default={obj_filter['data_field']:[] for obj_filter in get_setting('filters', request=request)}, is_json=True)
+    # set_session_from_url(request, 'viewer__filter_custom', default={obj_filter['data_field']:obj_filter['default_value'] for obj_filter in get_setting('filters', request=request)}, is_json=True)
     
     # in case of newly added filters add them
     dict_tmp = {obj_filter['data_field']:obj_filter['default_value'] for obj_filter in get_setting('filters', request=request)}
