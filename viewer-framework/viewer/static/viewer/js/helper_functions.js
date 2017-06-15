@@ -81,7 +81,7 @@ function reset_recommendations(wrapper_recommendation)
     wrapper_recommendation.find('.recommendation').remove();
 }
 
-function create_filter_active(value, data_field)
+function create_filter_active(value, data_field, info_filter_values)
 {
     // if is contains filter
     if(value.startsWith('s_') || value.startsWith('i_'))
@@ -89,25 +89,42 @@ function create_filter_active(value, data_field)
         is_case_sensitive = value.substring(0, 1) == 's';
         value_real = value.substring(2);
 
-        return create_filter_active_contains(value, data_field, value_real, is_case_sensitive)
+        return create_filter_active_contains(value, data_field, value_real, is_case_sensitive, info_filter_values)
     } else {
-        return create_filter_active_number(value, data_field)
+        return create_filter_active_number(value, data_field, info_filter_values)
     }
 }
-function create_filter_active_contains(value, data_field, value_real, is_case_sensitive)
+
+function create_filter_active_contains(value, data_field, value_real, is_case_sensitive, info_filter_values)
 {
     let template_case_sensitivity = '<span class="case_sensitivity bg-faded">aA</span>';
+
+    let template_info_filter_values = glob_template_info_filter_values_contains
+        .replace('PLACEHOLDER_VALUE_COUNT_TOTAL', info_filter_values.value_count_total)
+        .replace('PLACEHOLDER_VALUE_COUNT_PER_DOCUMENT', info_filter_values.value_count_per_document);
 
     if(is_case_sensitive == false)
     {
         template_case_sensitivity = '';
     }
 
-    return '<div data-value="'+value+'" class="pl-1 pr-1"><span>'+value_real+'</span><span class="float-right">'+template_case_sensitivity+'<span class="fa fa-times" data-value="'+value+'" data-data_field="'+ data_field +'"></span></span></div>';
+    return glob_template_filter_active_contains
+        .replace('PLACEHOLDER_VALUE_REAL', value_real)
+        .replace(/PLACEHOLDER_VALUE/g, value)
+        .replace('PLACEHOLDER_DATA_FIELD', data_field)
+        .replace('PLACEHOLDER_TEMPLATE_CASE_SENSITIVITY', template_case_sensitivity)
+        .replace('PLACEHOLDER_TEMPLATE_INFO_FILTER_VALUES', template_info_filter_values)
 }
-function create_filter_active_number(value, data_field)
+function create_filter_active_number(value, data_field, info_filter_values)
 {
-    return '<div data-value="'+value+'" class="pl-1 pr-1"><span>'+value+'</span><span class="float-right"><span class="fa fa-times" data-value="'+value+'" data-data_field="'+ data_field +'"></span></span></div>';
+    let template_info_filter_values = glob_template_info_filter_values_number
+        .replace('PLACEHOLDER_VALUE_COUNT_TOTAL', info_filter_values.value_count_total)
+        .replace('PLACEHOLDER_VALUE_COUNT_PER_DOCUMENT', info_filter_values.value_count_per_document);
+
+    return glob_template_filter_active_number
+        .replace(/PLACEHOLDER_VALUE/g, value)
+        .replace('PLACEHOLDER_DATA_FIELD', data_field)
+        .replace('PLACEHOLDER_TEMPLATE_INFO_FILTER_VALUES', template_info_filter_values)
 }
 
 function update_info_selected_items()
@@ -284,8 +301,43 @@ function set_session_entry(session_key, session_value, callback)
     });
 }
 
+function hightlight_results(key, value)
+{
+    if(value.startsWith('s_') || value.startsWith('i_'))
+    {
+        is_case_sensitive = value.substring(0, 1) == 's';
+        value_real = value.substring(2);
 
-function update_ui()
+        let replace = '(' + value_real + ')';
+        let flags = 'g';
+        if(!is_case_sensitive)
+        {
+            flags += 'i';
+        }
+
+        let re = new RegExp(replace, flags);
+
+        let query = '.row_viewer__item .column_' + key;
+
+        if($(query + ' td').length != 0)
+        {
+            query += ' td';
+        }
+        else {
+            query += ' span';
+        }
+
+        $(query).each(function(index, element) {
+            let text = $(element).html();
+            text = text.replace(re, '<span style="background-color:lightblue">$1</span>');
+
+            $(element).html('');            
+            $(element).html(text);
+        });
+    }
+}
+
+function update_ui(info_filter_values)
 {
     if(glob_prev_page != undefined)
     {
@@ -314,8 +366,8 @@ function update_ui()
         $('.viewer__column_filter_active[data-data_field="'+ key +'"]').html('');
 
         $.each(value, function(index, element) {
-            $('.viewer__column_filter_active[data-data_field="'+ key +'"]').append(create_filter_active(element, key));
-
+            $('.viewer__column_filter_active[data-data_field="'+ key +'"]').append(create_filter_active(element, key, info_filter_values[key][element]));
+            hightlight_results(key, element)
         });
     })
 
@@ -330,4 +382,8 @@ function update_ui()
         }
     });
     update_checkbox_select_all('input_select_item', 'input_select_all_items')
+}
+
+function escape_html(text) {
+    return text.replace(/&/g,'&amp;').replace(/"/g, "&quot;").replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }

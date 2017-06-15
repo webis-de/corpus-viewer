@@ -15,6 +15,45 @@ let glob_count_entries = undefined;
 let glob_mode_add_tag = {status: 'inactive', tag: {id: '', name: '', color: ''}};
 let glob_trigger_modal = undefined;
 
+let glob_template_filter_active_contains = `
+    <div data-value="PLACEHOLDER_VALUE" class="pl-1 pr-1">
+        <span>PLACEHOLDER_VALUE_REAL</span>
+        <span class="float-right">
+            PLACEHOLDER_TEMPLATE_CASE_SENSITIVITY
+            <span class="fa fa-info" data-toggle="popover" data-content="PLACEHOLDER_TEMPLATE_INFO_FILTER_VALUES"></span>
+            <span class="fa fa-times" data-value="PLACEHOLDER_VALUE" data-data_field="PLACEHOLDER_DATA_FIELD"></span>
+        </span>
+    </div>`;
+
+let glob_template_filter_active_number = `
+    <div data-value="PLACEHOLDER_VALUE" class="pl-1 pr-1">
+        <span>PLACEHOLDER_VALUE</span>
+        <span class="float-right">
+            <span class="fa fa-info" data-toggle="popover" data-content="PLACEHOLDER_TEMPLATE_INFO_FILTER_VALUES"></span>
+            <span class="fa fa-times" data-value="PLACEHOLDER_VALUE" data-data_field="PLACEHOLDER_DATA_FIELD"></span>
+        </span>
+    </div>`;
+
+let glob_template_info_filter_values_contains = escape_html(`
+    <table class="table table-bordered table-sm">
+        <tr>
+            <td>total occurence</td>
+            <td>PLACEHOLDER_VALUE_COUNT_TOTAL</td>
+        </tr>
+        <tr>
+            <td>item occurence</td>
+            <td>PLACEHOLDER_VALUE_COUNT_PER_DOCUMENT</td>
+        </tr>
+    </table>`);
+
+let glob_template_info_filter_values_number = escape_html(`
+    <table class="table table-bordered table-sm">
+        <tr>
+            <td>item occurence</td>
+            <td>PLACEHOLDER_VALUE_COUNT_PER_DOCUMENT</td>
+        </tr>
+    </table>`);
+
 $(document).ready(function()
 {
     $(document).on('change', '#input_page', function() { handle_page_input($(this)) });
@@ -28,6 +67,17 @@ $(document).ready(function()
     $(document).on('click', '.viewer__button_add_filter_contains', function(){ handle_click_on_button_add_filter_contains($(this)) });
     $(document).on('click', '.viewer__button_add_filter_number', function(){ handle_click_on_button_add_filter_number($(this)) });
     $(document).on('click', '.viewer__column_filter_active .fa-times', function(){ handle_click_on_remove_filter_value($(this)) });
+
+    $('body').popover({
+        selector: '.viewer__column_filter_active .fa-info',
+        placement: 'top',
+        animation: false,
+        container: 'body',
+        html: true,
+        trigger: 'hover',
+        // template: '<div class="popover link_delete_tag" style="cursor:pointer" role="tooltip"><div class="popover-content" style="padding: 3px 5px"></div></div>'
+    })
+
 
     $(document).on('show.bs.collapse', '.card .collapse', function(e) { set_session_entry('is_collapsed_'+$(this).attr('id'), false) });
     $(document).on('hide.bs.collapse', '.card .collapse', function(e) { set_session_entry('is_collapsed_'+$(this).attr('id'), true) });
@@ -75,7 +125,7 @@ $(document).ready(function()
         template: '<div class="popover link_delete_tag" style="cursor:pointer" role="tooltip"><div class="popover-content" style="padding: 3px 5px"></div></div>'
     })
 
-    $(document).on('contextmenu', '.row_viewer__item', function(e) {handle_rightclick_on_tr(e, $(this))})
+    // $(document).on('contextmenu', '.row_viewer__item', function(e) {handle_rightclick_on_tr(e, $(this))})
 
     $(document).on('click', '.link_add_tag', function(e) { handle_click_link_add_tag(e, $(this)) });
     $(document).on('show.bs.modal', '#modal_add_tag', function(e) { handle_show_modal(e, $(this)) });

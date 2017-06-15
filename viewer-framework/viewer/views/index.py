@@ -127,3 +127,7 @@ def get_url_params(request):
         dict_url_params['viewer__filter_custom'] = request.session[get_current_corpus(request)]['viewer__viewer__filter_custom']
 
     return dict_url_params
+
+def delete_session(request):
+    request.session.flush()
+    return JsonResponse({})

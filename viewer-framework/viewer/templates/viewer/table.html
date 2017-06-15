@@ -21,13 +21,13 @@
                 {% if not field == "viewer__item_selection" and not field == "viewer__tags" %}
                 <td class="column_{{ field }} {% if field|get_type_field:settings == 'text' %}viewer__column_type_text{% endif %}" style="{% if not field|in_columns_checked:request %}display: none;{% endif %}">
                 {% if field|get_type_field:settings == 'text' %}
-                    <table class="fixed_table" data-content="{{ item|get:field }}" data-id_item="{{ item|get:settings.id }}">
+                    <table class="fixed_table" data-id_item="{{ item|get:settings.id }}">
                         <tr>
                             <td>{{ item|get:field }}</td>
                         </tr>
                     </table>
                 {% else %}
-                    <span class="{% if field|get_type_field:settings == 'string' %}text-truncate{% endif %}">{{ item|get:field }}</span>
+                    <span class="text-nowrap">{{ item|get:field }}</span>
                 {% endif %}
                 </td>
                 {% endif %}

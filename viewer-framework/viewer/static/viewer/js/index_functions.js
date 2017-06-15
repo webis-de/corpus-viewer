@@ -305,7 +305,7 @@ function handle_toggle_container_text(table)
     {
         row.hide();
     } else {
-        row.find('td div').html(table.data('content'));
+        row.find('td div').html(table.find('td').html());
         row.show();
     }
 }
@@ -315,15 +315,15 @@ function handle_mouseover_popover_text(table)
     var row = $('.tr_container_text[data-id_item="'+table.data('id_item')+'"]');
     if(!row.is(':visible'))
     {
-        table.popover({
-            // selector: '.fixed_table',
+        let popover = table.popover({
             placement: 'bottom',
             animation: false,
             html: true,
             template: '<div class="popover popover_text" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>',
             container: 'body',
-            // trigger: 'manual',
-        }).popover('show');
+            content: table.find('td').html(),
+        })
+        popover.popover('show');
     }
 }
 
@@ -689,7 +689,7 @@ function load_current_page(update_tags = true)
                 });
             }
 
-            update_ui();
+            update_ui(result.info_filter_values);
             stop_loading();
         },
     });

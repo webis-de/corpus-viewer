@@ -82,7 +82,7 @@ DICT_SETTINGS_VIEWER = {
             'display_name': 'Text'
         },
         'author': {
-            'type': 'text',
+            'type': 'string',
             'display_name': 'Author'
         },
         'location': {
