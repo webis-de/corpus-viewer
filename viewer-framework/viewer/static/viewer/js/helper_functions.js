@@ -83,6 +83,30 @@ function reset_recommendations(wrapper_recommendation)
 
 function create_filter_active(value, data_field)
 {
+    // if is contains filter
+    if(value.startsWith('s_') || value.startsWith('i_'))
+    {
+        is_case_sensitive = value.substring(0, 1) == 's';
+        value_real = value.substring(2);
+
+        return create_filter_active_contains(value, data_field, value_real, is_case_sensitive)
+    } else {
+        return create_filter_active_number(value, data_field)
+    }
+}
+function create_filter_active_contains(value, data_field, value_real, is_case_sensitive)
+{
+    let template_case_sensitivity = '<span class="case_sensitivity bg-faded">aA</span>';
+
+    if(is_case_sensitive == false)
+    {
+        template_case_sensitivity = '';
+    }
+
+    return '<div data-value="'+value+'" class="pl-1 pr-1"><span>'+value_real+'</span><span class="float-right">'+template_case_sensitivity+'<span class="fa fa-times" data-value="'+value+'" data-data_field="'+ data_field +'"></span></span></div>';
+}
+function create_filter_active_number(value, data_field)
+{
     return '<div data-value="'+value+'" class="pl-1 pr-1"><span>'+value+'</span><span class="float-right"><span class="fa fa-times" data-value="'+value+'" data-data_field="'+ data_field +'"></span></span></div>';
 }
 

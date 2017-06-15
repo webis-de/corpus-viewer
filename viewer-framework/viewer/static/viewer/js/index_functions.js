@@ -93,7 +93,59 @@ function handle_click_on_recommendation_filter(recommendation, func)
     }
 }
 
-function handle_click_on_button_add_filter(button)
+function handle_click_on_button_case_sensitivity(button)
+{
+    button.blur();
+    if(button.hasClass('active'))
+    {
+        button.removeClass('active')
+    } else {
+        button.addClass('active')
+    }
+}
+
+function handle_click_on_button_add_filter_contains(button)
+{
+    button.blur();
+    let data_field = button.data('data_field');
+    let input = $('#input_' + data_field);
+    let value = input.val().trim();
+
+    if(value == '') 
+    {
+        return;
+    }
+
+    let case_sensitivity = $('.viewer__button_case_sensitivity[data-data_field="'+ data_field +'"]');
+    if(case_sensitivity.hasClass('active') == true)
+    {
+       value = 's_' + value;
+    } else {
+       value = 'i_' + value;
+    }
+
+    let is_unique = true;
+    $.each($('.viewer__column_filter_active[data-data_field="'+ data_field +'"]>div'), function(key, div){
+        // console.log($(div).data('value').toString(), value)
+        if($(div).data('value').toString() == value)
+        {
+            is_unique = false;
+            return false;
+        }
+    });
+
+    if(is_unique == true)
+    {
+        // console.log(value)
+        glob_filter_custom[data_field].push(value)
+        set_session_entry('viewer__filter_custom', glob_filter_custom, function() {
+            input.val('');
+            glob_current_page = 1;
+            load_current_page();
+        })
+    }
+}
+function handle_click_on_button_add_filter_number(button)
 {
     button.blur();
     let data_field = button.data('data_field');
@@ -106,8 +158,9 @@ function handle_click_on_button_add_filter(button)
     }
 
     let is_unique = true;
-    $.each($('.viewer__column_filter_active>div'), function(key, div){
-        if($(div).data('value') == value)
+    $.each($('.viewer__column_filter_active[data-data_field="'+ data_field +'"]>div'), function(key, div){
+        // console.log($(div).data('value').toString(), value)
+        if($(div).data('value').toString() == value)
         {
             is_unique = false;
             return false;
@@ -116,10 +169,10 @@ function handle_click_on_button_add_filter(button)
 
     if(is_unique == true)
     {
+        // console.log(value)
         glob_filter_custom[data_field].push(value)
         set_session_entry('viewer__filter_custom', glob_filter_custom, function() {
             input.val('');
-            $('.viewer__column_filter_active[data-data_field="'+ data_field +'"]').append(create_filter_active(value, data_field));
             glob_current_page = 1;
             load_current_page();
         })
@@ -133,7 +186,6 @@ function handle_click_on_remove_filter_value(cross)
 
     remove_element_from_array(glob_filter_custom[data_field], value)
     set_session_entry('viewer__filter_custom', glob_filter_custom, function() {
-        $('.viewer__column_filter_active[data-data_field="'+ data_field +'"] div[data-value="'+ value +'"]').remove();
         glob_current_page = 1;
         load_current_page();
     })

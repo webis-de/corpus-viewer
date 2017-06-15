@@ -142,7 +142,13 @@ def filter_data(request, data, obj_filter):
                 type_data_field = get_setting('data_fields', request=request)[obj_filter['data_field']]['type']
                 if type_data_field == 'string' or type_data_field == 'text':
                     # return only items which contain all the values
-                    data = [item for item in data if value in str(item[obj_filter['data_field']])]
+                    case_sensitivity = value[0]
+                    real_value = value[2:]
+                    if case_sensitivity == 'i':
+                        data = [item for item in data if real_value.lower() in str(item[obj_filter['data_field']]).lower()]
+                    else:
+                        data = [item for item in data if real_value in str(item[obj_filter['data_field']])]
+                        
                 elif type_data_field == 'list':
                     raise ValueError('NOT IMPLEMENTED')
             # if the filter is 'number'

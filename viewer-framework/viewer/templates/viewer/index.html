@@ -59,10 +59,10 @@
                                 <input name="tag" type="text" id="input_filter_tags" class="form-control form-control-sm" placeholder="Enter Tag-Name(s)" value="">
                                 <div id="wrapper_tag_recommendations_filter" class="wrapper_recommendation" style="display: none"></div>
                                 <ul id="list_filter_tags" class="list-unstyled">
-                                    {% get_tags as tags %}
+                                    <!-- {% get_tags as tags %}
                                     {% for tag in tags %}
                                         <li data-tag="{{ tag }}"><span class="badge badge-default">{{ tag }} <i class="fa fa-times" aria-hidden="true"></i></span></li>
-                                    {% endfor %}
+                                    {% endfor %} -->
                                 </ul>
                             </div>
                         {% for filter_custom in settings.filters %}
@@ -73,7 +73,7 @@
                                         {{ filter_custom.description }}
                                     </label>
                                 </div> -->
-                            {% elif filter_custom.type == 'contains' or filter_custom.type == 'number' %}
+                            {% elif filter_custom.type == 'contains' %}
                                 <div class="form-group">
                                     <label for="input_{{ filter_custom.data_field }}">{{ filter_custom.description }}</label>
                                     <div class="input-group input-group-sm">
@@ -86,7 +86,14 @@
                                         >
                                         <span class="input-group-btn">
                                             <button 
-                                                class="btn btn-secondary viewer__button_add_filter" 
+                                                class="btn btn-secondary viewer__button_case_sensitivity" 
+                                                type="button"
+                                                data-data_field="{{ filter_custom.data_field }}" >aA
+                                            </button>
+                                        </span>
+                                        <span class="input-group-btn">
+                                            <button 
+                                                class="btn btn-primary viewer__button_add_filter_contains" 
                                                 data-data_field="{{ filter_custom.data_field }}" 
                                                 type="button">Add
                                             </button>
@@ -94,15 +101,30 @@
                                     </div>
                                     <div class="row pl-1 pr-1">
                                         <div class="col viewer__column_filter_active" data-data_field="{{ filter_custom.data_field }}">
-                                        {% get_values_filter filter_custom as values_filter %}
-                                        {% for value in values_filter %}
-                                            <div data-value="{{ value }}" class="pl-1 pr-1">
-                                                <span>{{ value }}</span>
-                                                <span class="float-right">
-                                                    <span class="fa fa-times" data-value="{{ value }}" data-data_field="{{ filter_custom.data_field }}"></span>
-                                                </span>
-                                            </div>
-                                        {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% elif filter_custom.type == 'number' %}
+                                <div class="form-group">
+                                    <label for="input_{{ filter_custom.data_field }}">{{ filter_custom.description }}</label>
+                                    <div class="input-group input-group-sm">
+                                        <input 
+                                            name="{{ filter_custom.data_field }}" 
+                                            type="text" 
+                                            id="input_{{ filter_custom.data_field }}" 
+                                            class="form-control" 
+                                            placeholder="{{ filter_custom.placeholder }}" 
+                                        >
+                                        <span class="input-group-btn">
+                                            <button 
+                                                class="btn btn-primary viewer__button_add_filter_number" 
+                                                data-data_field="{{ filter_custom.data_field }}" 
+                                                type="button">Add
+                                            </button>
+                                        </span>
+                                    </div>
+                                    <div class="row pl-1 pr-1">
+                                        <div class="col viewer__column_filter_active" data-data_field="{{ filter_custom.data_field }}">
                                         </div>
                                     </div>
                                 </div>

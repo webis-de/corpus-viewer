@@ -129,11 +129,17 @@ html {
 .viewer__column_filter_active {
     min-height: 0px;
 }
-.viewer__column_filter_active>div {
-    font-size: 0.8rem;
-    border: 1px solid rgba(0,0,0,.125);
-    margin-top: 0.1rem;
-}
-.viewer__column_filter_active .fa-times {
-    cursor: pointer;
-}
+    .viewer__column_filter_active>div {
+        font-size: 0.8rem;
+        border: 1px solid rgba(0,0,0,.125);
+        margin-top: 0.1rem;
+    }
+    .viewer__column_filter_active .case_sensitivity {
+        border: 1px solid rgba(0,0,0,.125);
+        margin-right: 0.1rem;
+        font-size: 0.9em; 
+        border-radius: 0.3em;
+    }
+    .viewer__column_filter_active .fa-times {
+        cursor: pointer;
+    }
