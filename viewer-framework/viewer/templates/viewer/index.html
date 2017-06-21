@@ -4,7 +4,6 @@
 
 {% get_is_collapsed_div_filters as is_collapsed_div_filters %}
 {% get_is_collapsed_div_tags as is_collapsed_div_tags %}
-{% get_is_collapsed_div_settings as is_collapsed_div_settings %}
 
 <div class="row">
 	<div class="col">
@@ -13,9 +12,19 @@
         <div id="json_filters" data-json_filters="{{ json_filters }}" style="display: none"></div>
     </div>
     <div class="col d-flex justify-content-end align-items-center">
-        <div id="wrapper_loading">
+        <div id="wrapper_loading" class="mr-2">
             <i class="fa fa-refresh fa-spin"></i>
         </div>
+		<div class="btn-group btn-group-sm" role="group">
+			<button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">
+				<i class="fa fa-cog" ></i>
+			</button>
+			<div class="dropdown-menu" style="right: 0; left: inherit;">
+				<!-- <button type="button" class="btn btn-secondary dropdown-item">Export</button> -->
+				<!-- <button type="button" class="btn btn-secondary dropdown-item">Documentation</button> -->
+				<a class="dropdown-item" href="#" data-toggle="modal" data-target="#modal_export_data">Export</a>
+			</div>
+		</div>
     </div>
 </div>
 <div class="row">
@@ -205,22 +214,6 @@
                                     <tbody id="wrapper_tags_filtered_items"></tbody>
                                 </table>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- SETTINGS -->
-        <div class="row">
-            <div class="col">
-                <div class="card">
-                    <div class="card-header py-1 px-2">
-                        <a data-toggle="collapse" href="#div_settings" class="text-muted">Settings</a>
-                    </div>
-                    <div class="collapse {% if is_collapsed_div_settings == False %}show{% endif %}" id="div_settings">
-                        <div class="card-block py-2 px-2">
-                            <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal_export_data">Export</button>
-                            <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal_import_data">Import</button>
                         </div>
                     </div>
                 </div>

@@ -1,0 +1,13 @@
+html {
+  overflow-y: scroll;
+}
+#navigationtest {
+    position: fixed;
+}
+#navigationtest a.active {
+    font-weight: bold;
+}
+#navigationtest ul {
+    margin-left: 1em;
+    font-size: 0.9em;
+}

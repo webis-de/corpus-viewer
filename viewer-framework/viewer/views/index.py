@@ -16,6 +16,7 @@ def index(request):
         if obj['task'] == 'set_session_entry':
             request.session[get_current_corpus(request)]['viewer__'+obj['session_key']] = obj['session_value']
             response['status'] = 'success'
+            print(request.session[get_current_corpus(request)]['viewer__'+obj['session_key']])
         elif obj['task'] == 'get_tag_recommendations':
             array_tag_recommendations = get_tag_recommendations(request, obj)
             response['status'] = 'success'

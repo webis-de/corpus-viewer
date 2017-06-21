@@ -119,7 +119,6 @@ def set_sessions(request):
         
     set_session(request, 'is_collapsed_div_filters', default=True)
     set_session(request, 'is_collapsed_div_tags', default=True)
-    set_session(request, 'is_collapsed_div_settings', default=True)
     set_session(request, 'viewer__selected_tags', default=[])
 
     set_session_from_url(request, 'viewer__page', default=1)

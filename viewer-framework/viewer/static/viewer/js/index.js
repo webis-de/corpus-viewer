@@ -37,11 +37,11 @@ let glob_template_filter_active_number = `
 let glob_template_info_filter_values_contains = escape_html(`
     <table class="table table-bordered table-sm">
         <tr>
-            <td>total occurence</td>
+            <td>term frequency</td>
             <td>PLACEHOLDER_VALUE_COUNT_TOTAL</td>
         </tr>
         <tr>
-            <td>item occurence</td>
+            <td>document frequency</td>
             <td>PLACEHOLDER_VALUE_COUNT_PER_DOCUMENT</td>
         </tr>
     </table>`);
@@ -49,7 +49,7 @@ let glob_template_info_filter_values_contains = escape_html(`
 let glob_template_info_filter_values_number = escape_html(`
     <table class="table table-bordered table-sm">
         <tr>
-            <td>item occurence</td>
+            <td>document frequency</td>
             <td>PLACEHOLDER_VALUE_COUNT_PER_DOCUMENT</td>
         </tr>
     </table>`);

@@ -200,12 +200,12 @@ function handle_reset_filters()
         glob_filter_custom[key] = [];
     })
 
-    let input_toggle_columns_all = $('#input_toggle_columns_all')
-    if(!input_toggle_columns_all.prop('checked'))
-    {
-        input_toggle_columns_all.prop('checked', true)
-        input_toggle_columns_all.trigger('change')
-    }
+    // let input_toggle_columns_all = $('#input_toggle_columns_all')
+    // if(!input_toggle_columns_all.prop('checked'))
+    // {
+    //     input_toggle_columns_all.prop('checked', true)
+    //     input_toggle_columns_all.trigger('change')
+    // }
 
     load_current_page();
 }
