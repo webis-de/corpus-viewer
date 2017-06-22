@@ -73,7 +73,7 @@ DICT_SETTINGS_VIEWER = {
     'use_cache': True,
     'data_fields': {
         'id': {
-            'type': 'int',
+            'type': 'number',
             'display_name': 'ID'
         },
         'text': {
@@ -81,7 +81,7 @@ DICT_SETTINGS_VIEWER = {
             'display_name': 'Text'
         },
         'retweet_count': {
-            'type': 'int',
+            'type': 'number',
             'display_name': 'Retweets'
         },
         'annotatorA': {
@@ -109,36 +109,23 @@ DICT_SETTINGS_VIEWER = {
     # Possible filter types: 'text', 'checkbox'
     #
     'filters': [
-        # {
-        #   'type': 'checkbox',
-        #   'data_field_name': 'retweet_count',
-        #   'description': 'Some Checkbox',
-        #   'default_value': False,
-        #   'event': 'change'
-        # },
         {
-            'type': 'contains',
             'data_field': 'text',
             'description': 'Tweet Text',
             'placeholder': 'Text Input',
             'default_value': '',
-            'event': 'change'
         },
         {
-            'type': 'contains',
             'data_field': 'majority',
             'description': 'Majority',
             'placeholder': 'Text Input',
             'default_value': '',
-            'event': 'change'
         },
         {
-            'type': 'number',
             'data_field': 'retweet_count',
             'description': 'Count Retweets',
             'placeholder': 'Count Input',
             'default_value': '',
-            'event': 'change'
         },
     ],
 }

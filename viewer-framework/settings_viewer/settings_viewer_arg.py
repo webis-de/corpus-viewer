@@ -70,7 +70,7 @@ DICT_SETTINGS_VIEWER = {
     'use_cache': False,
     'data_fields': {
         'id': {
-            'type': 'int',
+            'type': 'number',
             'display_name': 'ID'
         },
         'topic': {
@@ -94,36 +94,23 @@ DICT_SETTINGS_VIEWER = {
     # Possible filter types: 'text', 'checkbox'
     #
     'filters': [
-        # {
-        #   'type': 'checkbox',
-        #   'data_field_name': 'retweet_count',
-        #   'description': 'Some Checkbox',
-        #   'default_value': False,
-        #   'event': 'change'
-        # },
         {
-            'type': 'contains',
             'data_field': 'topic',
             'description': 'Topic',
             'placeholder': 'Text Input',
             'default_value': '',
-            'event': 'change'
         },
         {
-            'type': 'contains',
             'data_field': 'opinion',
             'description': 'Opinion',
             'placeholder': 'Text Input',
             'default_value': '',
-            'event': 'change'
         },
         {
-            'type': 'contains',
             'data_field': 'text',
             'description': 'Text',
             'placeholder': 'Text Input',
             'default_value': '',
-            'event': 'change'
         },
     ],
 }

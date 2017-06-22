@@ -29,7 +29,7 @@ def load_data(request):
     data_only_ids = []
     dict_ids = {}
 
-    key_cache = 'data_' + get_current_corpus(request)
+    # key_cache = 'data_' + get_current_corpus(request)
     start = time.perf_counter()
     try:
         data_cached = glob_cache[key_cache]

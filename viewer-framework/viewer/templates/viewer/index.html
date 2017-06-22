@@ -75,14 +75,7 @@
                                 </ul>
                             </div>
                         {% for filter_custom in settings.filters %}
-                            {% if filter_custom.type == 'checkbox' %}
-                                <!-- <div class="form-check mb-3">
-                                    <label class="form-check-label">
-                                        <input name="{{ filter_custom.data_field  }}" id="input_{{ filter_custom.data_field  }}" type="checkbox" class="form-check-input" {{ filter_custom.default_value }}²>
-                                        {{ filter_custom.description }}
-                                    </label>
-                                </div> -->
-                            {% elif filter_custom.type == 'contains' %}
+                            {% if filter_custom.data_field|get_is_filter_for_alphanumeric:settings %}
                                 <div class="form-group">
                                     <label for="input_{{ filter_custom.data_field }}">{{ filter_custom.description }}</label>
                                     <div class="input-group input-group-sm">
@@ -113,7 +106,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            {% elif filter_custom.type == 'number' %}
+                            {% else %}
                                 <div class="form-group">
                                     <label for="input_{{ filter_custom.data_field }}">{{ filter_custom.description }}</label>
                                     <div class="input-group input-group-sm">

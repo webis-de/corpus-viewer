@@ -148,7 +148,7 @@ DICT_SETTINGS_VIEWER = {
     # which data-fields (columns) of the input data should be registered to the viewer?
     'data_fields': {
         'rev_id': {
-            'type': 'int',
+            'type': 'number',
             'display_name': 'ID'
         },
         'comment': {
@@ -156,7 +156,7 @@ DICT_SETTINGS_VIEWER = {
             'display_name': 'Comment'
         },
         'year': {
-            'type': 'int',
+            'type': 'number',
             'display_name': 'Year'
         },
         'logged_in': {
@@ -176,7 +176,7 @@ DICT_SETTINGS_VIEWER = {
             'display_name': 'Split'
         },
         'number_of_annotations': {
-            'type': 'int',
+            'type': 'number',
             'display_name': '#Annotations'
         },
         'attack': {
@@ -195,36 +195,28 @@ DICT_SETTINGS_VIEWER = {
     # specify the filters for the viewer
     'filters': [
         {
-            'type': 'contains',
             'data_field': 'split',
             'description': 'Split',
             'placeholder': 'Text Input',
             'default_value': '',
-            'event': 'change'
         },
         {
-            'type': 'number',
             'data_field': 'year',
             'description': 'Year',
             'placeholder': 'Year',
             'default_value': '',
-            'event': 'change'
         },
         {
-            'type': 'number',
             'data_field': 'number_of_annotations',
             'description': 'Number of annotations',
             'placeholder': 'Number of annotations',
             'default_value': '',
-            'event': 'change'
         },
 	{
-            'type': 'contains',
             'data_field': 'comment',
             'description': 'comment',
             'placeholder': 'Text Input',
             'default_value': '',
-            'event': 'change'
         },
     ],
 }

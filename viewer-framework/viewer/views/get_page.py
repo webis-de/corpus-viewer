@@ -120,15 +120,17 @@ def get_filtered_data(request):
     set_data = None
     for obj_filter in get_setting('filters', request=request):
         # filter the data by the current filter
-        data_tmp, info_values, skipped = filter_data(request, data, obj_filter)
+        set_data_new, info_values, skipped = filter_data(request, data, obj_filter)
+        # print(set_data_new)
         if not skipped:
             if set_data == None:
-                set_data = data_tmp
+                set_data = set_data_new
             else:
-                set_data = set_data.intersection(data_tmp)
+                set_data = set_data.intersection(set_data_new)
                 
             info_filter_values[obj_filter['data_field']] = info_values
-
+    # print(len(data))
+    # print(len(set_data))
     if set_data != None:
         data = [item for item in data if item[get_setting('id', request=request)] in set_data]
     #
@@ -142,6 +144,8 @@ def get_filtered_data(request):
     return data, data_only_ids, info_filter_values
 
 def filter_data(request, data, obj_filter):
+    set_data_new = set()
+
     info_values = {}
 
     skipped = True
@@ -156,15 +160,16 @@ def filter_data(request, data, obj_filter):
         info_values = {value:{'value_count_per_document': 0, 'value_count_total': 0} for value in values}
 
         if get_setting('data_type', request=request) == 'database':
+            raise ValueError('NOT IMPLEMENTED')
             # TODO: make flexible filters for database
             data = data.filter(**{obj_filter['data_field']+'__icontains': value})
         else:
+            filter_type = get_setting('data_fields', request=request)[obj_filter['data_field']]['type']
             # if the filter is 'contains'
-            if obj_filter['type'] == 'contains':
+            if filter_type == 'string' or filter_type == 'text':
                 # get the type (string, list) of the data-field
                 type_data_field = get_setting('data_fields', request=request)[obj_filter['data_field']]['type']
                 if type_data_field == 'string' or type_data_field == 'text':
-                    set_data_new = set()
 
                     for item in data:
                         text = str(item[obj_filter['data_field']])
@@ -192,19 +197,16 @@ def filter_data(request, data, obj_filter):
                         if keep:
                             set_data_new.add(item[field_id])
 
-                    data = set_data_new
+                    # data = set_data_new
                         
                 elif type_data_field == 'list':
                     raise ValueError('NOT IMPLEMENTED')
             # if the filter is 'number'
-            elif obj_filter['type'] == 'number':
+            elif filter_type == 'number':
                 values_parsed = parse_values(values)
-
-                set_data_new = set()
 
                 for item in data:
                     keep = True
-                    
                     for key, numbers in values_parsed.items():
                         if key == 'equal':
                             for obj in numbers:
@@ -245,10 +247,13 @@ def filter_data(request, data, obj_filter):
                     if keep:
                             set_data_new.add(item[field_id])
                 
-                data = set_data_new
+                # data = set_data_new
 
+
+    print(obj_filter)
+    print(type(set_data_new))
                 # check if a specific number is requested
-    return data, info_values, skipped
+    return set_data_new, info_values, skipped
 
 def parse_values(values):
     values_parsed = {}

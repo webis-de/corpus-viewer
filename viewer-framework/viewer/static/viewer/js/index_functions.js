@@ -716,18 +716,18 @@ function load_page_parameters()
     })
 }
 
-function load_filters()
-{
-    $.each($('#json_filters').data('json_filters'), function(key, value){
-        $(document).on(value.event, '#input_'+value.data_field, function(){
-            let data_field = $(this).prop('name')
-            let value = $(this).val()
-            glob_filter_custom[data_field] = value
+// function load_filters()
+// {
+//     $.each($('#json_filters').data('json_filters'), function(key, value){
+//         $(document).on(value.event, '#input_'+value.data_field, function(){
+//             let data_field = $(this).prop('name')
+//             let value = $(this).val()
+//             glob_filter_custom[data_field] = value
 
-            set_session_entry('viewer__filter_custom', glob_filter_custom, function() {
-                glob_current_page = 1;
-                load_current_page();
-            })
-        });
-    })
-}
+//             set_session_entry('viewer__filter_custom', glob_filter_custom, function() {
+//                 glob_current_page = 1;
+//                 load_current_page();
+//             })
+//         });
+//     })
+// }

@@ -7,6 +7,20 @@ import json
 def tags(request):
     tags = m_Tag.objects.filter(key_corpus=get_current_corpus(request))
 
+
+    # with open('int.bin', 'w') as f:
+    #     for x in range(0, 20 * 100 000 000):
+    #             f.write(1)
+
+    with open('int.bin', 'bw') as f:
+        f.write(bytes(1324324234)) 
+    with open('float.bin', 'bw') as f:
+        f.write(bytes(1.0)) 
+    with open('string.bin', 'bw') as f:
+        f.write('e') 
+    with open('text.bin', 'bw') as f:
+        f.write('asdds') 
+
     if request.method == 'POST':
         cookie_id = request.COOKIES['csrftoken']
         response = {}

@@ -70,7 +70,7 @@ DICT_SETTINGS_VIEWER = {
     'use_cache': False,
     'data_fields': {
         'id': {
-            'type': 'int',
+            'type': 'number',
             'display_name': 'ID'
         },
         'city': {
@@ -86,7 +86,7 @@ DICT_SETTINGS_VIEWER = {
             'display_name': 'Author'
         },
         'location': {
-            'type': 'int',
+            'type': 'number',
             'display_name': 'Location'
         }
     },
@@ -98,36 +98,23 @@ DICT_SETTINGS_VIEWER = {
     # Possible filter types: 'text', 'checkbox'
     #
     'filters': [
-        # {
-        #   'type': 'checkbox',
-        #   'data_field_name': 'retweet_count',
-        #   'description': 'Some Checkbox',
-        #   'default_value': False,
-        #   'event': 'change'
-        # },
         {
-            'type': 'contains',
             'data_field': 'city',
             'description': 'City',
             'placeholder': 'Text Input',
             'default_value': '',
-            'event': 'change'
         },
         {
-            'type': 'contains',
             'data_field': 'text',
             'description': 'Text',
             'placeholder': 'Text Input',
             'default_value': '',
-            'event': 'change'
         },
         {
-            'type': 'number',
             'data_field': 'location',
             'description': 'Location Rating',
             'placeholder': 'Text Input',
             'default_value': '',
-            'event': 'change'
         },
     ],
 }
