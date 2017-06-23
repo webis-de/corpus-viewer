@@ -250,8 +250,6 @@ def filter_data(request, data, obj_filter):
                 # data = set_data_new
 
 
-    print(obj_filter)
-    print(type(set_data_new))
                 # check if a specific number is requested
     return set_data_new, info_values, skipped
 
