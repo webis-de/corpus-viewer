@@ -1,6 +1,9 @@
-from .shared_code import set_sessions, load_data, get_setting, get_or_create_tag, get_current_corpus
+from .shared_code import set_sessions, load_data, get_setting, get_or_create_tag, \
+    get_current_corpus, get_items_by_indices, get_item_by_ids, glob_data_manager, \
+    get_setting_for_corpus
 import collections
 import re
+import os
 import time
 import json
 from django.http import JsonResponse
@@ -22,8 +25,12 @@ def get_page(request):
     start = time.perf_counter()
     set_sessions(request)
 ##### load data and apply filters
-    data, data_only_ids, info_filter_values = get_filtered_data(request)
-    list_tags = get_tags_filtered_items(data_only_ids, request)
+    info_filter_values = {}
+    list_ids = get_filtered_data(request)
+    # print(list_ids)
+    return JsonResponse({})
+    list_tags = []
+    # list_tags = get_tags_filtered_items(data_only_ids, request)
 ##### handle post requests
     if request.method == 'POST':
         response = {}
@@ -35,35 +42,44 @@ def get_page(request):
 
         return JsonResponse(response)
 ##### page the dataset
-    paginator = Paginator(data, get_setting('page_size', request=request))
+    paginator = Paginator(list_ids, get_setting('page_size', request=request))
+    # paginator = Paginator(data, get_setting('page_size', request=request))
     try:
-        data = paginator.page(request.session[get_current_corpus(request)]['viewer__viewer__page'])
+        page_current = paginator.page(request.session[get_current_corpus(request)]['viewer__viewer__page'])
     except PageNotAnInteger:
         # If page is not an integer, deliver first page.
-        data = paginator.page(1)
+        page_current = paginator.page(1)
     except EmptyPage:
         # If page is out of range (e.g. 9999), deliver last page of results.
-        data = paginator.page(paginator.num_pages)
+        page_current = paginator.page(paginator.num_pages)
 ##### add tags to the dataset
-    add_tags(data, request)
+    current_corpus = get_current_corpus(request)
+
+    with open(os.path.join(glob_path_cache, current_corpus + '.marshal'), 'rb') as f:
+        metadata = (current_corpus, f)
+
+        data = get_item_by_ids(page_current, metadata)
+
+    # add_tags(data, request)
 ##### handle post requests
     context = {}
     context['settings'] = get_setting(request=request)
+    context['page_current'] = page_current
     context['data'] = data
 
     previous_page_number = None
     next_page_number = None
-    if data.has_previous():
-        previous_page_number = data.previous_page_number()
-    if data.has_next():
-        next_page_number = data.next_page_number()
+    if page_current.has_previous():
+        previous_page_number = page_current.previous_page_number()
+    if page_current.has_next():
+        next_page_number = page_current.next_page_number()
     template = get_template('viewer/table.html')
     duration = round(float(time.perf_counter()-start) * 1000, 2)
     print('TIME: '+str(duration)+'ms')
     return JsonResponse({'content': template.render(context, request),
             'tags_filtered_items': list_tags,
-            'count_pages': data.paginator.num_pages,
-            'count_entries': data.paginator.count,
+            'count_pages': page_current.paginator.num_pages,
+            'count_entries': page_current.paginator.count,
             'previous_page_number': previous_page_number,
             'next_page_number': next_page_number,
             'info_filter_values': info_filter_values
@@ -98,8 +114,9 @@ def export_data(obj, data, request):
     return response
 
 def get_filtered_data(request):
+    current_corpus = get_current_corpus(request)
     start = time.perf_counter()
-    data, data_only_ids, dict_ids = load_data(request)
+    list_ids = glob_data_manager.get_all_ids_for_corpus(current_corpus, get_setting(request=request))
     print('time for loading all data: '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
     #
     # FILTER BY TAGS 
@@ -136,12 +153,13 @@ def get_filtered_data(request):
     #
     # UPDATE data_only_ids
     #
-    if get_setting('data_type', request=request) == 'database':
-        data_only_ids = [item.id for item in data]
-    else:
-        # update data_only_ids
-        data_only_ids = [str(item[get_setting('id', request=request)]) for item in data]
-    return data, data_only_ids, info_filter_values
+    # if get_setting('data_type', request=request) == 'database':
+    #     data_only_ids = [item.id for item in data]
+    # else:
+    #     # update data_only_ids
+    #     data_only_ids = [str(item[get_setting('id', request=request)]) for item in data]
+    return list_ids 
+    # return data, data_only_ids, info_filter_values
 
 def filter_data(request, data, obj_filter):
     set_data_new = set()

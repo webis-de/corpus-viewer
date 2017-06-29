@@ -4,13 +4,15 @@ import os
 import importlib
 import time
 import glob
-import pickle
-import struct
-import msgpack
-import marshal
+import sys
+import pickle as marshal
+# import marshal
+# import struct 
+# import msgpack
 # from struct import *
 from django.core.cache import cache
 from viewer.models import m_Tag, m_Entity
+from ..Data_Manager import *
 
 modules = glob.glob('settings_viewer/*.py')
 __all__ = [os.path.basename(f)[:-3] for f in modules if os.path.isfile(f) and not f.endswith('__init__.py')]
@@ -19,26 +21,8 @@ for corpus in __all__:
     module_settings = importlib.import_module('settings_viewer.'+corpus)
     glob_settings[corpus] = module_settings.DICT_SETTINGS_VIEWER
 
-glob_cache = {}
+glob_data_manager = Data_Manager(glob_settings)
 # cache.set('data_', {})
-
-glob_path_cache = '../cache'
-
-# print('started')
-# counter = 0
-# start = time.perf_counter()
-# with open(os.path.join(glob_path_cache, 'settings_viewer_large_corpus.ldjson'), 'r') as f:
-#     for line in f:
-#         pass
-#         if counter % 100000 == 0:
-#             print(counter)
-#         counter += 1
-# print(str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
-# print('finished')
-# 35 000 000
-# 2 000 000 000
-# 35100000
-# 35200000
 
 
 def get_or_create_tag(name, request, defaults={}):
@@ -49,6 +33,13 @@ def get_or_create_tag(name, request, defaults={}):
     return db_obj_tag
 
 def load_data(request):
+    current_corpus = get_current_corpus(request)
+    data = write_corpus(request)
+    data = load_corpus(request)
+    
+    return glob_cache[current_corpus]['list']
+
+
     data = []
     data_only_ids = []
     dict_ids = {}
@@ -71,9 +62,9 @@ def load_data(request):
 #     data, data_only_ids, dict_ids = data_cached
 
 #     return data, data_only_ids, dict_ids
-# else:
+# else: 
     # print('not using cache')
-    if get_setting('data_type', request=request) == 'database':
+    if get_setting('data_type', request=request) == 'database': 
         data = model_custom.objects.all()
         data_only_ids = [str(getattr(entity, get_setting('id', request=request))) for entity in model_custom.objects.all().only(get_setting('id', request=request))]
 
@@ -84,9 +75,7 @@ def load_data(request):
         elif get_setting('data_type', request=request) == 'ldjson-file':
             data = load_file_ldjson(request)
         elif get_setting('data_type', request=request) == 'custom':
-            data = write_corpus(request)
-            print('')
-            print('')
+            # data = write_corpus(request)
             data = load_corpus(request)
             pass
         # list of ids
@@ -101,231 +90,118 @@ def load_data(request):
 
     return data, data_only_ids, dict_ids
 
-def get_item_ldjson(index, metadata):
-    id_item = glob_cache[metadata[0]]['list'][index]
-    index_unecessary = glob_cache[metadata[0]]['index'][id_item]['index']
+def get_items_by_indices(list_indices, metadata):
+    list_result = []
 
-    for index_line, line in enumerate(metadata[1]):
-        if index_line == index_unecessary:
-            obj = json.loads(line)
-            print(obj['text'][-20:])
-            break
+    list_items = glob_cache[metadata[0]]['list']
+    index_items = glob_cache[metadata[0]]['index']
+    file = metadata[1]
 
-def get_item_binary(index, metadata, with_size=False):
+    for index in list_indices:
+        item = index_items[list_items[index]]
+
+        file.seek(item['offset_in_bytes'])
+
+        list_result.append(marshal.loads(file.read(item['size_in_bytes'])))
+
+    return list_result
+
+def get_item_by_ids(list_ids, metadata):
+    list_result = []
+
+    index_items = glob_cache[metadata[0]]['index']
+    file = metadata[1]
+
+    for id_item in list_ids:
+        item = index_items[id_item]
+
+        file.seek(item['offset_in_bytes'])
+        # file.seek(item[1])
+
+        list_result.append(marshal.loads(file.read(item['size_in_bytes'])))
+        # list_result.append(marshal.loads(file.read(item[2])))
+
+    return list_result
+
+def get_item_by_index(index, metadata):
     id_item = glob_cache[metadata[0]]['list'][index]
+
+    item = glob_cache[metadata[0]]['index'][id_item]
+
+    offset_in_bytes = item['offset_in_bytes']
+    size_in_bytes = item['size_in_bytes']
+
+    metadata[1].seek(offset_in_bytes)
+    item_bin = metadata[1].read(size_in_bytes)
+
+    marshal.loads(item_bin)
+
+def get_item_by_id(id_item, metadata):
     offset_in_bytes = glob_cache[metadata[0]]['index'][id_item]['offset_in_bytes']
     size_in_bytes = glob_cache[metadata[0]]['index'][id_item]['size_in_bytes']
 
     metadata[1].seek(offset_in_bytes)
-    if with_size:
-        item_bin = metadata[1].read(size_in_bytes)
-    else:
-        item_bin = metadata[1].read()
+    item_bin = metadata[1].read(size_in_bytes)
 
-    if metadata[3] == 'pickle':
-        obj = pickle.loads(item_bin)
-        print(obj['text'][-20:])
-    elif metadata[3] == 'marshal':
-        obj = marshal.loads(item_bin)
-        print(obj['text'][-20:])
-    elif metadata[3] == 'msgpack':
-        obj = msgpack.unpackb(item_bin, encoding='utf-8')
-        print(obj['text'][-20:])
-    # for index_line, line in enumerate(metadata[1]):
-    #     if index_line == index_unecessary:
-    #         obj = json.loads(line)
-    #         print(obj)
-    #         break
-    # offset_in_bytes = glob_cache[metadata[0]]['index'][id_item]['offset_in_bytes']
-    # metadata[1].seek
+    return marshal.loads(item_bin)
 
 def load_corpus(request):
+    start = time.perf_counter()
     field_id = get_setting_for_corpus(get_current_corpus(request), key='id')
     
-    list_modes = ['ldjson', 'pickle', 'msgpack', 'marshal']
-    for mode in list_modes:
-        print('LOADING IN MODE '+mode.upper())
-        current_corpus = get_current_corpus(request)+'_'+mode
+    current_corpus = get_current_corpus(request)
 
-        index = 900000
+    id_item = glob_cache[current_corpus]['list'][10]
 
-        if mode == 'ldjson':
-            with open(os.path.join(glob_path_cache, current_corpus + '.ldjson'), 'r') as f:
-                data = (current_corpus, f, field_id)
-                start = time.perf_counter()
-                get_item_ldjson(index=index, metadata=data)
-                print('loading time ('+mode+'): '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
-        elif mode == 'pickle':
-            with open(os.path.join(glob_path_cache, current_corpus + '.pickle'), 'rb') as f:
-                start = time.perf_counter()
-                data = (current_corpus, f, field_id, mode)
-                start = time.perf_counter()
-                get_item_binary(index=index, metadata=data)
-                print('loading time ('+mode+'): '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
-                start = time.perf_counter()
-                get_item_binary(index=index, metadata=data, with_size=True)
-                print('loading time ('+mode+'): '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
-        elif mode == 'msgpack':
-            with open(os.path.join(glob_path_cache, current_corpus + '.msgpack'), 'rb') as f:
-                data = (current_corpus, f, field_id, mode)
-                start = time.perf_counter()
-                get_item_binary(index=index, metadata=data, with_size=True)
-                print('loading time ('+mode+'): '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
-        elif mode == 'marshal':
-            with open(os.path.join(glob_path_cache, current_corpus + '.marshal'), 'rb') as f:
-                data = (current_corpus, f, field_id, mode)
-                start = time.perf_counter()
-                get_item_binary(index=index, metadata=data)
-                print('loading time ('+mode+'): '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
-                start = time.perf_counter()
-                get_item_binary(index=index, metadata=data, with_size=True)
-                print('loading time ('+mode+'): '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
+    with open(os.path.join(glob_path_cache, current_corpus + '.marshal'), 'rb') as f:
+        data = (current_corpus, f, field_id)
 
-        print('')
+        start = time.perf_counter()
+        for index in range(0, glob_cache[current_corpus]['size']):
+            pass
+        print('iterating over whole corpus: '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
+
+        # start = time.perf_counter()
+        # for index in range(0, glob_cache[current_corpus]['size']):
+        #     get_item_by_index(index, metadata=data)
+        # print('iterating over whole corpus: '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
+
+        start = time.perf_counter()
+        get_items_by_indices(range(0, glob_cache[current_corpus]['size']), data)
+        print('iterating over whole corpus: '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
+
+
+        # print(get_item_by_id(id_item=id_item, metadata=data))
+
+    print('loading time: '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
 
     return []
 
 def write_corpus(request):
-    field_id = get_setting_for_corpus(get_current_corpus(request), key='id')
+    start = time.perf_counter()
     
-    list_modes = ['ldjson', 'pickle', 'msgpack', 'marshal']
-    for mode in list_modes:
-        start = time.perf_counter()
-        print('WRITING IN MODE '+mode.upper())
+    field_id = get_setting_for_corpus(get_current_corpus(request), key='id')
 
-        current_corpus = get_current_corpus(request)+'_'+mode
-        glob_cache[current_corpus] = {}
-        glob_cache[current_corpus]['size'] = 0
-        glob_cache[current_corpus]['size_in_bytes'] = 0
-        glob_cache[current_corpus]['index'] = {}
-        glob_cache[current_corpus]['list'] = []
+    current_corpus = get_current_corpus(request)
+    glob_cache[current_corpus] = {}
+    glob_cache[current_corpus]['is_loaded'] = False
+    glob_cache[current_corpus]['size'] = 0
+    glob_cache[current_corpus]['size_in_bytes'] = 0
+    glob_cache[current_corpus]['index'] = {}
+    glob_cache[current_corpus]['list'] = []
+    
+    with open(os.path.join(glob_path_cache, current_corpus + '.marshal'), 'wb') as f:
+        data = (current_corpus, f, field_id)
+        get_setting('load_data_function', request=request)(data, add_item)
 
-        if mode == 'ldjson':
-            with open(os.path.join(glob_path_cache, current_corpus + '.ldjson'), 'w') as f:
-                data = (current_corpus, f, field_id, mode)
-                get_setting('load_data_function', request=request)(data, add_item_ldjson)
-        elif mode == 'pickle':
-            with open(os.path.join(glob_path_cache, current_corpus + '.pickle'), 'wb') as f:
-                data = (current_corpus, f, field_id, mode)
-                get_setting('load_data_function', request=request)(data, add_item_pickle)
-        elif mode == 'msgpack':
-            with open(os.path.join(glob_path_cache, current_corpus + '.msgpack'), 'wb') as f:
-                data = (current_corpus, f, field_id, mode)
-                get_setting('load_data_function', request=request)(data, add_item_msgpack)
-        elif mode == 'marshal':
-            with open(os.path.join(glob_path_cache, current_corpus + '.marshal'), 'wb') as f:
-                data = (current_corpus, f, field_id, mode)
-                get_setting('load_data_function', request=request)(data, add_item_marshal)
+    cache.set('metadata_corpora', glob_cache)
 
-        print('size of corpus: '+str(glob_cache[current_corpus]['size']))
-        print('size of corpus (bytes): '+str(glob_cache[current_corpus]['size_in_bytes']))
-        print('writing time ('+mode+'): '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
-        print('')
-
-        # break
+    print('size of corpus: '+str(glob_cache[current_corpus]['size']))
+    print('size of corpus (bytes): '+str(glob_cache[current_corpus]['size_in_bytes']))
+    print('writing time: '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
+    print('')
 
     return []
-
-def add_item_ldjson(item, metadata):
-    metadata[1].write(json.dumps(item) + '\n')
-
-    glob_cache[metadata[0]]['index'][item[metadata[2]]] = {
-        'index': glob_cache[metadata[0]]['size'],
-    }
-
-
-    glob_cache[metadata[0]]['list'].append(item[metadata[2]])
-
-    glob_cache[metadata[0]]['size'] += 1
-
-def add_item_pickle(item, metadata):
-    item_bin = pickle.dumps(item, pickle.HIGHEST_PROTOCOL)
-    metadata[1].write(item_bin)
-
-    size_in_bytes = len(item_bin)
-
-    glob_cache[metadata[0]]['index'][item[metadata[2]]] = {
-        'index': glob_cache[metadata[0]]['size'],
-        'offset_in_bytes': glob_cache[metadata[0]]['size_in_bytes'],
-        'size_in_bytes': size_in_bytes,
-    }
-
-    glob_cache[metadata[0]]['list'].append(item[metadata[2]])
-    glob_cache[metadata[0]]['size'] += 1
-    glob_cache[metadata[0]]['size_in_bytes'] += size_in_bytes
-
-def add_item_marshal(item, metadata):
-    item_bin = marshal.dumps(item)
-    metadata[1].write(item_bin)
-
-    size_in_bytes = len(item_bin)
-
-    glob_cache[metadata[0]]['index'][item[metadata[2]]] = {
-        'index': glob_cache[metadata[0]]['size'],
-        'offset_in_bytes': glob_cache[metadata[0]]['size_in_bytes'],
-        'size_in_bytes': size_in_bytes,
-    }
-
-    glob_cache[metadata[0]]['list'].append(item[metadata[2]])
-    glob_cache[metadata[0]]['size'] += 1
-    glob_cache[metadata[0]]['size_in_bytes'] += size_in_bytes
-
-def add_item_msgpack(item, metadata):
-    item_bin = msgpack.packb(item)
-    metadata[1].write(item_bin)
-
-    size_in_bytes = len(item_bin)
-
-    glob_cache[metadata[0]]['index'][item[metadata[2]]] = {
-        'index': glob_cache[metadata[0]]['size'],
-        'offset_in_bytes': glob_cache[metadata[0]]['size_in_bytes'],
-        'size_in_bytes': size_in_bytes,
-    }
-
-    glob_cache[metadata[0]]['list'].append(item[metadata[2]])
-    glob_cache[metadata[0]]['size'] += 1
-    glob_cache[metadata[0]]['size_in_bytes'] += size_in_bytes
-
-def add_item(item, metadata):
-    # ldjson: 3964.2ms
-    # msgpack: 2281.27ms
-    # pickle: 1480.72ms
-
-    item_bin = msgpack.packb(item)
-    # item_bin = pickle.dumps(item, pickle.HIGHEST_PROTOCOL)
-
-    metadata[1].write(item_bin)
-    # metadata[1].write(json.dumps(item) + '\n')
-
-    # glob_cache[metadata[0]]['index'][item[metadata[2]]] = {
-    #     'index': glob_cache[metadata[0]]['size'],
-    #     'size_in_bytes': len(item_bin),
-    # }
-
-    # glob_cache[metadata[0]]['size'] += 1
-    # print(glob_cache)
-
-    # custom_struct = Struct('<l s')
-    # print(custom_struct)
-
-
-    # "I%ds" % (len(s),), len(s)
-    # format_string = ''
-    # for key, field in sorted(get_setting('data_fields', request=request).items()):
-    #     if field['type'] == 'number':
-    #         format_string += 'f '
-    #     elif field['type'] == 'string' or field['type'] == 'text':
-    #         format_string += '{}s '
-
-    # # print(format_string)
-
-    # with open(get_current_corpus(request)+'.bin', 'wb') as f:
-    #     for item in data:
-    #         # print(format_string.format(len(item['text'].encode('utf-8'))))
-    #         result = struct.pack(format_string.format(len(item['text'].encode('utf-8'))), item['id'], item['text'].encode('utf-8'))
-    #         # result = custom_struct.pack(item['id'], item['text'].encode('utf-8'))
-    #         # print(result)
-    #         f.write(result)
 
 def load_file_csv(request):
     data = []

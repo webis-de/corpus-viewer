@@ -2,8 +2,7 @@ import os
 import csv
 import json
 
-def load_data():
-    data = []
+def load_data(metadata, function_add_item):
     
     path_corpora = '../corpora/webis-cbc-16'
     path_truth = os.path.join(path_corpora, 'truth')
@@ -32,11 +31,10 @@ def load_data():
                         obj_tweet['annotatorB'] = dict_annotations_annotatorB[obj_json['id']]
                         obj_tweet['annotatorC'] = dict_annotations_annotatorC[obj_json['id']]
                         obj_tweet['majority'] = dict_annotations_majority[obj_json['id']]
-                        data.append(obj_tweet)
+                        function_add_item(obj_tweet, metadata=metadata)
+
                     except (json.decoder.JSONDecodeError, UnicodeDecodeError):
                         counter_error += 1
-
-    return data
 
 def load_annotations(path_truth, annotator):
     dict_annotations = {}
@@ -109,23 +107,23 @@ DICT_SETTINGS_VIEWER = {
     # Possible filter types: 'text', 'checkbox'
     #
     'filters': [
-        {
-            'data_field': 'text',
-            'description': 'Tweet Text',
-            'placeholder': 'Text Input',
-            'default_value': '',
-        },
-        {
-            'data_field': 'majority',
-            'description': 'Majority',
-            'placeholder': 'Text Input',
-            'default_value': '',
-        },
-        {
-            'data_field': 'retweet_count',
-            'description': 'Count Retweets',
-            'placeholder': 'Count Input',
-            'default_value': '',
-        },
+        # {
+        #     'data_field': 'text',
+        #     'description': 'Tweet Text',
+        #     'placeholder': 'Text Input',
+        #     'default_value': '',
+        # },
+        # {
+        #     'data_field': 'majority',
+        #     'description': 'Majority',
+        #     'placeholder': 'Text Input',
+        #     'default_value': '',
+        # },
+        # {
+        #     'data_field': 'retweet_count',
+        #     'description': 'Count Retweets',
+        #     'placeholder': 'Count Input',
+        #     'default_value': '',
+        # },
     ],
 }
