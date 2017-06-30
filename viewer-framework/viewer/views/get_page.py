@@ -22,13 +22,13 @@ regex_filter_numbers_gte = re.compile('>=(-?[0-9]+\.?[0-9]*)')
 
 def get_page(request):
 ##### handle session entries
-    start = time.perf_counter()
+    start_total = time.perf_counter()
     set_sessions(request)
 ##### load data and apply filters
     info_filter_values = {}
     list_ids = get_filtered_data(request)
     # print(list_ids)
-    return JsonResponse({})
+    # return JsonResponse({})
     list_tags = []
     # list_tags = get_tags_filtered_items(data_only_ids, request)
 ##### handle post requests
@@ -53,18 +53,17 @@ def get_page(request):
         # If page is out of range (e.g. 9999), deliver last page of results.
         page_current = paginator.page(paginator.num_pages)
 ##### add tags to the dataset
-    current_corpus = get_current_corpus(request)
+    id_corpus = get_current_corpus(request)
 
-    with open(os.path.join(glob_path_cache, current_corpus + '.marshal'), 'rb') as f:
-        metadata = (current_corpus, f)
-
-        data = get_item_by_ids(page_current, metadata)
+    start_loading = time.perf_counter()
+    data = glob_data_manager.get_items(id_corpus, get_current_corpus(request=request), page_current)
+    print('loading time: '+str(round(float(time.perf_counter() - start_loading) * 1000, 2))+'ms')
 
     # add_tags(data, request)
 ##### handle post requests
     context = {}
     context['settings'] = get_setting(request=request)
-    context['page_current'] = page_current
+    # context['page_current'] = page_current
     context['data'] = data
 
     previous_page_number = None
@@ -74,8 +73,9 @@ def get_page(request):
     if page_current.has_next():
         next_page_number = page_current.next_page_number()
     template = get_template('viewer/table.html')
-    duration = round(float(time.perf_counter()-start) * 1000, 2)
-    print('TIME: '+str(duration)+'ms')
+
+    print('TIME: '+str(round(float(time.perf_counter() - start_total) * 1000, 2))+'ms')
+
     return JsonResponse({'content': template.render(context, request),
             'tags_filtered_items': list_tags,
             'count_pages': page_current.paginator.num_pages,
@@ -115,8 +115,16 @@ def export_data(obj, data, request):
 
 def get_filtered_data(request):
     current_corpus = get_current_corpus(request)
+
+    values_filter_tags = request.session[get_current_corpus(request)]['viewer__viewer__filter_tags']
+    values_filter_custom = request.session[get_current_corpus(request)]['viewer__viewer__filter_custom']
+
+    if len(values_filter_tags) == 0 and len(values_filter_custom) == 0:
+        return glob_data_manager.get_all_ids_for_corpus(current_corpus, get_setting(request=request))
+
     start = time.perf_counter()
     list_ids = glob_data_manager.get_all_ids_for_corpus(current_corpus, get_setting(request=request))
+    # print(list_ids)
     print('time for loading all data: '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
     #
     # FILTER BY TAGS 

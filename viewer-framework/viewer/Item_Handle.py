@@ -2,31 +2,88 @@ import pickle
 import struct
 
 class Item_Handle:
-    def __init__(self, dict_data, id_corpus, handle_file_data, handle_file_metadata, field_id):
-        self.dict_data = dict_data
-        self.id_corpus = id_corpus
+    def __init__(self, struct):
+        self.struct = struct
+
+class Item_Handle_Get_Item(Item_Handle):
+    def __init__(self, struct, length_struct, handle_file_data, handle_file_metadata):
+        Item_Handle.__init__(self, struct)
+
+        self.length_struct = length_struct
         self.handle_file_data = handle_file_data
         self.handle_file_metadata = handle_file_metadata
-        self.field_id = field_id
 
-        self.struct = struct.Struct('<Q Q Q')
-        self.length_struct = 24
+    def get_items(self, list_indices):
+        list_items = []
+        for index in list_indices:
+            offset_in_bytes_metadata = index * self.length_struct
+
+            self.handle_file_metadata.seek(offset_in_bytes_metadata)
+            item_bin = self.handle_file_metadata.read(self.length_struct)
+            metadata = self.struct.unpack(item_bin) 
+
+            self.handle_file_data.seek(metadata[0])
+            item_bin = self.handle_file_data.read(metadata[1])
+
+            list_items.append(pickle.loads(item_bin))
+
+        return list_items
+
+class Item_Handle_Get_Metadata(Item_Handle):
+    def __init__(self, struct, length_struct, handle_file_metadata):
+        Item_Handle.__init__(self, struct)
+
+        self.length_struct = length_struct
+        self.handle_file_metadata = handle_file_metadata
+
+    # def get(self, list_items):
+        # print(list_items)
+        # for item in list_items:
+            # print(item)
+        # offset_in_bytes = index * self.length_struct
+
+        # self.handle_file_metadata.seek(offset_in_bytes)
+        # item_bin = self.handle_file_metadata.read(self.length_struct)
+        # return self.struct.unpack(item_bin) 
+
+    # def get(self, index, length_in_bytes):
+    #     offset_in_bytes = index * 19
+
+    #     self.handle_file_metadata.seek(offset_in_bytes)
+    #     item_bin = self.handle_file_metadata.read(19)
+    #     return pickle.loads(item_bin)
+    #     # return self.struct.unpack(item_bin)
+
+class Item_Handle_Add(Item_Handle):
+    def __init__(self, struct, handle_index, handle_file_data, handle_file_metadata, dict_data, field_id, settings_corpus):
+        Item_Handle.__init__(self, struct) 
+
+        self.handle_file_data = handle_file_data
+        self.handle_file_metadata = handle_file_metadata
+        self.dict_data = dict_data
+        self.field_id = field_id
+        self.settings_corpus = settings_corpus
+        self.handle_index = handle_index
 
     def add(self, item):
         # print(self.dict_data)
-        item_bin = pickle.dumps(item)
-        length_in_bytes = len(item_bin)
+        bin_item = pickle.dumps(item)
+        self.handle_file_data.write(bin_item)
 
-        # self.handle_file_data.write(item_bin)
-        # try:
-        item_bin = self.struct.pack(self.dict_data['size_in_bytes'], length_in_bytes, self.dict_data['size'])
-        # except:
-        #     print(self.dict_data['size_in_bytes'])
-        #     print(length_in_bytes)
-        #     print(self.dict_data['size'])
-        self.handle_file_metadata.write(item_bin)
+        length_in_bytes = len(bin_item)
 
-        self.dict_data['list'].append(item[self.field_id])
+        bin_metadata = self.struct.pack(self.dict_data['size_in_bytes'], length_in_bytes, self.dict_data['size'])
+        self.handle_file_metadata.write(bin_metadata)
+
+        # for key, data_field in self.settings_corpus['data_fields'].items():
+        #     type_data_field = data_field['type']
+        #     value = item[key]
+
+        #     if type_data_field == 'string':
+        #         self.handle_index.add(value, str(item[self.field_id]))
+
+        self.dict_data['list'].append(self.dict_data['size'])
+        # self.dict_data['list'].append((self.dict_data['size'], item[self.field_id]))
         self.dict_data['size'] += 1
         self.dict_data['size_in_bytes'] += length_in_bytes
 
@@ -46,18 +103,3 @@ class Item_Handle:
     #     self.dict_data['list'].append(len(item_bin))
     #     self.dict_data['size'] += 1
     #     self.dict_data['size_in_bytes'] += length_in_bytes
-
-    def get(self, index):
-        offset_in_bytes = index * self.length_struct
-
-        self.handle_file_metadata.seek(offset_in_bytes)
-        item_bin = self.handle_file_metadata.read(self.length_struct)
-        return self.struct.unpack(item_bin)
-
-    # def get(self, index, length_in_bytes):
-    #     offset_in_bytes = index * 19
-
-    #     self.handle_file_metadata.seek(offset_in_bytes)
-    #     item_bin = self.handle_file_metadata.read(19)
-    #     return pickle.loads(item_bin)
-    #     # return self.struct.unpack(item_bin)
