@@ -29,12 +29,12 @@ class Item_Handle_Get_Item(Item_Handle):
 
         return list_items
 
-class Item_Handle_Get_Metadata(Item_Handle):
-    def __init__(self, struct, length_struct, handle_file_metadata):
-        Item_Handle.__init__(self, struct)
+# class Item_Handle_Get_Metadata(Item_Handle):
+#     def __init__(self, struct, length_struct, handle_file_metadata):
+#         Item_Handle.__init__(self, struct)
 
-        self.length_struct = length_struct
-        self.handle_file_metadata = handle_file_metadata
+#         self.length_struct = length_struct
+#         self.handle_file_metadata = handle_file_metadata
 
     # def get(self, list_items):
         # print(list_items)
@@ -70,19 +70,21 @@ class Item_Handle_Add(Item_Handle):
         bin_item = pickle.dumps(item)
         self.handle_file_data.write(bin_item)
 
+        id_intern = self.dict_data['size']
+
         length_in_bytes = len(bin_item)
 
-        bin_metadata = self.struct.pack(self.dict_data['size_in_bytes'], length_in_bytes, self.dict_data['size'])
+        bin_metadata = self.struct.pack(self.dict_data['size_in_bytes'], length_in_bytes, id_intern)
         self.handle_file_metadata.write(bin_metadata)
 
-        # for key, data_field in self.settings_corpus['data_fields'].items():
-        #     type_data_field = data_field['type']
-        #     value = item[key]
+        for key, data_field in self.settings_corpus['data_fields'].items():
+            type_data_field = data_field['type']
+            value = item[key]
 
-        #     if type_data_field == 'string':
-        #         self.handle_index.add(value, str(item[self.field_id]))
+            if type_data_field == 'string':
+                self.handle_index.add(value, id_intern)
 
-        self.dict_data['list'].append(self.dict_data['size'])
+        self.dict_data['list'].append(id_intern)
         # self.dict_data['list'].append((self.dict_data['size'], item[self.field_id]))
         self.dict_data['size'] += 1
         self.dict_data['size_in_bytes'] += length_in_bytes

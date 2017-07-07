@@ -4,6 +4,16 @@ class Handle_Index():
 
 	def add(self, key, value):
 		try:
-			self.dict_data[key].append(value)
+			self.dict_data[key] = set()
+			print("worked")
+			self.dict_data[key].add(value)
 		except KeyError:
-			self.dict_data[key] = [value]
+			self.dict_data[key] = set(value)
+
+	def get(self, key):
+		try:
+			print(key)
+			print(self.dict_data)
+			return self.dict_data[key]
+		except KeyError:
+			return set()

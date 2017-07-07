@@ -68,12 +68,12 @@ DICT_SETTINGS_VIEWER = {
     # Possible filter types: 'text', 'checkbox'
     #
     'filters': [
-        # {
-        #     'data_field': 'text',
-        #     'description': 'Text',
-        #     'placeholder': 'Text Input',
-        #     'default_value': '',
-        # },
+        {
+            'data_field': 'text',
+            'description': 'Text',
+            'placeholder': 'Text Input',
+            'default_value': '',
+        },
         # {
         #     'data_field': 'id',
         #     'description': 'Id',

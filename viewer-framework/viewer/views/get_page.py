@@ -116,27 +116,19 @@ def export_data(obj, data, request):
 def get_filtered_data(request):
     current_corpus = get_current_corpus(request)
 
-    values_filter_tags = request.session[get_current_corpus(request)]['viewer__viewer__filter_tags']
-    values_filter_custom = request.session[get_current_corpus(request)]['viewer__viewer__filter_custom']
-
-    if len(values_filter_tags) == 0 and len(values_filter_custom) == 0:
-        return glob_data_manager.get_all_ids_for_corpus(current_corpus, get_setting(request=request))
-
-    start = time.perf_counter()
-    list_ids = glob_data_manager.get_all_ids_for_corpus(current_corpus, get_setting(request=request))
-    # print(list_ids)
-    print('time for loading all data: '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
     #
     # FILTER BY TAGS 
     #
-    if len(request.session[get_current_corpus(request)]['viewer__viewer__filter_tags']) > 0:
-        if get_setting('data_type', request=request) == 'database':
-            # iterate over tag and return only items tagged with them
-            for tag in request.session[get_current_corpus(request)]['viewer__viewer__filter_tags']:
-                data = data.filter(viewer_tags__name=tag)
-        else:
-            # filter the data by tags
-            data = filter_data_tags(data, request.session[get_current_corpus(request)]['viewer__viewer__filter_tags'], request)
+    # values_filter_tags = request.session[get_current_corpus(request)]['viewer__viewer__filter_tags']
+    # if len(values_filter_tags) > 0:
+    #     if get_setting('data_type', request=request) == 'database':
+    #         # iterate over tag and return only items tagged with them
+    #         for tag in values_filter_tags:
+    #             data = data.filter(viewer_tags__name=tag)
+    #     else:
+    #         # filter the data by tags
+    #         data = filter_data_tags(data, values_filter_tags, request)
+
     #
     # FILTERS
     #
@@ -145,7 +137,7 @@ def get_filtered_data(request):
     set_data = None
     for obj_filter in get_setting('filters', request=request):
         # filter the data by the current filter
-        set_data_new, info_values, skipped = filter_data(request, data, obj_filter)
+        set_data_new, info_values, skipped = filter_data(request, obj_filter)
         # print(set_data_new)
         if not skipped:
             if set_data == None:
@@ -158,6 +150,10 @@ def get_filtered_data(request):
     # print(len(set_data))
     if set_data != None:
         data = [item for item in data if item[get_setting('id', request=request)] in set_data]
+
+    # if no filter was applied return all ids
+    if set_data == None:
+        return glob_data_manager.get_all_ids_for_corpus(current_corpus, get_setting(request=request))
     #
     # UPDATE data_only_ids
     #
@@ -167,9 +163,10 @@ def get_filtered_data(request):
     #     # update data_only_ids
     #     data_only_ids = [str(item[get_setting('id', request=request)]) for item in data]
     return list_ids 
+
     # return data, data_only_ids, info_filter_values
 
-def filter_data(request, data, obj_filter):
+def filter_data(request, obj_filter):
     set_data_new = set()
 
     info_values = {}
@@ -184,96 +181,102 @@ def filter_data(request, data, obj_filter):
     if len(values) != 0:
         skipped = False
         info_values = {value:{'value_count_per_document': 0, 'value_count_total': 0} for value in values}
-
+        print(values)
         if get_setting('data_type', request=request) == 'database':
             raise ValueError('NOT IMPLEMENTED')
-            # TODO: make flexible filters for database
-            data = data.filter(**{obj_filter['data_field']+'__icontains': value})
+        #     # TODO: make flexible filters for database
+        #     data = data.filter(**{obj_filter['data_field']+'__icontains': value})
         else:
             filter_type = get_setting('data_fields', request=request)[obj_filter['data_field']]['type']
             # if the filter is 'contains'
             if filter_type == 'string' or filter_type == 'text':
                 # get the type (string, list) of the data-field
                 type_data_field = get_setting('data_fields', request=request)[obj_filter['data_field']]['type']
-                if type_data_field == 'string' or type_data_field == 'text':
+                if type_data_field == 'string':
+                    print(values)
+                    for value in values:
+                        is_case_insensitive = True if value[0] == 'i' else False
+                        real_value = value[2:]
+                        list_ids = glob_data_manager.handle_index.get(real_value)
+                        print(list_ids)
+        #             for item in data:
+        #                 text = str(item[obj_filter['data_field']])
+        #                 text_lower = text.lower()
+        #                 keep = True
 
-                    for item in data:
-                        text = str(item[obj_filter['data_field']])
-                        text_lower = text.lower()
-                        keep = True
+        #                 for value in values:
+        #                     is_case_insensitive = True if value[0] == 'i' else False
+        #                     real_value = value[2:]
 
-                        for value in values:
-                            is_case_insensitive = True if value[0] == 'i' else False
-                            real_value = value[2:]
+        #                     if is_case_insensitive:
+        #                         real_value = real_value.lower()
+        #                         if real_value in text_lower:
+        #                             info_values[value]['value_count_total'] += text_lower.count(real_value)
+        #                             info_values[value]['value_count_per_document'] += 1
+        #                         else:
+        #                             keep = False
+        #                     else:
+        #                         if real_value in text:
+        #                             info_values[value]['value_count_total'] += text.count(real_value)
+        #                             info_values[value]['value_count_per_document'] += 1
+        #                         else:
+        #                             keep = False
 
-                            if is_case_insensitive:
-                                real_value = real_value.lower()
-                                if real_value in text_lower:
-                                    info_values[value]['value_count_total'] += text_lower.count(real_value)
-                                    info_values[value]['value_count_per_document'] += 1
-                                else:
-                                    keep = False
-                            else:
-                                if real_value in text:
-                                    info_values[value]['value_count_total'] += text.count(real_value)
-                                    info_values[value]['value_count_per_document'] += 1
-                                else:
-                                    keep = False
+        #                 if keep:
+        #                     set_data_new.add(item[field_id])
 
-                        if keep:
-                            set_data_new.add(item[field_id])
-
-                    # data = set_data_new
+        #             # data = set_data_new
                         
                 elif type_data_field == 'list':
                     raise ValueError('NOT IMPLEMENTED')
-            # if the filter is 'number'
+        #     # if the filter is 'number'
             elif filter_type == 'number':
-                values_parsed = parse_values(values)
+                pass
+        #         values_parsed = parse_values(values)
 
-                for item in data:
-                    keep = True
-                    for key, numbers in values_parsed.items():
-                        if key == 'equal':
-                            for obj in numbers:
-                                if item[obj_filter['data_field']] == obj[1]:
-                                    info_values[obj[0]]['value_count_total'] += 1
-                                    info_values[obj[0]]['value_count_per_document'] += 1
-                                else:
-                                    keep = False
-                        elif key == 'lt':
-                            for obj in numbers:
-                                if item[obj_filter['data_field']] < obj[1]:
-                                    info_values[obj[0]]['value_count_total'] += 1
-                                    info_values[obj[0]]['value_count_per_document'] += 1
-                                else:
-                                    keep = False
-                        elif key == 'lte':
-                            for obj in numbers:
-                                if item[obj_filter['data_field']] <= obj[1]:
-                                    info_values[obj[0]]['value_count_total'] += 1
-                                    info_values[obj[0]]['value_count_per_document'] += 1
-                                else:
-                                    keep = False
-                        elif key == 'gt':
-                            for obj in numbers:
-                                if item[obj_filter['data_field']] > obj[1]:
-                                    info_values[obj[0]]['value_count_total'] += 1
-                                    info_values[obj[0]]['value_count_per_document'] += 1
-                                else:
-                                    keep = False
-                        elif key == 'gte':
-                            for obj in numbers:
-                                if item[obj_filter['data_field']] >= obj[1]:
-                                    info_values[obj[0]]['value_count_total'] += 1
-                                    info_values[obj[0]]['value_count_per_document'] += 1
-                                else:
-                                    keep = False
+        #         for item in data:
+        #             keep = True
+        #             for key, numbers in values_parsed.items():
+        #                 if key == 'equal':
+        #                     for obj in numbers:
+        #                         if item[obj_filter['data_field']] == obj[1]:
+        #                             info_values[obj[0]]['value_count_total'] += 1
+        #                             info_values[obj[0]]['value_count_per_document'] += 1
+        #                         else:
+        #                             keep = False
+        #                 elif key == 'lt':
+        #                     for obj in numbers:
+        #                         if item[obj_filter['data_field']] < obj[1]:
+        #                             info_values[obj[0]]['value_count_total'] += 1
+        #                             info_values[obj[0]]['value_count_per_document'] += 1
+        #                         else:
+        #                             keep = False
+        #                 elif key == 'lte':
+        #                     for obj in numbers:
+        #                         if item[obj_filter['data_field']] <= obj[1]:
+        #                             info_values[obj[0]]['value_count_total'] += 1
+        #                             info_values[obj[0]]['value_count_per_document'] += 1
+        #                         else:
+        #                             keep = False
+        #                 elif key == 'gt':
+        #                     for obj in numbers:
+        #                         if item[obj_filter['data_field']] > obj[1]:
+        #                             info_values[obj[0]]['value_count_total'] += 1
+        #                             info_values[obj[0]]['value_count_per_document'] += 1
+        #                         else:
+        #                             keep = False
+        #                 elif key == 'gte':
+        #                     for obj in numbers:
+        #                         if item[obj_filter['data_field']] >= obj[1]:
+        #                             info_values[obj[0]]['value_count_total'] += 1
+        #                             info_values[obj[0]]['value_count_per_document'] += 1
+        #                         else:
+        #                             keep = False
 
-                    if keep:
-                            set_data_new.add(item[field_id])
+        #             if keep:
+        #                     set_data_new.add(item[field_id])
                 
-                # data = set_data_new
+        #         # data = set_data_new
 
 
                 # check if a specific number is requested
