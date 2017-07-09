@@ -1,13 +1,13 @@
 import pickle
 import struct
 
-class Item_Handle:
+class Handle_Item:
     def __init__(self, struct):
         self.struct = struct
 
-class Item_Handle_Get_Item(Item_Handle):
+class Handle_Item_Get_Item(Handle_Item):
     def __init__(self, struct, length_struct, handle_file_data, handle_file_metadata):
-        Item_Handle.__init__(self, struct)
+        Handle_Item.__init__(self, struct)
 
         self.length_struct = length_struct
         self.handle_file_data = handle_file_data
@@ -29,9 +29,9 @@ class Item_Handle_Get_Item(Item_Handle):
 
         return list_items
 
-# class Item_Handle_Get_Metadata(Item_Handle):
+# class Handle_Item_Get_Metadata(Handle_Item):
 #     def __init__(self, struct, length_struct, handle_file_metadata):
-#         Item_Handle.__init__(self, struct)
+#         Handle_Item.__init__(self, struct)
 
 #         self.length_struct = length_struct
 #         self.handle_file_metadata = handle_file_metadata
@@ -54,15 +54,16 @@ class Item_Handle_Get_Item(Item_Handle):
     #     return pickle.loads(item_bin)
     #     # return self.struct.unpack(item_bin)
 
-class Item_Handle_Add(Item_Handle):
-    def __init__(self, struct, handle_index, handle_file_data, handle_file_metadata, dict_data, field_id, settings_corpus):
-        Item_Handle.__init__(self, struct) 
+class Handle_Item_Add(Handle_Item):
+    def __init__(self, struct, handle_index, handle_file_data, handle_file_metadata, dict_data, field_id, dict_data_fields):
+        Handle_Item.__init__(self, struct) 
 
         self.handle_file_data = handle_file_data
         self.handle_file_metadata = handle_file_metadata
         self.dict_data = dict_data
         self.field_id = field_id
-        self.settings_corpus = settings_corpus
+        # self.settings_corpus = settings_corpus
+        self.dict_data_fields = dict_data_fields
         self.handle_index = handle_index
 
     def add(self, item):
@@ -74,17 +75,23 @@ class Item_Handle_Add(Item_Handle):
 
         length_in_bytes = len(bin_item)
 
-        bin_metadata = self.struct.pack(self.dict_data['size_in_bytes'], length_in_bytes, id_intern)
+        bin_metadata = self.struct.pack(self.dict_data['size_in_bytes'], length_in_bytes)
         self.handle_file_metadata.write(bin_metadata)
 
-        for key, data_field in self.settings_corpus['data_fields'].items():
-            type_data_field = data_field['type']
-            value = item[key]
+        for key, data_field in self.dict_data_fields.items():
+        # for key, data_field in self.settings_corpus['data_fields'].items():
+            pass
+            # type_data_field = data_field['type']
+            # value = item[key]
 
-            if type_data_field == 'string':
-                self.handle_index.add(value, id_intern)
+            # if type_data_field == 'string':
+            #     self.handle_index.add_string(value, id_intern)
+            # elif type_data_field == 'text':
+            #     self.handle_index.add_text(value, id_intern)
+            # elif type_data_field == 'number':
+            #     self.handle_index.add_number(value, id_intern)
 
-        self.dict_data['list'].append(id_intern)
+        # self.dict_data['list'].append(id_intern)
         # self.dict_data['list'].append((self.dict_data['size'], item[self.field_id]))
         self.dict_data['size'] += 1
         self.dict_data['size_in_bytes'] += length_in_bytes

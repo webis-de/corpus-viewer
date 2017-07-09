@@ -1,5 +1,5 @@
 from .shared_code import set_sessions, load_data, get_setting, get_or_create_tag, \
-    get_current_corpus, get_items_by_indices, get_item_by_ids, glob_data_manager, \
+    get_current_corpus, get_items_by_indices, get_item_by_ids, glob_manager_data, \
     get_setting_for_corpus
 import collections
 import re
@@ -42,6 +42,7 @@ def get_page(request):
 
         return JsonResponse(response)
 ##### page the dataset
+    # paginator = Paginator(range(0, get_setting('page_size', request=request))
     paginator = Paginator(list_ids, get_setting('page_size', request=request))
     # paginator = Paginator(data, get_setting('page_size', request=request))
     try:
@@ -56,7 +57,7 @@ def get_page(request):
     id_corpus = get_current_corpus(request)
 
     start_loading = time.perf_counter()
-    data = glob_data_manager.get_items(id_corpus, get_current_corpus(request=request), page_current)
+    data = glob_manager_data.get_items(id_corpus, get_current_corpus(request=request), page_current)
     print('loading time: '+str(round(float(time.perf_counter() - start_loading) * 1000, 2))+'ms')
 
     # add_tags(data, request)
@@ -153,7 +154,7 @@ def get_filtered_data(request):
 
     # if no filter was applied return all ids
     if set_data == None:
-        return glob_data_manager.get_all_ids_for_corpus(current_corpus, get_setting(request=request))
+        return glob_manager_data.get_all_ids_for_corpus(current_corpus, get_setting(request=request))
     #
     # UPDATE data_only_ids
     #
@@ -197,7 +198,7 @@ def filter_data(request, obj_filter):
                     for value in values:
                         is_case_insensitive = True if value[0] == 'i' else False
                         real_value = value[2:]
-                        list_ids = glob_data_manager.handle_index.get(real_value)
+                        list_ids = glob_manager_data.handle_index.get(real_value)
                         print(list_ids)
         #             for item in data:
         #                 text = str(item[obj_filter['data_field']])

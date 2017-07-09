@@ -18,11 +18,12 @@ def load_data(item_handle):
     #         if counter == 10000000:
     #             return
 
-    for x in range(0, 10000):
+    for x in range(0, 100):
+    # for x in range(0, 10000000):
         obj = {}
         obj['id'] = 'id_'+str(x)
-        # obj['text'] = text
-        obj['text'] = 'text_'+str(x % 5)
+        obj['text'] = text
+        # obj['text'] = 'text_'+str(x % 5)
         item_handle.add(obj)
 
 
@@ -55,8 +56,8 @@ DICT_SETTINGS_VIEWER = {
             'display_name': 'ID'
         },
         'text': {
-            'type': 'string',
-            # 'type': 'text',
+            # 'type': 'string',
+            'type': 'text',
             'display_name': 'Text'
         }
     },

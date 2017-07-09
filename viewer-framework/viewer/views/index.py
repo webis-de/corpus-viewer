@@ -1,22 +1,35 @@
-from .shared_code import get_setting, set_sessions, get_current_corpus
+from .shared_code import get_setting, set_sessions, get_current_corpus, glob_manager_data
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from viewer.models import m_Tag, m_Entity
 import json
-
+from threading import Thread
 
 def index(request):
 ##### set sessions
     # request.session.flush()
     set_sessions(request)
+    id_corpus = get_current_corpus(request)
+
+    state_loaded = glob_manager_data.get_state_loaded(id_corpus)
+    if state_loaded != glob_manager_data.State_Loaded.LOADED:
+
+        if 'start_loading' in request.GET:
+            glob_manager_data.index_corpus(id_corpus, get_setting(request=request))
+            return redirect('dashboard:index')
+
+        context = {}
+        context['state_loaded'] = state_loaded
+        context['settings'] = get_setting(request=request)
+        return render(request, 'viewer/not_loaded.html', context)
 ##### handle post requests
     if request.method == 'POST':
         response = {}
         obj = json.loads(request.body.decode("utf-8"))
         if obj['task'] == 'set_session_entry':
-            request.session[get_current_corpus(request)]['viewer__'+obj['session_key']] = obj['session_value']
+            request.session[id_corpus]['viewer__'+obj['session_key']] = obj['session_value']
             response['status'] = 'success'
-            print(request.session[get_current_corpus(request)]['viewer__'+obj['session_key']])
+            print(request.session[id_corpus]['viewer__'+obj['session_key']])
         elif obj['task'] == 'get_tag_recommendations':
             array_tag_recommendations = get_tag_recommendations(request, obj)
             response['status'] = 'success'

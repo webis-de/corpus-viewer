@@ -4,6 +4,7 @@ import importlib
 import glob
 import json
 import collections
+from django.core.cache import cache
 from viewer.views.shared_code import glob_settings
 
 # glob_settings = {}
@@ -24,10 +25,31 @@ def index(request):
 
     context = {}
 
+    dict_data_chached = init_data()
+
     dict_ordered = collections.OrderedDict()
     for key in sorted(glob_settings.keys(), key=lambda corpus: glob_settings[corpus]['name']):
-    	dict_ordered[key] = glob_settings[key]
+        state_loaded = 'not_loaded'
+
+        if key in dict_data_chached:
+            if dict_data_chached[key]['is_loaded'] == True:
+                state_loaded = 'loaded'
+            else:
+                state_loaded = 'loading'
+
+        glob_settings[key]['viewer__state_loaded'] = state_loaded
+        dict_ordered[key] = glob_settings[key]
+
+
 
     context['corpora'] = dict_ordered
     # print(context['corpora'].items())
     return render(request, 'dashboard/index.html', context)
+
+def init_data():
+    dict_data = cache.get('metadata_corpora')
+
+    if(dict_data == None):
+        dict_data = {}
+
+    return dict_data

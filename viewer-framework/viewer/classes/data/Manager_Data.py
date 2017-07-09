@@ -1,17 +1,20 @@
 from django.core.cache import cache
-from .Item_Handle import *
-from .Handle_Index import *
+from .Handle_Item import *
+from ..index.Handle_Index_Dictionary import *
+from enum import Enum, unique
 import time
 import os
 import shelve
 
-class Data_Manager:
+
+
+class Manager_Data:
     def __init__(self, glob_settings):
         self.debug = True
         self.path_cache = '../cache'
-        self.struct = struct.Struct('<Q Q Q')
+        self.struct = struct.Struct('<Q L')
         self.length_struct = self.struct.size
-        self.handle_index = Handle_Index()
+        self.handle_index = Handle_Index_Dictionary()
         self.dict_data = self.init_data()
 
         if not os.path.exists(self.path_cache):
@@ -21,6 +24,9 @@ class Data_Manager:
         dict_data = cache.get('metadata_corpora')
         if(dict_data == None):
             dict_data = {}
+
+        if self.debug == True:
+            print('loaded metadata for {} corpora'.format(len(dict_data)))
 
         return dict_data
 
@@ -34,9 +40,10 @@ class Data_Manager:
         dict_data['is_loaded'] = False
         dict_data['size'] = 0
         dict_data['size_in_bytes'] = 0
-        dict_data['list'] = []
+
 
         self.dict_data[id_corpus] = dict_data
+        cache.set('metadata_corpora', self.dict_data)
 
         path_corpus = os.path.join(self.path_cache, id_corpus)
         if not os.path.exists(path_corpus):
@@ -45,9 +52,9 @@ class Data_Manager:
         with open(os.path.join(path_corpus, id_corpus + '.data'), 'wb') as handle_file_data:
             with open(os.path.join(path_corpus, id_corpus + '.metadata'), 'wb') as handle_file_metadata:
                 start = time.perf_counter()
-                obj_item_handle = Item_Handle_Add(self.struct, self.handle_index, handle_file_data, handle_file_metadata, dict_data, field_id, settings_corpus)
+                obj_handle_item = Handle_Item_Add(self.struct, self.handle_index, handle_file_data, handle_file_metadata, dict_data, field_id, settings_corpus['data_fields'])
 
-                settings_corpus['load_data_function'](obj_item_handle)
+                settings_corpus['load_data_function'](obj_handle_item)
                 print('writing time: '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
 
         # cache.set('metadata_corpora', glob_cache)
@@ -59,32 +66,55 @@ class Data_Manager:
 
         # with open(os.path.join(path_corpus, id_corpus + '_metadata.pickle'), 'rb') as handle_file_metadata:
         #     start = time.perf_counter()
-        #     obj_item_handle = Item_Handle_Get_Metadata(self.struct, self.length_struct, handle_file_metadata)
+        #     obj_handle_item = Item_Handle_Get_Metadata(self.struct, self.length_struct, handle_file_metadata)
 
         #     for index, item in enumerate(dict_data['list']):   
-        #         obj_item_handle.get(index)
+        #         obj_handle_item.get(index)
         #     print('loading time: '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
 
         dict_data['is_loaded'] = True
+        cache.set('metadata_corpora', self.dict_data)
+        print(self.dict_data)
+
         # self.dict_data[id_corpus] = dict_data
         # print(dict_data)
-        return dict_data
 
     def get_all_ids_for_corpus(self, id_corpus, settings_corpus):
         if self.debug == True:
             print('loading all ids from \''+id_corpus+'\'')
 
         try:
-            return self.dict_data[id_corpus]['list']
+            return range(0, self.dict_data[id_corpus]['size'])
         except KeyError:
             if self.debug == True:
                 print('no entry for \''+id_corpus+'\' found')
-            return self.index_corpus(id_corpus, settings_corpus)['list']
+            return []
+            # self.index_corpus(id_corpus, settings_corpus)
+            # return range(0, self.dict_data[id_corpus]['size'])
 
     def get_items(self, id_corpus, corpus, list_indices):       
         path_corpus = os.path.join(self.path_cache, id_corpus)
 
         with open(os.path.join(path_corpus, id_corpus + '.data'), 'rb') as handle_file_data:
             with open(os.path.join(path_corpus, id_corpus + '.metadata'), 'rb') as handle_file_metadata:
-                obj_item_handle = Item_Handle_Get_Item(self.struct, self.length_struct, handle_file_data, handle_file_metadata)
-                return obj_item_handle.get_items(list_indices)
+                obj_handle_item = Handle_Item_Get_Item(self.struct, self.length_struct, handle_file_data, handle_file_metadata)
+                return obj_handle_item.get_items(list_indices)
+
+
+    def get_state_loaded(self, id_corpus):       
+        state_loaded = self.State_Loaded.NOT_LOADED
+
+        if id_corpus in self.dict_data:
+            if self.dict_data[id_corpus]['is_loaded'] == True:
+                state_loaded = self.State_Loaded.LOADED
+            else:
+                state_loaded = self.State_Loaded.LOADING
+
+        return state_loaded
+
+    @unique
+    class State_Loaded(Enum):
+        LOADED = 1
+        NOT_LOADED = 2
+        LOADING = 3
+    

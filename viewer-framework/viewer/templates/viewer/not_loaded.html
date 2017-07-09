@@ -1,0 +1,28 @@
+{% include "dashboard/header.html" %}
+{% load staticfiles %}
+{% load tags_not_loaded %}
+{% csrf_token %}
+<div class="row">
+    <div class="col">
+        <h1>Corpus '{{ settings.name }}' not ready</h1>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+    {% if is_loading %}
+        <p class="lead">
+            The corpus is currently loading. Please come back later.
+        </p>
+    {% else %}
+        <p class="lead">
+            The corpus has to be loaded. This has to be done once but may take some time.
+        </p>
+        <p class="lead">
+            Start the loading process by pressing the button below.<br>
+            You will be redirected to the Dashboard.<br>
+            <a href="?start_loading" class="btn btn-primary">Start</a>
+        </p>
+    {% endif %}
+    </div>
+</div>
+{% include "viewer/footer.html" %}
