@@ -2,29 +2,31 @@ import os
 import csv
 import json
 
+print('EXECUTED FILE')
 def load_data(item_handle):
-    text = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.'
+    print('function 1')
+    # text = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.'
 
-    # with open('../large_corpus.txt') as f:
-    #     counter = 0
-    #     for line in f:
-    #         obj = {}
-    #         obj['id'] = counter
-    #         obj['text'] = text  
-    #         item_handle.add(obj)
-    #         counter += 1
-    #         if counter % 1000000 == 0:
-    #             print(counter)
-    #         if counter == 10000000:
-    #             return
+    # # with open('../large_corpus.txt') as f:
+    # #     counter = 0
+    # #     for line in f:
+    # #         obj = {}
+    # #         obj['id'] = counter
+    # #         obj['text'] = text  
+    # #         item_handle.add(obj)
+    # #         counter += 1
+    # #         if counter % 1000000 == 0:
+    # #             print(counter)
+    # #         if counter == 10000000:
+    # #             return
 
-    for x in range(0, 100):
-    # for x in range(0, 10000000):
-        obj = {}
-        obj['id'] = 'id_'+str(x)
-        obj['text'] = text
-        # obj['text'] = 'text_'+str(x % 5)
-        item_handle.add(obj)
+    # for x in range(0, 100):
+    # # for x in range(0, 10000000):
+    #     obj = {}
+    #     obj['id'] = 'id_'+str(x)
+    #     obj['text'] = text
+    #     # obj['text'] = 'text_'+str(x % 5)
+    #     item_handle.add(obj)
 
 
 

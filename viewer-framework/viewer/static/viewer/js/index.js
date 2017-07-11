@@ -141,6 +141,9 @@ $(document).ready(function()
 
     
     $(document).on('click', '#submit_export_data', function(e) { export_data($('#modal_export_data')) });
+    $(document).on('click', '#submit_reload_settings', function(e) { reload_settings() });
+    $(document).on('click', '#submit_reindex_corpus', function(e) { reindex_corpus($('#modal_reindex_corpus')) });
+    $(document).on('click', '#submit_delete_corpus', function(e) { delete_corpus($('#modal_delete_corpus')) });
 
     $(document).on('change', '#checkbox_tag_selection_all', function(e) { handle_change_displayed_tag_all($(this)) });
     $(document).on('change', '.checkbox_tag_selection', function(e) { handle_change_displayed_tag($(this)) });

@@ -12,16 +12,31 @@ import pickle as marshal
 # from struct import *
 from django.core.cache import cache
 from viewer.models import m_Tag, m_Entity
-from ..classes.data.Manager_Data import *
+from viewer.classes.data.Manager_Data import Manager_Data
+from viewer.classes.data.Manager_Corpora import Manager_Corpora
 
-modules = glob.glob('settings_viewer/*.py')
-__all__ = [os.path.basename(f)[:-3] for f in modules if os.path.isfile(f) and not f.endswith('__init__.py')]
-glob_settings = {}
-for corpus in __all__:
-    module_settings = importlib.import_module('settings_viewer.'+corpus)
-    glob_settings[corpus] = module_settings.DICT_SETTINGS_VIEWER
+# modules = glob.glob('settings_viewer/*.py')
+# __all__ = [os.path.basename(f)[:-3] for f in modules if os.path.isfile(f) and not f.endswith('__init__.py')]
+# print(DICT_SETTINGS_VIEWER)
+# glob_settings = {}
+# print('############')
+# with open('/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/settings_viewer/settings_viewer_large_corpus.py', 'r') as f:
+#     # print(compile(f.read(), '<string>', 'exec'))
+#     exec(compile(f.read(), '<string>', 'exec'))
+#     print(DICT_SETTINGS_VIEWER)
+# print('############')
 
-glob_manager_data = Manager_Data(glob_settings)
+# print(DICT_SETTINGS_VIEWER['load_data_function'](3))
+
+# with open('/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/settings_viewer/settings_viewer_test.py', 'r') as f:
+#     exec(compile(f.read(), '<string>', 'exec'))
+# print(DICT_SETTINGS_VIEWER['load_data_function'](3))
+# for corpus in __all__:
+#     module_settings = importlib.import_module('settings_viewer.'+corpus)
+#     glob_settings[corpus] = module_settings.DICT_SETTINGS_VIEWER
+
+glob_manager_corpora = Manager_Corpora()
+glob_manager_data = Manager_Data(glob_manager_corpora)
 # cache.set('data_', {})
 
 
@@ -246,22 +261,23 @@ def load_file_ldjson(request):
 #     model_custom.objects.bulk_create(list_entries)
 
 def set_sessions(request):
-    set_current_corpus(request)
-        
+    glob_manager_corpora.set_current_corpus(request)
+    id_corpus = get_current_corpus(request)
+
     set_session(request, 'is_collapsed_div_filters', default=True)
     set_session(request, 'is_collapsed_div_tags', default=True)
     set_session(request, 'viewer__selected_tags', default=[])
 
     set_session_from_url(request, 'viewer__page', default=1)
 
-    set_session_from_url(request, 'viewer__columns', default=get_setting('displayed_fields', request=request) + ['viewer__item_selection', 'viewer__tags'], is_json=True)
+    set_session_from_url(request, 'viewer__columns', default=glob_manager_corpora.get_setting_for_corpus('displayed_fields', id_corpus) + ['viewer__item_selection', 'viewer__tags'], is_json=True)
     set_session_from_url(request, 'viewer__filter_tags', default=[], is_json=True)
 
-    set_session_from_url(request, 'viewer__filter_custom', default={obj_filter['data_field']:[] for obj_filter in get_setting('filters', request=request)}, is_json=True)
-    # set_session_from_url(request, 'viewer__filter_custom', default={obj_filter['data_field']:obj_filter['default_value'] for obj_filter in get_setting('filters', request=request)}, is_json=True)
+    set_session_from_url(request, 'viewer__filter_custom', default={obj_filter['data_field']:[] for obj_filter in glob_manager_corpora.get_setting_for_corpus('filters', id_corpus)}, is_json=True)
+    # set_session_from_url(request, 'viewer__filter_custom', default={obj_filter['data_field']:obj_filter['default_value'] for obj_filter in glob_manager_corpora.get_setting_for_corpus(id_corpus) get_setting('filters', request=request)}, is_json=True)
     
     # in case of newly added filters add them
-    dict_tmp = {obj_filter['data_field']:obj_filter['default_value'] for obj_filter in get_setting('filters', request=request)}
+    dict_tmp = {obj_filter['data_field']:obj_filter['default_value'] for obj_filter in glob_manager_corpora.get_setting_for_corpus('filters', id_corpus)}
     dict_tmp.update(request.session[get_current_corpus(request)]['viewer__viewer__filter_custom'])
     request.session[get_current_corpus(request)]['viewer__viewer__filter_custom'] = dict_tmp.copy()
 
@@ -293,36 +309,36 @@ def set_session_from_url(request, key, default, is_json=False):
         if sessionkey not in request.session[current_corpus]:
             request.session[current_corpus][sessionkey] = default
             
-def set_current_corpus(request):
-    default = list(glob_settings.keys())[0]
-    key = 'viewer__current_corpus'
-    sessionkey = 'viewer__' + key
+# def set_current_corpus(request):
+#     default = list(glob_settings.keys())[0]
+#     key = 'viewer__current_corpus'
+#     sessionkey = 'viewer__' + key
 
-    if request.GET.get(key) != None:
-        request.session[sessionkey] = request.GET.get(key)
-    else:
-        if sessionkey not in request.session:
-            request.session[sessionkey] = default
+#     if request.GET.get(key) != None:
+#         request.session[sessionkey] = request.GET.get(key)
+#     else:
+#         if sessionkey not in request.session:
+#             request.session[sessionkey] = default
 
 def get_current_corpus(request):
     return request.session['viewer__viewer__current_corpus']
 
-def get_setting_for_corpus(id_corpus, key = None):
-    return glob_settings[id_corpus][key]
+# def get_setting_for_corpus(id_corpus, key = None):
+#     return glob_settings[id_corpus][key]
 
-def get_setting(key = None, request = None):
-    if key == None:
-        return glob_settings[get_current_corpus(request)]
+# def get_setting(key = None, request = None):
+#     if key == None:
+#         return glob_settings[get_current_corpus(request)]
 
-    if key in glob_settings[get_current_corpus(request)]:
-        return glob_settings[get_current_corpus(request)][key]
+#     if key in glob_settings[get_current_corpus(request)]:
+#         return glob_settings[get_current_corpus(request)][key]
 
-    if key == 'use_cache':
-        return False;
-    elif key == 'page_size':
-        return 25;
+#     if key == 'use_cache':
+#         return False;
+#     elif key == 'page_size':
+#         return 25;
 
-    raise ValueError('setting-key \''+key+'\' not found')
+#     raise ValueError('setting-key \''+key+'\' not found')
 
 # module_custom = importlib.import_module(get_setting('app_label')+'.models')
 # model_custom = getattr(module_custom, get_setting('model_name'))

@@ -2,6 +2,7 @@
 {% load staticfiles %}
 {% load tags_not_loaded %}
 {% csrf_token %}
+{% load humanize %}
 <div class="row">
     <div class="col">
         <h1>Corpus '{{ settings.name }}' not ready</h1>
@@ -9,20 +10,76 @@
 </div>
 <div class="row">
     <div class="col">
+    {% check_is_loading as is_loading %}
     {% if is_loading %}
         <p class="lead">
             The corpus is currently loading. Please come back later.
         </p>
+        <p class="lead">
+            Number of indexed items: <span id="span_number_of_indexed_items" class="font-weight-bold">{{ number_of_indexed_items|intcomma }}</span>
+        </p>
     {% else %}
         <p class="lead">
-            The corpus has to be loaded. This has to be done once but may take some time.
+            The corpus has to be indexed. This has to be done once but may take some time.
         </p>
         <p class="lead">
-            Start the loading process by pressing the button below.<br>
-            You will be redirected to the Dashboard.<br>
-            <a href="?start_loading" class="btn btn-primary">Start</a>
+            Start the indexing process by pressing the button below.<br>
+            <button type="button" class="btn btn-primary" id="submit_index_corpus">Index Corpus</button>
         </p>
     {% endif %}
     </div>
 </div>
+<div style="display:none" id="data_id_corpus" data-id_corpus="{{ id_corpus }}"></div>
+<script src="{% static 'viewer/js/jquery-3.1.1.min.js' %}"></script>
+<script src="{% static 'viewer/js/helper_functions.js' %}"></script>
+<script>
+    $(document).ready(function()
+    {
+        $(document).on('click', '#submit_index_corpus', function(e) { 
+            let data = {};
+            data.task = 'reindex_corpus';
+            data.id_corpus = $('#data_id_corpus').data('id_corpus');
+
+            $.ajax({
+                url: 'get_page?',
+                method: 'POST',
+                contentType: 'application/json',
+                headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+                data: JSON.stringify(data),
+                success: function(result) {
+                }
+            });
+            location.reload();
+        });
+
+        if($('#span_number_of_indexed_items').length == 1) 
+        {
+            let interval = setInterval(update_number_of_indexed_items, 500);
+        }
+    });
+
+    function update_number_of_indexed_items()
+    {
+        let data = {};
+        data.task = 'get_number_of_indexed_items';
+        data.id_corpus = $('#data_id_corpus').data('id_corpus');
+
+        let span = $('#span_number_of_indexed_items');
+
+        $.ajax({
+            url: 'get_page?',
+            method: 'POST',
+            contentType: 'application/json',
+            headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+            data: JSON.stringify(data),
+            success: function(result) {
+                if(result.state_loaded == 0)
+                {
+                    location.reload();
+                }
+                span.text(result.number_of_indexed_items.toLocaleString());
+            }
+        });
+    }
+</script>
 {% include "viewer/footer.html" %}

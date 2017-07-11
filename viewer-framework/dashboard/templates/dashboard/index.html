@@ -6,25 +6,7 @@
 	<div class="col">
         <h1>Dashboard</h1>
 		<h2>Available Corpora:</h2>
-        <div class="row">
-        {% for key, settings in corpora.items %}
-            <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
-                <div class="card card_corpus" data-key="{{ key }}">
-                    <h3 class="card-header">
-                        <span>{{ settings.name }}</span>
-                        {{ settings.viewer__state_loaded|get_html_state_loaded|safe }}
-                    </h3>                
-                    <div class="card-block">
-                        <p class="card-text">
-                            {{ settings.description|safe }}
-                        </p>
-                    </div>
-                    <!-- <div class="card-footer">
-                        <small class="text-muted">Last updated 3 mins ago</small>
-                    </div> -->
-                </div>
-            </div>
-        {% endfor %}
+        <div class="row" id="wrapper_corpora">
         </div>
     </div>
 </div>

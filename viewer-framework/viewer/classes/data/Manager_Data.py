@@ -1,19 +1,18 @@
 from django.core.cache import cache
 from .Handle_Item import *
 from ..index.Handle_Index_Dictionary import *
-from enum import Enum, unique
+from enum import IntEnum, unique
 import time
 import os
-import shelve
-
-
+import shutil
 
 class Manager_Data:
-    def __init__(self, glob_settings):
+    def __init__(self, manager_corpora):
         self.debug = True
         self.path_cache = '../cache'
         self.struct = struct.Struct('<Q L')
         self.length_struct = self.struct.size
+        self.manager_corpora = manager_corpora
         self.handle_index = Handle_Index_Dictionary()
         self.dict_data = self.init_data()
 
@@ -29,6 +28,20 @@ class Manager_Data:
             print('loaded metadata for {} corpora'.format(len(dict_data)))
 
         return dict_data
+
+    def delete_corpus(self, id_corpus):
+        path_corpus = os.path.join(self.path_cache, id_corpus)
+        shutil.rmtree(path_corpus)
+
+        del self.dict_data[id_corpus]
+        self.manager_corpora.delete_corpus(id_corpus)
+
+    def get_number_of_indexed_items(self, id_corpus):
+        return self.dict_data[id_corpus]['size']
+
+    def reindex_corpus(self, id_corpus):
+        settings_corpus = self.manager_corpora.reload_settings(id_corpus)
+        self.index_corpus(id_corpus, settings_corpus)
 
     def index_corpus(self, id_corpus, settings_corpus):
         if self.debug == True:
@@ -113,8 +126,8 @@ class Manager_Data:
         return state_loaded
 
     @unique
-    class State_Loaded(Enum):
-        LOADED = 1
-        NOT_LOADED = 2
-        LOADING = 3
+    class State_Loaded(IntEnum):
+        LOADED = 0
+        NOT_LOADED = 1
+        LOADING = 2
     

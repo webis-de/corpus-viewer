@@ -1,4 +1,4 @@
-from .shared_code import get_setting, get_current_corpus
+from .shared_code import get_current_corpus
 from django.http import JsonResponse
 from django.shortcuts import render
 from viewer.models import m_Tag, m_Entity

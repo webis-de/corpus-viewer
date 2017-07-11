@@ -456,8 +456,65 @@ function export_data(modal)
         headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
         data: JSON.stringify(data),
         success: function(result) {
-
             modal.modal('hide');
+
+        }
+    })
+}
+
+function reload_settings()
+{
+    let data = {}
+    data.task = 'reload_settings'
+    
+    let url_params = refresh_url();
+
+    $.ajax({
+        url: 'get_page?'+url_params,
+        method: 'POST',
+        contentType: 'application/json',
+        headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+        data: JSON.stringify(data),
+        success: function(result) {
+            location.reload();
+        }
+    })
+}
+
+function reindex_corpus(modal)
+{
+    let data = {}
+    data.task = 'reindex_corpus'
+    
+    let url_params = refresh_url();
+
+    $.ajax({
+        url: 'get_page?'+url_params,
+        method: 'POST',
+        contentType: 'application/json',
+        headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+        data: JSON.stringify(data),
+        success: function(result) {
+        }
+    })
+    location.reload();
+}
+
+function delete_corpus(modal)
+{
+    let data = {}
+    data.task = 'delete_corpus'
+    
+    let url_params = refresh_url();
+
+    $.ajax({
+        url: 'get_page?'+url_params,
+        method: 'POST',
+        contentType: 'application/json',
+        headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+        data: JSON.stringify(data),
+        success: function(result) {
+            location.reload();
         }
     })
 }

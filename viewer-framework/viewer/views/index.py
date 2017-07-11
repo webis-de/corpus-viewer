@@ -1,4 +1,4 @@
-from .shared_code import get_setting, set_sessions, get_current_corpus, glob_manager_data
+from .shared_code import set_sessions, glob_manager_data, glob_manager_corpora, get_current_corpus
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from viewer.models import m_Tag, m_Entity
@@ -8,19 +8,24 @@ from threading import Thread
 def index(request):
 ##### set sessions
     # request.session.flush()
-    set_sessions(request)
+    # if not glob_manager_corpora.corpus_exists(id_corpus):
+    #     return redirect('dashboard:index')
+    try:
+        set_sessions(request)
+    except:
+        return redirect('dashboard:index')
     id_corpus = get_current_corpus(request)
 
     state_loaded = glob_manager_data.get_state_loaded(id_corpus)
     if state_loaded != glob_manager_data.State_Loaded.LOADED:
-
-        if 'start_loading' in request.GET:
-            glob_manager_data.index_corpus(id_corpus, get_setting(request=request))
-            return redirect('dashboard:index')
-
         context = {}
+        context['id_corpus'] = id_corpus
         context['state_loaded'] = state_loaded
-        context['settings'] = get_setting(request=request)
+        try:
+            context['number_of_indexed_items'] = glob_manager_data.get_number_of_indexed_items(id_corpus)
+        except:
+            context['number_of_indexed_items'] = 0
+        context['settings'] = glob_manager_corpora.get_settings_for_corpus(id_corpus)
         return render(request, 'viewer/not_loaded.html', context)
 ##### handle post requests
     if request.method == 'POST':
@@ -47,8 +52,8 @@ def index(request):
 
     context = {}
     context['json_url_params'] = json.dumps(get_url_params(request))
-    context['json_filters'] = json.dumps(get_setting('filters', request=request))
-    context['settings'] = get_setting(request=request)
+    context['json_filters'] = json.dumps(glob_manager_corpora.get_setting_for_corpus('filters', id_corpus))
+    context['settings'] = glob_manager_corpora.get_settings_for_corpus(id_corpus)
     return render(request, 'viewer/index.html', context)
 
 def check_if_tag_exists(obj, request):
@@ -123,7 +128,7 @@ def get_url_params(request):
     if 'viewer__current_corpus' in dict_url_params:
         dict_url_params['viewer__current_corpus'] = dict_url_params['viewer__current_corpus']
     else:
-        dict_url_params['viewer__current_corpus'] = request.session['viewer__viewer__current_corpus']
+        dict_url_params['viewer__current_corpus'] = get_current_corpus(request)
 
     if 'viewer__columns' in dict_url_params:
         dict_url_params['viewer__columns'] = json.loads(dict_url_params['viewer__columns'])

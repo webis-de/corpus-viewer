@@ -1,6 +1,5 @@
-from .shared_code import set_sessions, load_data, get_setting, get_or_create_tag, \
-    get_current_corpus, get_items_by_indices, get_item_by_ids, glob_manager_data, \
-    get_setting_for_corpus
+from .shared_code import set_sessions, load_data, get_or_create_tag, \
+    get_items_by_indices, get_item_by_ids, glob_manager_data, glob_manager_corpora, get_current_corpus
 import collections
 import re
 import os
@@ -24,6 +23,8 @@ def get_page(request):
 ##### handle session entries
     start_total = time.perf_counter()
     set_sessions(request)
+    id_corpus = get_current_corpus(request)
+
 ##### load data and apply filters
     info_filter_values = {}
     list_ids = get_filtered_data(request)
@@ -39,14 +40,26 @@ def get_page(request):
             response['data'] = add_tag(obj, data, request)
         elif obj['task'] == 'export_data':
             response = export_data(obj, data, request)
+        elif obj['task'] == 'reload_settings':
+            glob_manager_corpora.reload_settings(id_corpus)
+        elif obj['task'] == 'reindex_corpus':
+            try:
+                glob_manager_data.reindex_corpus(obj['id_corpus'])
+            except:
+                glob_manager_data.reindex_corpus(id_corpus)
+        elif obj['task'] == 'get_number_of_indexed_items':
+            response['number_of_indexed_items'] = glob_manager_data.get_number_of_indexed_items(obj['id_corpus'])
+            response['state_loaded'] = glob_manager_data.get_state_loaded(obj['id_corpus'])
+        elif obj['task'] == 'delete_corpus':
+            glob_manager_data.delete_corpus(id_corpus)
 
         return JsonResponse(response)
 ##### page the dataset
     # paginator = Paginator(range(0, get_setting('page_size', request=request))
-    paginator = Paginator(list_ids, get_setting('page_size', request=request))
+    paginator = Paginator(list_ids, glob_manager_corpora.get_setting_for_corpus('page_size', id_corpus))
     # paginator = Paginator(data, get_setting('page_size', request=request))
     try:
-        page_current = paginator.page(request.session[get_current_corpus(request)]['viewer__viewer__page'])
+        page_current = paginator.page(request.session[id_corpus]['viewer__viewer__page'])
     except PageNotAnInteger:
         # If page is not an integer, deliver first page.
         page_current = paginator.page(1)
@@ -54,16 +67,15 @@ def get_page(request):
         # If page is out of range (e.g. 9999), deliver last page of results.
         page_current = paginator.page(paginator.num_pages)
 ##### add tags to the dataset
-    id_corpus = get_current_corpus(request)
 
     start_loading = time.perf_counter()
-    data = glob_manager_data.get_items(id_corpus, get_current_corpus(request=request), page_current)
+    data = glob_manager_data.get_items(id_corpus, id_corpus, page_current)
     print('loading time: '+str(round(float(time.perf_counter() - start_loading) * 1000, 2))+'ms')
 
     # add_tags(data, request)
 ##### handle post requests
     context = {}
-    context['settings'] = get_setting(request=request)
+    context['settings'] = glob_manager_corpora.get_settings_for_corpus(id_corpus)
     # context['page_current'] = page_current
     context['data'] = data
 
@@ -115,7 +127,7 @@ def export_data(obj, data, request):
     return response
 
 def get_filtered_data(request):
-    current_corpus = get_current_corpus(request)
+    id_corpus = get_current_corpus(request)
 
     #
     # FILTER BY TAGS 
@@ -136,7 +148,7 @@ def get_filtered_data(request):
     info_filter_values = {}
 
     set_data = None
-    for obj_filter in get_setting('filters', request=request):
+    for obj_filter in glob_manager_corpora.get_setting_for_corpus('filters', id_corpus):
         # filter the data by the current filter
         set_data_new, info_values, skipped = filter_data(request, obj_filter)
         # print(set_data_new)
@@ -154,7 +166,7 @@ def get_filtered_data(request):
 
     # if no filter was applied return all ids
     if set_data == None:
-        return glob_manager_data.get_all_ids_for_corpus(current_corpus, get_setting(request=request))
+        return glob_manager_data.get_all_ids_for_corpus(id_corpus, glob_manager_corpora.get_settings_for_corpus(id_corpus))
     #
     # UPDATE data_only_ids
     #
@@ -171,28 +183,29 @@ def filter_data(request, obj_filter):
     set_data_new = set()
 
     info_values = {}
+    id_corpus = get_current_corpus(request)
 
     skipped = True
-    field_id = get_setting('id', request=request)
+    field_id = glob_manager_corpora.get_setting_for_corpus('id', id_corpus)
 
     # get the values of the current filter
-    values = request.session[get_current_corpus(request)]['viewer__viewer__filter_custom'][obj_filter['data_field']]
+    values = request.session[id_corpus]['viewer__viewer__filter_custom'][obj_filter['data_field']]
 
     # if the value is not empty 
     if len(values) != 0:
         skipped = False
         info_values = {value:{'value_count_per_document': 0, 'value_count_total': 0} for value in values}
         print(values)
-        if get_setting('data_type', request=request) == 'database':
+        if glob_manager_corpora.get_setting_for_corpus('data_type', id_corpus) == 'database':
             raise ValueError('NOT IMPLEMENTED')
         #     # TODO: make flexible filters for database
         #     data = data.filter(**{obj_filter['data_field']+'__icontains': value})
         else:
-            filter_type = get_setting('data_fields', request=request)[obj_filter['data_field']]['type']
+            filter_type = glob_manager_corpora.get_setting_for_corpus('data_fields', id_corpus)[obj_filter['data_field']]['type']
             # if the filter is 'contains'
             if filter_type == 'string' or filter_type == 'text':
                 # get the type (string, list) of the data-field
-                type_data_field = get_setting('data_fields', request=request)[obj_filter['data_field']]['type']
+                type_data_field = glob_manager_corpora.get_setting_for_corpus('data_fields', id_corpus)[obj_filter['data_field']]['type']
                 if type_data_field == 'string':
                     print(values)
                     for value in values:
