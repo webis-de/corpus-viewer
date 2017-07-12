@@ -27,7 +27,6 @@ def get_corpora():
 
     glob_manager_corpora.check_for_new_corpora()
 
-
     dict_data_chached = init_data()
 
     dict_ordered = collections.OrderedDict()
@@ -38,6 +37,8 @@ def get_corpora():
         settings = {key: settings_total[key] for key in list_keys}
         settings['state_loaded'] = glob_manager_data.get_state_loaded(id_corpus)
         dict_ordered[id_corpus] = settings
+
+        
 
     # print(dict_ordered)
     response['corpora'] = dict_ordered

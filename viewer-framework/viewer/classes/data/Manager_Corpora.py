@@ -46,9 +46,17 @@ class Manager_Corpora:
         return local_env['DICT_SETTINGS_VIEWER']
 
     def check_for_new_corpora(self):
+        dict_tmp = {}
+
         for file in os.listdir(self.path_settings):
-            if not file[:-3] in self.dict_corpora:
-                self.dict_corpora[file[:-3]] = self.load_corpus_from_file(file)
+            id_corpus = file[:-3]
+
+            try:
+                dict_tmp[id_corpus] = self.dict_corpora[id_corpus]
+            except KeyError:
+                dict_tmp[id_corpus] = self.load_corpus_from_file(file)
+
+        self.dict_corpora = dict_tmp
 
     def get_ids_corpora(self, sorted_by=None):
         if sorted_by == None:
