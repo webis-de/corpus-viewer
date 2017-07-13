@@ -5,8 +5,8 @@ import re
 import os
 import time
 import json
-from django.http import JsonResponse
-from django.shortcuts import render
+from django.http import JsonResponse, Http404
+from django.shortcuts import render, redirect
 from django.template import Engine, Context
 from django.template.loader import get_template
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -22,7 +22,11 @@ regex_filter_numbers_gte = re.compile('>=(-?[0-9]+\.?[0-9]*)')
 def get_page(request):
 ##### handle session entries
     start_total = time.perf_counter()
-    set_sessions(request)
+    try:
+        set_sessions(request)
+    except:
+        raise Http404("Corpus does not exist")
+
     id_corpus = get_current_corpus(request)
 
 ##### load data and apply filters

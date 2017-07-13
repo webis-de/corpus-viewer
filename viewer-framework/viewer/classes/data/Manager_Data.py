@@ -23,7 +23,17 @@ class Manager_Data:
         dict_data = cache.get('metadata_corpora')
         if(dict_data == None):
             dict_data = {}
+        else:
+            dict_tmp = {}
+            for id_corpus in self.manager_corpora.get_ids_corpora():
+                try:
+                    dict_tmp[id_corpus] = dict_data[id_corpus]
+                except KeyError:
+                    pass
 
+            dict_data = dict_tmp
+            cache.set('metadata_corpora', dict_data)
+        
         if self.debug == True:
             print('loaded metadata for {} corpora'.format(len(dict_data)))
 
@@ -34,6 +44,8 @@ class Manager_Data:
         shutil.rmtree(path_corpus)
 
         del self.dict_data[id_corpus]
+        cache.set('metadata_corpora', self.dict_data)
+
         self.manager_corpora.delete_corpus(id_corpus)
 
     def get_number_of_indexed_items(self, id_corpus):
@@ -84,7 +96,7 @@ class Manager_Data:
         #     for index, item in enumerate(dict_data['list']):   
         #         obj_handle_item.get(index)
         #     print('loading time: '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
-
+        print('made this')
         dict_data['is_loaded'] = True
         cache.set('metadata_corpora', self.dict_data)
         print(self.dict_data)

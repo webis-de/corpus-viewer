@@ -49,6 +49,9 @@ function handle_recommendation(input, wrapper_recommendation)
             data: JSON.stringify(data),
             success: function(result) {
                 set_recommendations(wrapper_recommendation, $(result.data.array_recommendations));
+            },
+            error: function(result) {
+                error_corpus_not_exists();
             }
         });
     }
@@ -297,6 +300,9 @@ function set_session_entry(session_key, session_value, callback)
             {
                 callback()
             }
+        },
+        error: function(result) {
+            error_corpus_not_exists();
         }
     });
 }
@@ -386,4 +392,9 @@ function update_ui(info_filter_values)
 
 function escape_html(text) {
     return text.replace(/&/g,'&amp;').replace(/"/g, "&quot;").replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function error_corpus_not_exists()
+{
+    location.reload();
 }

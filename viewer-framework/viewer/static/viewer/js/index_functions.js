@@ -67,6 +67,9 @@ function handle_recommendation_filter(input, wrapper_recommendation)
             data: JSON.stringify(data),
             success: function(result) {
                 set_recommendations(wrapper_recommendation, $(result.data.array_recommendations));
+            },
+            error: function(result) {
+                error_corpus_not_exists();
             }
         });
     }
@@ -352,6 +355,9 @@ function delete_tag_from_item(id_item, id_tag)
                 wrapper_tags.removeClass('tag_'+id_tag)
                 wrapper_tags.find('.tag_marker[data-id_tag="'+id_tag+'"]').remove()
             }
+        },
+        error: function(result) {
+            error_corpus_not_exists();
         }
     })
 }
@@ -458,6 +464,9 @@ function export_data(modal)
         success: function(result) {
             modal.modal('hide');
 
+        },
+        error: function(result) {
+            error_corpus_not_exists();
         }
     })
 }
@@ -477,6 +486,9 @@ function reload_settings()
         data: JSON.stringify(data),
         success: function(result) {
             location.reload();
+        },
+        error: function(result) {
+            error_corpus_not_exists();
         }
     })
 }
@@ -495,6 +507,9 @@ function reindex_corpus(modal)
         headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
         data: JSON.stringify(data),
         success: function(result) {
+        },
+        error: function(result) {
+            error_corpus_not_exists();
         }
     })
     location.reload();
@@ -515,6 +530,9 @@ function delete_corpus(modal)
         data: JSON.stringify(data),
         success: function(result) {
             location.reload();
+        },
+        error: function(result) {
+            error_corpus_not_exists();
         }
     })
 }
@@ -578,6 +596,9 @@ function add_tag(modal)
             }
 
             modal.modal('hide');
+        },
+        error: function(result) {
+            error_corpus_not_exists();
         }
     })
 }
@@ -632,6 +653,9 @@ function handle_click_mode_add_tag(button)
                     glob_trigger_modal = 'mode_add_tag';
                     $('#modal_add_tag').modal('show');
                 }
+            },
+            error: function(result) {
+                error_corpus_not_exists();
             }
         })
 
@@ -670,6 +694,9 @@ function handle_click_on_tr(event, tr)
                     $('#table_entities tr[data-id_item="'+id_item+'"] .wrapper_tags').addClass('tag_'+tag.id)
                     add_tag_marker(tag.id, tag.name, tag.color)
                 }
+            },
+            error: function(result) {
+                error_corpus_not_exists();
             }
         })
     }
@@ -749,6 +776,9 @@ function load_current_page(update_tags = true)
             update_ui(result.info_filter_values);
             stop_loading();
         },
+        error: function(result) {
+            error_corpus_not_exists();
+        }
     });
 }
 

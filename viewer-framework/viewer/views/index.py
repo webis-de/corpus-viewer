@@ -13,7 +13,11 @@ def index(request):
     try:
         set_sessions(request)
     except:
+        if request.is_ajax():
+            raise Http404("Corpus does not exist")
+
         return redirect('dashboard:index')
+
     id_corpus = get_current_corpus(request)
 
     state_loaded = glob_manager_data.get_state_loaded(id_corpus)
