@@ -80,7 +80,8 @@ CACHES = {
     # }
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': '/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/cache',
+        'LOCATION': '../cache',
+        # 'LOCATION': '/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/cache',
         'TIMEOUT': None,
     }
     # 'default': {
