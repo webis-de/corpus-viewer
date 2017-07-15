@@ -1,6 +1,6 @@
 from django.core.cache import cache
 from .Handle_Item import *
-from ..index.Handle_Index_Dictionary import *
+from ..index.Handle_Index_Dictionary import Handle_Index_Dictionary
 from enum import IntEnum, unique
 import time
 import os
@@ -13,7 +13,6 @@ class Manager_Data:
         self.struct = struct.Struct('<Q L')
         self.length_struct = self.struct.size
         self.manager_corpora = manager_corpora
-        self.handle_index = Handle_Index_Dictionary()
         self.dict_data = self.init_data()
 
         if not os.path.exists(self.path_cache):
@@ -32,19 +31,34 @@ class Manager_Data:
                     pass
 
             dict_data = dict_tmp
-            cache.set('metadata_corpora', dict_data)
+
+            self.update_cache(dict_data)
+
+            for key in dict_data.keys():
+                print(key)
+                print(key)
+                print(key)
+            
         
         if self.debug == True:
             print('loaded metadata for {} corpora'.format(len(dict_data)))
 
+            # dict_data[key]['handle_index'] = Handle_Index_Dictionary(id_corpus, settings_corpus)
+
         return dict_data
+
+    def update_cache(self, dict_data):
+        list_keys = ['is_loaded', 'size', 'size_in_bytes']
+
+        dict_data = {key:dict_data[key] for key in list_keys}
+        cache.set('metadata_corpora', dict_data)
 
     def delete_corpus(self, id_corpus):
         path_corpus = os.path.join(self.path_cache, id_corpus)
         shutil.rmtree(path_corpus)
 
         del self.dict_data[id_corpus]
-        cache.set('metadata_corpora', self.dict_data)
+        self.update_cache(self.dict_data)
 
         self.manager_corpora.delete_corpus(id_corpus)
 
@@ -65,10 +79,12 @@ class Manager_Data:
         dict_data['is_loaded'] = False
         dict_data['size'] = 0
         dict_data['size_in_bytes'] = 0
-
+        
+        handle_index = Handle_Index_Dictionary(id_corpus, settings_corpus)
+        # dict_data['handle_index'] = handle_index
 
         self.dict_data[id_corpus] = dict_data
-        cache.set('metadata_corpora', self.dict_data)
+        # cache.set('metadata_corpora', self.dict_data)
 
         path_corpus = os.path.join(self.path_cache, id_corpus)
         if not os.path.exists(path_corpus):
@@ -77,7 +93,7 @@ class Manager_Data:
         with open(os.path.join(path_corpus, id_corpus + '.data'), 'wb') as handle_file_data:
             with open(os.path.join(path_corpus, id_corpus + '.metadata'), 'wb') as handle_file_metadata:
                 start = time.perf_counter()
-                obj_handle_item = Handle_Item_Add(self.struct, self.handle_index, handle_file_data, handle_file_metadata, dict_data, field_id, settings_corpus['data_fields'])
+                obj_handle_item = Handle_Item_Add(self.struct, handle_index, handle_file_data, handle_file_metadata, dict_data, field_id, settings_corpus['data_fields'])
 
                 settings_corpus['load_data_function'](obj_handle_item)
                 print('writing time: '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
@@ -98,7 +114,8 @@ class Manager_Data:
         #     print('loading time: '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
         print('made this')
         dict_data['is_loaded'] = True
-        cache.set('metadata_corpora', self.dict_data)
+        update_cache(self.dict_data)
+        # cache.set('metadata_corpora', self.dict_data)
         print(self.dict_data)
 
         # self.dict_data[id_corpus] = dict_data

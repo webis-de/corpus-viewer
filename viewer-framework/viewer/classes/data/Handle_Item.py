@@ -80,16 +80,16 @@ class Handle_Item_Add(Handle_Item):
 
         for key, data_field in self.dict_data_fields.items():
         # for key, data_field in self.settings_corpus['data_fields'].items():
-            pass
-            # type_data_field = data_field['type']
-            # value = item[key]
+            # pass
+            type_data_field = data_field['type']
+            value = item[key]
 
-            # if type_data_field == 'string':
-            #     self.handle_index.add_string(value, id_intern)
-            # elif type_data_field == 'text':
-            #     self.handle_index.add_text(value, id_intern)
-            # elif type_data_field == 'number':
-            #     self.handle_index.add_number(value, id_intern)
+            if type_data_field == 'string':
+                self.handle_index.add_string(key, value, id_intern)
+            elif type_data_field == 'text':
+                self.handle_index.add_text(key, value, id_intern)
+            elif type_data_field == 'number':
+                self.handle_index.add_number(key, value, id_intern)
 
         # self.dict_data['list'].append(id_intern)
         # self.dict_data['list'].append((self.dict_data['size'], item[self.field_id]))
