@@ -13,7 +13,6 @@ import pickle as marshal
 from django.core.cache import cache
 from viewer.models import m_Tag, m_Entity
 from viewer.classes.data.Manager_Data import Manager_Data
-from viewer.classes.data.Manager_Corpora import Manager_Corpora
 
 # modules = glob.glob('settings_viewer/*.py')
 # __all__ = [os.path.basename(f)[:-3] for f in modules if os.path.isfile(f) and not f.endswith('__init__.py')]
@@ -35,7 +34,6 @@ from viewer.classes.data.Manager_Corpora import Manager_Corpora
 #     module_settings = importlib.import_module('settings_viewer.'+corpus)
 #     glob_settings[corpus] = module_settings.DICT_SETTINGS_VIEWER
 
-glob_manager_corpora = Manager_Corpora()
 glob_manager_data = Manager_Data(glob_manager_corpora)
 # cache.set('data_', {})
 

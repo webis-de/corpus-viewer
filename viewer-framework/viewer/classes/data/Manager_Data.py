@@ -7,12 +7,12 @@ import os
 import shutil
 
 class Manager_Data:
-    def __init__(self, manager_corpora):
+    def __init__(self):
         self.debug = True
         self.path_cache = '../cache'
         self.struct = struct.Struct('<Q L')
         self.length_struct = self.struct.size
-        self.manager_corpora = manager_corpora
+        self.manager_corpora = Manager_Corpora()
         self.dict_data = self.init_data()
 
         if not os.path.exists(self.path_cache):
@@ -114,7 +114,7 @@ class Manager_Data:
         #     print('loading time: '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
         print('made this')
         dict_data['is_loaded'] = True
-        update_cache(self.dict_data)
+        self.update_cache(self.dict_data)
         # cache.set('metadata_corpora', self.dict_data)
         print(self.dict_data)
 
