@@ -1,4 +1,4 @@
-from .shared_code import set_sessions, glob_manager_data, glob_manager_corpora, get_current_corpus
+from .shared_code import set_sessions, glob_manager_data, get_current_corpus
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from viewer.models import m_Tag, m_Entity
@@ -7,9 +7,6 @@ from threading import Thread
 
 def index(request):
 ##### set sessions
-    # request.session.flush()
-    # if not glob_manager_corpora.corpus_exists(id_corpus):
-    #     return redirect('dashboard:index')
     try:
         set_sessions(request)
     except:
@@ -29,7 +26,7 @@ def index(request):
             context['number_of_indexed_items'] = glob_manager_data.get_number_of_indexed_items(id_corpus)
         except:
             context['number_of_indexed_items'] = 0
-        context['settings'] = glob_manager_corpora.get_settings_for_corpus(id_corpus)
+        context['settings'] = glob_manager_data.get_settings_for_corpus(id_corpus)
         return render(request, 'viewer/not_loaded.html', context)
 ##### handle post requests
     if request.method == 'POST':
@@ -56,8 +53,8 @@ def index(request):
 
     context = {}
     context['json_url_params'] = json.dumps(get_url_params(request))
-    context['json_filters'] = json.dumps(glob_manager_corpora.get_setting_for_corpus('filters', id_corpus))
-    context['settings'] = glob_manager_corpora.get_settings_for_corpus(id_corpus)
+    context['json_filters'] = json.dumps(glob_manager_data.get_setting_for_corpus('filters', id_corpus))
+    context['settings'] = glob_manager_data.get_settings_for_corpus(id_corpus)
     return render(request, 'viewer/index.html', context)
 
 def check_if_tag_exists(obj, request):

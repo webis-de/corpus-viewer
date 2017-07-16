@@ -1,5 +1,5 @@
 from .shared_code import set_sessions, load_data, get_or_create_tag, \
-    get_items_by_indices, get_item_by_ids, glob_manager_data, glob_manager_corpora, get_current_corpus
+    get_items_by_indices, get_item_by_ids, glob_manager_data, get_current_corpus
 import collections
 import re
 import os
@@ -30,9 +30,7 @@ def get_page(request):
     id_corpus = get_current_corpus(request)
 
 ##### load data and apply filters
-    info_filter_values = {}
-    list_ids = get_filtered_data(request)
-    # print(list_ids)
+    list_ids, info_filter_values = get_filtered_data(request)
     # return JsonResponse({})
     list_tags = []
     # list_tags = get_tags_filtered_items(data_only_ids, request)
@@ -45,7 +43,7 @@ def get_page(request):
         elif obj['task'] == 'export_data':
             response = export_data(obj, data, request)
         elif obj['task'] == 'reload_settings':
-            glob_manager_corpora.reload_settings(id_corpus)
+            glob_manager_data.reload_settings(id_corpus)
         elif obj['task'] == 'reindex_corpus':
             try:
                 glob_manager_data.reindex_corpus(obj['id_corpus'])
@@ -60,7 +58,7 @@ def get_page(request):
         return JsonResponse(response)
 ##### page the dataset
     # paginator = Paginator(range(0, get_setting('page_size', request=request))
-    paginator = Paginator(list_ids, glob_manager_corpora.get_setting_for_corpus('page_size', id_corpus))
+    paginator = Paginator(list_ids, glob_manager_data.get_setting_for_corpus('page_size', id_corpus))
     # paginator = Paginator(data, get_setting('page_size', request=request))
     try:
         page_current = paginator.page(request.session[id_corpus]['viewer__viewer__page'])
@@ -79,7 +77,7 @@ def get_page(request):
     # add_tags(data, request)
 ##### handle post requests
     context = {}
-    context['settings'] = glob_manager_corpora.get_settings_for_corpus(id_corpus)
+    context['settings'] = glob_manager_data.get_settings_for_corpus(id_corpus)
     # context['page_current'] = page_current
     context['data'] = data
 
@@ -151,26 +149,30 @@ def get_filtered_data(request):
     #
     info_filter_values = {}
 
-    set_data = None
-    for obj_filter in glob_manager_corpora.get_setting_for_corpus('filters', id_corpus):
+    list_data = None
+    for obj_filter in glob_manager_data.get_setting_for_corpus('filters', id_corpus):
         # filter the data by the current filter
-        set_data_new, info_values, skipped = filter_data(request, obj_filter)
-        # print(set_data_new)
+        list_data_new, info_values, skipped = filter_data(request, obj_filter)
+        # print(list_data_new)
         if not skipped:
-            if set_data == None:
-                set_data = set_data_new
+            if list_data == None:
+                list_data = list_data_new
             else:
-                set_data = set_data.intersection(set_data_new)
+                set_tmp = frozenset(list_data_new)
+                list_data = [x for x in list_data if x in set_tmp]
+                # list_data = list_data.intersection(list_data_new)
                 
             info_filter_values[obj_filter['data_field']] = info_values
     # print(len(data))
-    # print(len(set_data))
-    if set_data != None:
-        data = [item for item in data if item[get_setting('id', request=request)] in set_data]
+    # print(len(list_data))
+    if list_data != None:
+        # data = [item for item in data if item[get_setting('id', request=request)] in list_data]
+        # print(list_data)
+        return list_data, info_filter_values
 
     # if no filter was applied return all ids
-    if set_data == None:
-        return glob_manager_data.get_all_ids_for_corpus(id_corpus, glob_manager_corpora.get_settings_for_corpus(id_corpus))
+    if list_data == None:
+        return glob_manager_data.get_all_ids_for_corpus(id_corpus, glob_manager_data.get_settings_for_corpus(id_corpus)), info_filter_values
     #
     # UPDATE data_only_ids
     #
@@ -184,13 +186,14 @@ def get_filtered_data(request):
     # return data, data_only_ids, info_filter_values
 
 def filter_data(request, obj_filter):
-    set_data_new = set()
+    list_data_new = []
+    # set_data_new = set()
 
     info_values = {}
     id_corpus = get_current_corpus(request)
 
     skipped = True
-    field_id = glob_manager_corpora.get_setting_for_corpus('id', id_corpus)
+    field_id = glob_manager_data.get_setting_for_corpus('id', id_corpus)
 
     # get the values of the current filter
     values = request.session[id_corpus]['viewer__viewer__filter_custom'][obj_filter['data_field']]
@@ -199,24 +202,29 @@ def filter_data(request, obj_filter):
     if len(values) != 0:
         skipped = False
         info_values = {value:{'value_count_per_document': 0, 'value_count_total': 0} for value in values}
-        print(values)
-        if glob_manager_corpora.get_setting_for_corpus('data_type', id_corpus) == 'database':
+        if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
             raise ValueError('NOT IMPLEMENTED')
         #     # TODO: make flexible filters for database
         #     data = data.filter(**{obj_filter['data_field']+'__icontains': value})
         else:
-            filter_type = glob_manager_corpora.get_setting_for_corpus('data_fields', id_corpus)[obj_filter['data_field']]['type']
+            type_data_field = glob_manager_data.get_setting_for_corpus('data_fields', id_corpus)[obj_filter['data_field']]['type']
             # if the filter is 'contains'
-            if filter_type == 'string' or filter_type == 'text':
+            if type_data_field == 'string' or type_data_field == 'text':
                 # get the type (string, list) of the data-field
-                type_data_field = glob_manager_corpora.get_setting_for_corpus('data_fields', id_corpus)[obj_filter['data_field']]['type']
                 if type_data_field == 'string':
-                    print(values)
                     for value in values:
                         is_case_insensitive = True if value[0] == 'i' else False
                         real_value = value[2:]
-                        list_ids = glob_manager_data.handle_index.get(real_value)
-                        print(list_ids)
+                        list_data_new = glob_manager_data.get_handle_index(id_corpus).get_string(obj_filter['data_field'], real_value, is_case_insensitive)
+                elif type_data_field == 'text':
+                    for value in values:
+                        is_case_insensitive = True if value[0] == 'i' else False
+                        real_value = value[2:]
+                        list_data_new = glob_manager_data.get_handle_index(id_corpus).get_text(obj_filter['data_field'], real_value, is_case_insensitive)
+                
+                        # info_values[value]['value_count_total'] = text_lower.count(real_value)
+                        # info_values[value]['value_count_per_document'] = 1 
+                        # print(list_ids)
         #             for item in data:
         #                 text = str(item[obj_filter['data_field']])
         #                 text_lower = text.lower()
@@ -248,8 +256,15 @@ def filter_data(request, obj_filter):
                 elif type_data_field == 'list':
                     raise ValueError('NOT IMPLEMENTED')
         #     # if the filter is 'number'
-            elif filter_type == 'number':
-                pass
+            elif type_data_field == 'number':
+                for value in values:
+                    try:
+                        value = int(value)
+                    except ValueError:
+                        value = float(value)
+
+                    list_data_new = glob_manager_data.get_handle_index(id_corpus).get_number(obj_filter['data_field'], int(value))
+                       
         #         values_parsed = parse_values(values)
 
         #         for item in data:
@@ -296,9 +311,8 @@ def filter_data(request, obj_filter):
                 
         #         # data = set_data_new
 
-
                 # check if a specific number is requested
-    return set_data_new, info_values, skipped
+    return list_data_new, info_values, skipped
 
 def parse_values(values):
     values_parsed = {}

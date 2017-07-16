@@ -6,7 +6,7 @@ import json
 import collections
 from django.core.cache import cache
 from django.http import JsonResponse
-from viewer.views.shared_code import glob_manager_corpora, glob_manager_data
+from viewer.views.shared_code import glob_manager_data
 
 def index(request):
     if request.method == 'POST':
@@ -24,17 +24,17 @@ def index(request):
 
 def get_corpora():
     response = {}
-    print(glob_manager_data.dict_data)
+    # print(glob_manager_data.dict_corpora)
 
-    glob_manager_corpora.check_for_new_corpora()
+    glob_manager_data.check_for_new_corpora()
 
-    print(glob_manager_data.dict_data)
+    # print(glob_manager_data.dict_corpora)
 
     dict_data_chached = init_data()
     dict_ordered = collections.OrderedDict()
     list_keys = ['name', 'description']
-    for id_corpus in glob_manager_corpora.get_ids_corpora(sorted_by='name'):
-        settings_total = glob_manager_corpora.get_settings_for_corpus(id_corpus)
+    for id_corpus in glob_manager_data.get_ids_corpora(sorted_by='name'):
+        settings_total = glob_manager_data.get_settings_for_corpus(id_corpus)
         # print(glob_manager_data.get_state_loaded(id_corpus))
         settings = {key: settings_total[key] for key in list_keys}
         settings['state_loaded'] = glob_manager_data.get_state_loaded(id_corpus)

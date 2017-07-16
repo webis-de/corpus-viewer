@@ -1,18 +1,46 @@
 from abc import ABC, abstractmethod
 
 class Handle_Index(ABC):
-	@abstractmethod
-	def add_string(self, data_field, value, id_intern):
-		pass
+    def __init__(self, id_corpus, settings_corpus):
+        self.id_corpus = id_corpus
+        self.settings_corpus = settings_corpus
 
-	@abstractmethod
-	def add_text(self, data_field, value, id_intern):
-		pass
+    @abstractmethod
+    def start(self):
+        pass
 
-	@abstractmethod
-	def add_number(self, data_field, value, id_intern):
-		pass
+    @abstractmethod
+    def finish(self):
+        pass
 
-	@abstractmethod
-	def get(self, data_field, value):
-		pass
+    @abstractmethod
+    def add_item(self, id_intern, item):
+        pass
+
+    @abstractmethod
+    def add_string(self, data_field, value, id_intern):
+        pass
+
+    @abstractmethod
+    def add_text(self, data_field, value, id_intern):
+        pass
+
+    @abstractmethod
+    def add_number(self, data_field, value, id_intern):
+        pass
+
+    @abstractmethod
+    def get_string(self, data_field, value, case_sensitive):
+        pass
+
+    @abstractmethod
+    def get_text(self, data_field, value, case_sensitive):
+        pass
+
+    @abstractmethod
+    def get_number(self, data_field, value):
+        pass
+
+    @abstractmethod
+    def clear(self):
+        pass

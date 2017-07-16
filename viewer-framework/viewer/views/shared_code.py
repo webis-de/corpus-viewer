@@ -34,7 +34,7 @@ from viewer.classes.data.Manager_Data import Manager_Data
 #     module_settings = importlib.import_module('settings_viewer.'+corpus)
 #     glob_settings[corpus] = module_settings.DICT_SETTINGS_VIEWER
 
-glob_manager_data = Manager_Data(glob_manager_corpora)
+glob_manager_data = Manager_Data()
 # cache.set('data_', {})
 
 
@@ -259,7 +259,7 @@ def load_file_ldjson(request):
 #     model_custom.objects.bulk_create(list_entries)
 
 def set_sessions(request):
-    glob_manager_corpora.set_current_corpus(request)
+    glob_manager_data.set_current_corpus(request)
     id_corpus = get_current_corpus(request)
 
     set_session(request, 'is_collapsed_div_filters', default=True)
@@ -268,14 +268,14 @@ def set_sessions(request):
 
     set_session_from_url(request, 'viewer__page', default=1)
 
-    set_session_from_url(request, 'viewer__columns', default=glob_manager_corpora.get_setting_for_corpus('displayed_fields', id_corpus) + ['viewer__item_selection', 'viewer__tags'], is_json=True)
+    set_session_from_url(request, 'viewer__columns', default=glob_manager_data.get_setting_for_corpus('displayed_fields', id_corpus) + ['viewer__item_selection', 'viewer__tags'], is_json=True)
     set_session_from_url(request, 'viewer__filter_tags', default=[], is_json=True)
 
-    set_session_from_url(request, 'viewer__filter_custom', default={obj_filter['data_field']:[] for obj_filter in glob_manager_corpora.get_setting_for_corpus('filters', id_corpus)}, is_json=True)
-    # set_session_from_url(request, 'viewer__filter_custom', default={obj_filter['data_field']:obj_filter['default_value'] for obj_filter in glob_manager_corpora.get_setting_for_corpus(id_corpus) get_setting('filters', request=request)}, is_json=True)
+    set_session_from_url(request, 'viewer__filter_custom', default={obj_filter['data_field']:[] for obj_filter in glob_manager_data.get_setting_for_corpus('filters', id_corpus)}, is_json=True)
+    # set_session_from_url(request, 'viewer__filter_custom', default={obj_filter['data_field']:obj_filter['default_value'] for obj_filter in glob_manager_data.get_setting_for_corpus(id_corpus) get_setting('filters', request=request)}, is_json=True)
     
     # in case of newly added filters add them
-    dict_tmp = {obj_filter['data_field']:obj_filter['default_value'] for obj_filter in glob_manager_corpora.get_setting_for_corpus('filters', id_corpus)}
+    dict_tmp = {obj_filter['data_field']:obj_filter['default_value'] for obj_filter in glob_manager_data.get_setting_for_corpus('filters', id_corpus)}
     dict_tmp.update(request.session[get_current_corpus(request)]['viewer__viewer__filter_custom'])
     request.session[get_current_corpus(request)]['viewer__viewer__filter_custom'] = dict_tmp.copy()
 

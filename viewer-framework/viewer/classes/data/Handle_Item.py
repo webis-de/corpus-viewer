@@ -55,7 +55,7 @@ class Handle_Item_Get_Item(Handle_Item):
     #     # return self.struct.unpack(item_bin)
 
 class Handle_Item_Add(Handle_Item):
-    def __init__(self, struct, handle_index, handle_file_data, handle_file_metadata, dict_data, field_id, dict_data_fields):
+    def __init__(self, struct, handle_file_data, handle_file_metadata, dict_data, field_id, dict_data_fields):
         Handle_Item.__init__(self, struct) 
 
         self.handle_file_data = handle_file_data
@@ -64,7 +64,7 @@ class Handle_Item_Add(Handle_Item):
         self.field_id = field_id
         # self.settings_corpus = settings_corpus
         self.dict_data_fields = dict_data_fields
-        self.handle_index = handle_index
+        self.handle_index = self.dict_data['handle_index']
 
     def add(self, item):
         # print(self.dict_data)
@@ -78,18 +78,19 @@ class Handle_Item_Add(Handle_Item):
         bin_metadata = self.struct.pack(self.dict_data['size_in_bytes'], length_in_bytes)
         self.handle_file_metadata.write(bin_metadata)
 
-        for key, data_field in self.dict_data_fields.items():
-        # for key, data_field in self.settings_corpus['data_fields'].items():
-            # pass
-            type_data_field = data_field['type']
-            value = item[key]
+        result = self.handle_index.add_item(id_intern, item)
 
-            if type_data_field == 'string':
-                self.handle_index.add_string(key, value, id_intern)
-            elif type_data_field == 'text':
-                self.handle_index.add_text(key, value, id_intern)
-            elif type_data_field == 'number':
-                self.handle_index.add_number(key, value, id_intern)
+        if result != None:
+            for key, data_field in self.dict_data_fields.items():
+                type_data_field = data_field['type']
+                value = item[key]
+
+                if type_data_field == 'string':
+                    self.handle_index.add_string(key, value, id_intern)
+                elif type_data_field == 'text':
+                    self.handle_index.add_text(key, value, id_intern)
+                elif type_data_field == 'number':
+                    self.handle_index.add_number(key, value, id_intern)
 
         # self.dict_data['list'].append(id_intern)
         # self.dict_data['list'].append((self.dict_data['size'], item[self.field_id]))
