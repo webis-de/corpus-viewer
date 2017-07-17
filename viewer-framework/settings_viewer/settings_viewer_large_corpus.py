@@ -54,7 +54,7 @@ DICT_SETTINGS_VIEWER = {
     'use_cache': True,
     'data_fields': {
         'id': {
-            'type': 'number',
+            'type': 'string',
             'display_name': 'ID'
         },
         'text': {
