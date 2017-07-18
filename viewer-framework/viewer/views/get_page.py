@@ -186,7 +186,8 @@ def get_filtered_data(request):
     # return data, data_only_ids, info_filter_values
 
 def filter_data(request, obj_filter):
-    list_data_new = []
+    list_data = None
+    # list_data_new = []
     # set_data_new = set()
 
     info_values = {}
@@ -216,6 +217,12 @@ def filter_data(request, obj_filter):
                         is_case_insensitive = True if value[0] == 'i' else False
                         real_value = value[2:]
                         list_data_new = glob_manager_data.get_handle_index(id_corpus).get_string(obj_filter['data_field'], real_value, is_case_insensitive)
+                        
+                        if list_data == None:
+                            list_data = sorted(list_data_new)
+                        else:
+                            set_tmp = frozenset(list_data_new)
+                            list_data = [x for x in list_data if x in set_tmp]
                 elif type_data_field == 'text':
                     for value in values:
                         is_case_insensitive = True if value[0] == 'i' else False
@@ -223,6 +230,13 @@ def filter_data(request, obj_filter):
 
                         start = time.perf_counter()
                         list_data_new = glob_manager_data.get_handle_index(id_corpus).get_text(obj_filter['data_field'], real_value, is_case_insensitive)
+                        
+                        if list_data == None:
+                            list_data = sorted(list_data_new)
+                        else:
+                            set_tmp = frozenset(list_data_new)
+                            list_data = [x for x in list_data if x in set_tmp]
+
                         print('searching time: '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
                 
                         # info_values[value]['value_count_total'] = text_lower.count(real_value)
@@ -268,6 +282,11 @@ def filter_data(request, obj_filter):
 
                     list_data_new = glob_manager_data.get_handle_index(id_corpus).get_number(obj_filter['data_field'], int(value))
                        
+                    if list_data == None:
+                        list_data = sorted(list_data_new)
+                    else:
+                        set_tmp = frozenset(list_data_new)
+                        list_data = [x for x in list_data if x in set_tmp]
         #         values_parsed = parse_values(values)
 
         #         for item in data:
@@ -315,7 +334,10 @@ def filter_data(request, obj_filter):
         #         # data = set_data_new
 
                 # check if a specific number is requested
-    return list_data_new, info_values, skipped
+
+    if list_data == None:
+        list_data = []
+    return list_data, info_values, skipped
 
 def parse_values(values):
     values_parsed = {}

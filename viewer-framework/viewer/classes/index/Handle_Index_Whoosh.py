@@ -101,10 +101,10 @@ class Handle_Index_Whoosh(Handle_Index):
 
             if is_case_insensitive == True:
                 tokens = [token.text for token in self.analyzer_string_case_insensitive(value)]
-                query = Term(data_field + self.suffix_case_insensitive, tokens)
+                query = Phrase(data_field + self.suffix_case_insensitive, tokens)
             else:
                 tokens = [token.text for token in self.analyzer_string_case_sensitive(value)]
-                query = Term(data_field + self.suffix_case_sensitive, tokens)
+                query = Phrase(data_field + self.suffix_case_sensitive, tokens)
             print(tokens)
             results = searcher.search(query, limit=None, sortedby=None)
             print(len(results))
