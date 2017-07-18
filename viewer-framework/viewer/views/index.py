@@ -34,8 +34,8 @@ def index(request):
         obj = json.loads(request.body.decode("utf-8"))
         if obj['task'] == 'set_session_entry':
             request.session[id_corpus]['viewer__'+obj['session_key']] = obj['session_value']
+            request.session.modified = True
             response['status'] = 'success'
-            print(request.session[id_corpus]['viewer__'+obj['session_key']])
         elif obj['task'] == 'get_tag_recommendations':
             array_tag_recommendations = get_tag_recommendations(request, obj)
             response['status'] = 'success'
@@ -50,7 +50,7 @@ def index(request):
         return JsonResponse(response)
 
     # index_example_data()
-
+    # print('final value: '+str(request.session[id_corpus]['viewer__settings_viewer_large_corpus']))
     context = {}
     context['json_url_params'] = json.dumps(get_url_params(request))
     context['json_filters'] = json.dumps(glob_manager_data.get_setting_for_corpus('filters', id_corpus))
