@@ -156,7 +156,7 @@ def get_filtered_data(request):
         # print(list_data_new)
         if not skipped:
             if list_data == None:
-                list_data = list_data_new
+                list_data = sorted(list_data_new)
             else:
                 set_tmp = frozenset(list_data_new)
                 list_data = [x for x in list_data if x in set_tmp]
@@ -220,7 +220,10 @@ def filter_data(request, obj_filter):
                     for value in values:
                         is_case_insensitive = True if value[0] == 'i' else False
                         real_value = value[2:]
+
+                        start = time.perf_counter()
                         list_data_new = glob_manager_data.get_handle_index(id_corpus).get_text(obj_filter['data_field'], real_value, is_case_insensitive)
+                        print('searching time: '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
                 
                         # info_values[value]['value_count_total'] = text_lower.count(real_value)
                         # info_values[value]['value_count_per_document'] = 1 

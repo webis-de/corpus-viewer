@@ -1,10 +1,12 @@
 from .Handle_Index import * 
 from whoosh.index import create_in, open_dir, exists_in
 from whoosh.query import Term, Phrase
-from whoosh.analysis import StemmingAnalyzer, RegexTokenizer
+from whoosh.scoring import WeightingModel, BaseScorer
+from whoosh.analysis import StemmingAnalyzer, RegexTokenizer, LowercaseFilter, NgramFilter
 # from whoosh.qparser import QueryParser
 from whoosh.fields import Schema, TEXT, KEYWORD, NUMERIC, ID
 import os
+import time
 
 
 class Handle_Index_Whoosh(Handle_Index):
@@ -16,30 +18,31 @@ class Handle_Index_Whoosh(Handle_Index):
         self.suffix_case_sensitive = '_cs'
         self.suffix_case_insensitive = '_ci'
 
-        self.analyzer_string_case_sensitive = StemmingAnalyzer()
-        self.analyzer_string_case_insensitive = StemmingAnalyzer()
+        analyzer_whitespace = RegexTokenizer()
+        # analyzer_whitespace = RegexTokenizer() | NgramFilter(1)
+        analyzer_whitespace_lowercase = analyzer_whitespace | LowercaseFilter()
 
-        self.analyzer_text_case_sensitive = StemmingAnalyzer()
-        self.analyzer_text_case_insensitive = StemmingAnalyzer()
+        self.analyzer_string_case_sensitive = analyzer_whitespace
+        self.analyzer_string_case_insensitive = analyzer_whitespace_lowercase
 
-        self.analyzer_number_case_insensitive = StemmingAnalyzer()
+        self.analyzer_text_case_sensitive = analyzer_whitespace
+        self.analyzer_text_case_insensitive = analyzer_whitespace_lowercase
 
         if not os.path.exists(self.path_index):
             os.makedirs(self.path_index)
 
-        print('CREATE INDEX')
         dict_fields = {}
 
         for key, value in settings_corpus['data_fields'].items():
             type_data_field = value['type']
             if type_data_field == 'string':
-                dict_fields[key + self.suffix_case_sensitive] = ID(analyzer=self.analyzer_string_case_sensitive)
-                dict_fields[key + self.suffix_case_insensitive] = ID(analyzer=self.analyzer_string_case_insensitive)
+                dict_fields[key + self.suffix_case_sensitive] = TEXT(analyzer=self.analyzer_string_case_sensitive)
+                dict_fields[key + self.suffix_case_insensitive] = TEXT(analyzer=self.analyzer_string_case_insensitive)
             elif type_data_field == 'text':
                 dict_fields[key + self.suffix_case_sensitive] = TEXT(analyzer=self.analyzer_text_case_sensitive)
                 dict_fields[key + self.suffix_case_insensitive] = TEXT(analyzer=self.analyzer_text_case_insensitive)
             elif type_data_field == 'number':
-                dict_fields[key] = TEXT(analyzer=self.analyzer_number_case_insensitive)
+                dict_fields[key] = NUMERIC
 
         dict_fields[self.field_internal_id] = NUMERIC(stored=True)
 
@@ -51,13 +54,26 @@ class Handle_Index_Whoosh(Handle_Index):
             self.ix = create_in(self.path_index, self.schema)
 
     def start(self):
-        self.writer = self.ix.writer()
+        self.writer = self.ix.writer(limitmb=512, procs=4, multisegment=True)
         pass
 
     def add_item(self, id_intern, item):
-        item[self.field_internal_id] = id_intern
 
-        self.writer.add_document(**item)
+        dict_data_fields = self.settings_corpus['data_fields']
+
+        dict_document = {}
+        for key, value in item.items():
+            type_data_field = dict_data_fields[key]['type']
+            if type_data_field == 'number':
+                dict_document[key] = value                
+            else:
+                dict_document[key + self.suffix_case_sensitive] = value                
+                dict_document[key + self.suffix_case_insensitive] = value                
+        
+        dict_document[self.field_internal_id] = id_intern
+
+        self.writer.add_document(**dict_document)
+
         return True
 
     def finish(self):
@@ -74,33 +90,71 @@ class Handle_Index_Whoosh(Handle_Index):
         return []
 
 
-    def get_string(self, data_field, value, case_sensitive):
+    def get_string(self, data_field, value, is_case_insensitive):
         print('STRING: searching for \'{}\' in \'{}\''.format(value, data_field))
-        with self.ix.searcher() as searcher:
-            # for foo in self.settings_corpus['data_fields'].keys():
-            #     print(list(searcher.lexicon(foo)))
+        with self.ix.searcher(weighting=CustomWeightingModel) as searcher:
+            # for name in self.schema.names():
+            #     print('')
+            #     print(name)
+            #     print(list(searcher.lexicon(name)))
+            #     print('')
 
-            query = Term(data_field, value)
-            results = searcher.search(query, limit=None)
+            if is_case_insensitive == True:
+                tokens = [token.text for token in self.analyzer_string_case_insensitive(value)]
+                query = Term(data_field + self.suffix_case_insensitive, tokens)
+            else:
+                tokens = [token.text for token in self.analyzer_string_case_sensitive(value)]
+                query = Term(data_field + self.suffix_case_sensitive, tokens)
+            print(tokens)
+            results = searcher.search(query, limit=None, sortedby=None)
             print(len(results))
             # for result in results:
             #     print(result)
             return [result[self.field_internal_id] for result in results]
 
-    def get_text(self, data_field, value, case_sensitive):
+    def get_text(self, data_field, value, is_case_insensitive):
         print('TEXT: searching for \'{}\' in \'{}\''.format(value, data_field))
-        with self.ix.searcher() as searcher:
-            tokenizer = StemmingAnalyzer()
-            tokens = [token.text for token in tokenizer(value)]
-            query = Phrase(data_field, tokens)
-            results = searcher.search(query, limit=None)
+        with self.ix.searcher(weighting=CustomWeightingModel) as searcher:
+            if is_case_insensitive == True:
+                tokens = [token.text for token in self.analyzer_text_case_insensitive(value)]
+                query = Phrase(data_field + self.suffix_case_insensitive, tokens)
+            else:
+                tokens = [token.text for token in self.analyzer_text_case_sensitive(value)]
+                query = Phrase(data_field + self.suffix_case_sensitive, tokens)
+            
+            start = time.perf_counter()
+            results = searcher.search(query, limit=None, sortedby=None)
+            print('real searching time: '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
             print(len(results))
             # for result in results:
             #     print(result)
             return [result[self.field_internal_id] for result in results]
 
     def get_number(self, data_field, value):
-        return []
+        print('NUMBER: searching for \'{}\' in \'{}\''.format(value, data_field))
+        with self.ix.searcher(weighting=CustomWeightingModel) as searcher:
+            query = Term(data_field, value)
+            results = searcher.search(query, limit=None, sortedby=None)
+            
+            return [result[self.field_internal_id] for result in results]
 
     def clear(self):
         create_in(self.path_index, self.schema)
+
+class CustomWeightingModel(WeightingModel):
+    def scorer(self, searcher, fieldname, text, qf=1):
+        return CustomWeightingModelScorer()
+
+class CustomWeightingModelScorer(BaseScorer):
+
+    def supports_block_quality(self):
+        return True
+
+    def score(self, matcher):
+        return 0.0
+
+    def max_quality(self):
+        return 0.0
+
+    def block_quality(self, matcher):
+        return 0.0

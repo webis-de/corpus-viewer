@@ -164,6 +164,7 @@ class Manager_Data:
         return self.dict_corpora[id_corpus]['handle_index']
 
     def index_corpus(self, id_corpus, settings_corpus):
+        start_total = time.perf_counter()
         if self.debug == True:
             print('indexing \''+id_corpus+'\'')
 
@@ -186,11 +187,10 @@ class Manager_Data:
 
         with open(os.path.join(path_corpus, id_corpus + '.data'), 'wb') as handle_file_data:
             with open(os.path.join(path_corpus, id_corpus + '.metadata'), 'wb') as handle_file_metadata:
-                start = time.perf_counter()
                 obj_handle_item = Handle_Item_Add(self.struct, handle_file_data, handle_file_metadata, self.dict_corpora[id_corpus], field_id, settings_corpus['data_fields'])
-
+                start = time.perf_counter()
                 settings_corpus['load_data_function'](obj_handle_item)
-                print('writing time: '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
+                indexing_only = round(float(time.perf_counter()-start_total) * 1000, 2)
 
         # cache.set('metadata_corpora', glob_cache)
         handle_index.finish()
@@ -210,6 +210,10 @@ class Manager_Data:
         #     print('loading time: '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
         self.dict_corpora[id_corpus]['state_loaded'] = self.State_Loaded.LOADED
         self.update_cache()
+
+        if self.debug == True:
+            print('writing time: '+str(round(float(time.perf_counter()-start_total) * 1000, 2))+'ms')
+            print('indexing only: '+str(indexing_only)+'ms')
 
         # print(self.dict_corpora[id_corpus]['handle_index'].dict_data)
         # cache.set('metadata_corpora', self.dict_data)

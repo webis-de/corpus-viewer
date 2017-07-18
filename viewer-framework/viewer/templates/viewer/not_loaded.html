@@ -54,7 +54,8 @@
 
         if($('#span_number_of_indexed_items').length == 1) 
         {
-            let interval = setInterval(update_number_of_indexed_items, 500);
+            update_number_of_indexed_items()
+            // let interval = setInterval(update_number_of_indexed_items, 500);
         }
     });
 
@@ -78,6 +79,7 @@
                     location.reload();
                 }
                 span.text(result.number_of_indexed_items.toLocaleString());
+                setTimeout(update_number_of_indexed_items, 300)
             }
         });
     }
