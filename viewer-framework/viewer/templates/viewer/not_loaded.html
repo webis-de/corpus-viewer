@@ -77,9 +77,10 @@
                 if(result.state_loaded == 0)
                 {
                     location.reload();
+                } else {
+                    span.text(result.number_of_indexed_items.toLocaleString());
+                    setTimeout(update_number_of_indexed_items, 300)
                 }
-                span.text(result.number_of_indexed_items.toLocaleString());
-                setTimeout(update_number_of_indexed_items, 300)
             }
         });
     }

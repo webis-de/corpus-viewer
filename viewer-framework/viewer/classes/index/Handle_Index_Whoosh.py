@@ -1,6 +1,7 @@
 from .Handle_Index import * 
 from whoosh.index import create_in, open_dir, exists_in
 from whoosh.query import Term, Phrase
+from whoosh.collectors import Collector
 from whoosh.scoring import WeightingModel, BaseScorer
 from whoosh.analysis import StemmingAnalyzer, RegexTokenizer, LowercaseFilter, NgramFilter
 # from whoosh.qparser import QueryParser
@@ -122,13 +123,13 @@ class Handle_Index_Whoosh(Handle_Index):
                 tokens = [token.text for token in self.analyzer_text_case_sensitive(value)]
                 query = Phrase(data_field + self.suffix_case_sensitive, tokens)
             
+            collector = CustomCollector()
+
             start = time.perf_counter()
-            results = searcher.search(query, limit=None, sortedby=None)
+            searcher.search_with_collector(query, collector)
             print('real searching time: '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
-            print(len(results))
-            # for result in results:
-            #     print(result)
-            return [result[self.field_internal_id] for result in results]
+
+            return collector.results
 
     def get_number(self, data_field, value):
         print('NUMBER: searching for \'{}\' in \'{}\''.format(value, data_field))
@@ -141,20 +142,20 @@ class Handle_Index_Whoosh(Handle_Index):
     def clear(self):
         create_in(self.path_index, self.schema)
 
+class CustomCollector(Collector):
+    def prepare(self, top_searcher, q, context):
+        # Always call super method in prepare
+        Collector.prepare(self, top_searcher, q, context)
+        self.results = []
+        self.internal_field = 'viewer__id'
+
+    def collect(self, sub_docnum):
+        self.results.append(self.top_searcher.stored_fields(self.offset + sub_docnum)[self.internal_field])
+
 class CustomWeightingModel(WeightingModel):
     def scorer(self, searcher, fieldname, text, qf=1):
         return CustomWeightingModelScorer()
 
 class CustomWeightingModelScorer(BaseScorer):
-
-    def supports_block_quality(self):
-        return True
-
     def score(self, matcher):
-        return 0.0
-
-    def max_quality(self):
-        return 0.0
-
-    def block_quality(self, matcher):
         return 0.0
