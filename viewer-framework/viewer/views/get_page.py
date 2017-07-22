@@ -129,8 +129,21 @@ def export_data(obj, data, request):
     return response
 
 def get_filtered_data(request):
+    info_filter_values = {}
     id_corpus = get_current_corpus(request)
 
+    dict_filters = get_filters_if_not_empty(request, id_corpus)
+
+    if dict_filters == None:
+            return glob_manager_data.get_all_ids_for_corpus(id_corpus, glob_manager_data.get_settings_for_corpus(id_corpus)), info_filter_values
+    else:
+        hash_custom = hash(json.dumps(dict_filters, sort_keys=True))
+        try:
+            if hash_custom == request.session[id_corpus]['viewer__last_hash']:
+                return request.session[id_corpus]['viewer__last_result']
+        except:
+            print("exception")
+    # print(hash_customs)
     #
     # FILTER BY TAGS 
     #
@@ -147,7 +160,6 @@ def get_filtered_data(request):
     #
     # FILTERS
     #
-    info_filter_values = {}
 
     list_data = None
     for obj_filter in glob_manager_data.get_setting_for_corpus('filters', id_corpus):
@@ -168,11 +180,11 @@ def get_filtered_data(request):
     if list_data != None:
         # data = [item for item in data if item[get_setting('id', request=request)] in list_data]
         # print(list_data)
+        request.session[id_corpus]['viewer__last_hash'] = hash_custom
+        request.session[id_corpus]['viewer__last_result'] = list_data, info_filter_values
         return list_data, info_filter_values
 
     # if no filter was applied return all ids
-    if list_data == None:
-        return glob_manager_data.get_all_ids_for_corpus(id_corpus, glob_manager_data.get_settings_for_corpus(id_corpus)), info_filter_values
     #
     # UPDATE data_only_ids
     #
@@ -338,6 +350,20 @@ def filter_data(request, obj_filter):
     if list_data == None:
         list_data = []
     return list_data, info_values, skipped
+
+def get_filters_if_not_empty(request, id_corpus):
+    dict_filters = request.session[id_corpus]['viewer__viewer__filter_custom']
+
+    is_empty = True
+    for values in dict_filters.values():
+        if len(values) != 0:
+            is_empty = False
+            break
+
+    if is_empty == True:
+        return None 
+    else:
+        return dict_filters
 
 def parse_values(values):
     values_parsed = {}
