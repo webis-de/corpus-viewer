@@ -184,6 +184,8 @@ def get_filtered_data(request):
         request.session[id_corpus]['viewer__last_result'] = list_data, info_filter_values
         return list_data, info_filter_values
 
+
+    raise Exception("shouldn't reach this!")
     # if no filter was applied return all ids
     #
     # UPDATE data_only_ids
@@ -193,7 +195,6 @@ def get_filtered_data(request):
     # else:
     #     # update data_only_ids
     #     data_only_ids = [str(item[get_setting('id', request=request)]) for item in data]
-    return list_ids 
 
     # return data, data_only_ids, info_filter_values
 
