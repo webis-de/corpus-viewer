@@ -11,6 +11,7 @@ from django.template import Engine, Context
 from django.template.loader import get_template
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from viewer.models import m_Tag, m_Entity
+import hashlib
 
 regex_filter_numbers_negative = re.compile('(?<![>|\.|>=|<=|<|<|0|1|2|3|4|5|6|7|8|9|0])(-[0-9]+\.?[0-9]*)')
 regex_filter_numbers_positive = re.compile('(?<![>|\.|>=|<=|<|<|0|1|2|3|4|5|6|7|8|9|0|-])([0-9]+\.?[0-9]*)')
@@ -133,16 +134,18 @@ def get_filtered_data(request):
     id_corpus = get_current_corpus(request)
 
     dict_filters = get_filters_if_not_empty(request, id_corpus)
-
     if dict_filters == None:
             return glob_manager_data.get_all_ids_for_corpus(id_corpus, glob_manager_data.get_settings_for_corpus(id_corpus)), info_filter_values
     else:
-        hash_custom = hash(json.dumps(dict_filters, sort_keys=True))
+        bytes_dict_filters = json.dumps(dict_filters, sort_keys=True).encode()
+        hash_custom = hashlib.sha1(bytes_dict_filters).hexdigest()
+        # fails if the user has no hash stored
         try:
+            # checks if the hash corresponds to the last hash
             if hash_custom == request.session[id_corpus]['viewer__last_hash']:
                 return request.session[id_corpus]['viewer__last_result']
         except:
-            print("exception")
+            pass
     # print(hash_customs)
     #
     # FILTER BY TAGS 
