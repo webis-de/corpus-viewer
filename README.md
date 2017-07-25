@@ -20,7 +20,7 @@ By default the tool uses the pure-Python search-engine [Whoosh](https://pypi.pyt
 * Kristof Komlossy
 * Martin Potthast
 * Matthias Hagen
-* 
+
 ## Contact
 You found a bug or you have questions/requests?
 Write me a mail: kristof.komlossy@uni-weimar.de
