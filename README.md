@@ -1,10 +1,10 @@
 # Corpus-Viewer
 This repository houses a tool which loads any arbitrary corpus and provides an extensive user interface to explore the data. 
 
-The user has to provide one single property file for each corpus. This file defines the overall structure of the corpus and how to load the corpus into the tool.
+The user has to provide one single property file for each corpus. This file defines the overall structure of the corpus and how to load the corpus into the tool.  
 The instructions of how to write that file can be found in the 'Documentation'-page inside of the tool.  
 
-The whole tool is built on top of the [Django-Framework](https://www.djangoproject.com/).
+The whole tool is built on top of the [Django-Framework](https://www.djangoproject.com/).  
 By default the tool uses the pure-Python search-engine [Whoosh](https://pypi.python.org/pypi/Whoosh/) to make each corpus searchable.
 
 ## Requirements
@@ -22,5 +22,5 @@ By default the tool uses the pure-Python search-engine [Whoosh](https://pypi.pyt
 * Matthias Hagen
 
 ## Contact
-You found a bug or you have questions/requests?
+You found a bug or you have questions/requests?  
 Write me a mail: kristof.komlossy@uni-weimar.de
