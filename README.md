@@ -14,7 +14,7 @@ By default the tool uses the pure-Python search-engine [Whoosh](https://pypi.pyt
 ## Installation
 1. run `sudo ./install.sh` to install Django and Whoosh
 2. run `./setup_django.sh` to setup the required Django database tables
-3. run `python3 manage.py runserver` to start the server
+3. run `python3  viewer-framework/manage.py runserver` to start the server _([more](https://docs.djangoproject.com/en/1.10/ref/django-admin/#django-admin-runserver) on how to start a django server)_
 
 ## Contributors
 * Kristof Komlossy
