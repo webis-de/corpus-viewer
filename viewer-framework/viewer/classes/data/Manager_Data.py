@@ -1,6 +1,17 @@
 from django.core.cache import cache
 from .Handle_Item import *
-from ..index.Handle_Index_Whoosh import Handle_Index_Whoosh as Handle_Index
+import glob
+import importlib
+import os
+
+modules = glob.glob('viewer/classes/index/Handle_Index_*.py')
+__all__ = [os.path.basename(f)[:-3] for f in modules]
+dict_handle_index = {}
+for corpus in __all__:
+    module_index_handle = importlib.import_module('viewer.classes.index.'+corpus)
+    dict_handle_index[corpus] = module_index_handle
+
+# from ..index.Handle_Index_Whoosh import Handle_Index_Whoosh as Handle_Index
 # from ..index.Handle_Index_Dictionary import Handle_Index_Dictionary as Handle_Index
 from enum import IntEnum, unique
 import time
@@ -26,13 +37,15 @@ class Manager_Data:
             id_corpus = file[:-3]
             self.dict_corpora[id_corpus] =  {}
             self.dict_corpora[id_corpus]['settings'] = self.load_corpus_from_file(file)
-            self.dict_corpora[id_corpus]['handle_index'] = Handle_Index(id_corpus, self.get_settings_for_corpus(id_corpus))
 
         dict_corpora_cached = cache.get('metadata_corpora')
         if(dict_corpora_cached != None):
             for id_corpus in self.dict_corpora.keys():
                 try:
                     self.dict_corpora[id_corpus].update(dict_corpora_cached[id_corpus])
+                    if 'class_handle_index' in self.dict_corpora[id_corpus]:
+                        self.dict_corpora[id_corpus]['handle_index'] = getattr(dict_handle_index[self.dict_corpora[id_corpus]['class_handle_index']], self.dict_corpora[id_corpus]['class_handle_index'])(id_corpus, self.get_settings_for_corpus(id_corpus))
+
                 except KeyError:
                     print('SOME ERROR HAPPENEND')
         else:
@@ -134,8 +147,6 @@ class Manager_Data:
                 dict_tmp[id_corpus] = self.dict_corpora[id_corpus]
             except KeyError:
                 dict_tmp[id_corpus] = {'size_in_bytes': 0, 'size': 0, 'state_loaded': self.State_Loaded.NOT_LOADED}
-                dict_tmp[id_corpus]['handle_index'] = Handle_Index(id_corpus, self.get_settings_for_corpus(id_corpus))
-
                 dict_tmp[id_corpus]['settings'] = self.load_corpus_from_file(file)
 
         self.dict_corpora = dict_tmp
@@ -174,6 +185,8 @@ class Manager_Data:
         self.dict_corpora[id_corpus]['size'] = 0
         self.dict_corpora[id_corpus]['size_in_bytes'] = 0
 
+        print('indexong!!!!!!!!!!!1')
+        return 
         handle_index = self.dict_corpora[id_corpus]['handle_index']
         handle_index.clear()
 
@@ -242,6 +255,13 @@ class Manager_Data:
                 obj_handle_item = Handle_Item_Get_Item(self.struct, self.length_struct, handle_file_data, handle_file_metadata)
                 return obj_handle_item.get_items(list_indices)
 
+    def get_active_handle_indices(self):
+        list_handle_indices = []
+
+        for key in sorted(dict_handle_index.keys()):
+            list_handle_indices.append(key)
+
+        return list_handle_indices
 
     def get_state_loaded(self, id_corpus):       
         return self.dict_corpora[id_corpus]['state_loaded']

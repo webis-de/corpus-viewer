@@ -12,7 +12,7 @@ import time
 
 class Handle_Index_Whoosh(Handle_Index):
     def __init__(self, id_corpus, settings_corpus):
-        Handle_Index.__init__(self, id_corpus, settings_corpus)
+        Handle_Index.__init__(self, id_corpus, settings_corpus, False)
         self.path_index = os.path.join('../index_whoosh', id_corpus)
         self.field_internal_id = 'viewer__id'
 
@@ -20,7 +20,6 @@ class Handle_Index_Whoosh(Handle_Index):
         self.suffix_case_insensitive = '_ci'
 
         analyzer_whitespace = RegexTokenizer()
-        # analyzer_whitespace = RegexTokenizer() | NgramFilter(1)
         analyzer_whitespace_lowercase = analyzer_whitespace | LowercaseFilter()
 
         self.analyzer_string_case_sensitive = analyzer_whitespace
@@ -59,7 +58,7 @@ class Handle_Index_Whoosh(Handle_Index):
         pass
 
     def add_item(self, id_intern, item):
-
+        return True
         dict_data_fields = self.settings_corpus['data_fields']
 
         dict_document = {}

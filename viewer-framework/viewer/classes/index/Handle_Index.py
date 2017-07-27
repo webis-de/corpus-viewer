@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 
 class Handle_Index(ABC):
-    def __init__(self, id_corpus, settings_corpus):
+    def __init__(self, id_corpus, settings_corpus, is_active):
         self.id_corpus = id_corpus
         self.settings_corpus = settings_corpus
+        self.is_active = is_active
 
     @abstractmethod
     def start(self):
@@ -11,6 +12,10 @@ class Handle_Index(ABC):
 
     @abstractmethod
     def finish(self):
+        pass
+
+    @abstractmethod
+    def clear(self):
         pass
 
     @abstractmethod
@@ -39,8 +44,4 @@ class Handle_Index(ABC):
 
     @abstractmethod
     def get_number(self, data_field, value):
-        pass
-
-    @abstractmethod
-    def clear(self):
         pass

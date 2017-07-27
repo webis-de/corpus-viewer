@@ -1,5 +1,5 @@
 from django import template
-from viewer.classes.data.Manager_Data import * 
+from viewer.classes.data.Manager_Data import Manager_Data 
 
 register = template.Library()
 
