@@ -497,6 +497,7 @@ function reindex_corpus(modal)
 {
     let data = {}
     data.task = 'reindex_corpus'
+    data.class_handle_index = 
     
     let url_params = refresh_url();
 
