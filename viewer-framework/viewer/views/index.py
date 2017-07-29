@@ -26,6 +26,8 @@ def index(request):
             context['number_of_indexed_items'] = glob_manager_data.get_number_of_indexed_items(id_corpus)
         except:
             context['number_of_indexed_items'] = 0
+
+        context['handle_incides'] = glob_manager_data.get_active_handle_indices()
         context['settings'] = glob_manager_data.get_settings_for_corpus(id_corpus)
         return render(request, 'viewer/not_loaded.html', context)
 ##### handle post requests

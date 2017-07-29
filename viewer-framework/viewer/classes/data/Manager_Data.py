@@ -6,10 +6,10 @@ import os
 
 modules = glob.glob('viewer/classes/index/Handle_Index_*.py')
 __all__ = [os.path.basename(f)[:-3] for f in modules]
-dict_handle_index = {}
+dict_handle_indices = {}
 for corpus in __all__:
     module_index_handle = importlib.import_module('viewer.classes.index.'+corpus)
-    dict_handle_index[corpus] = module_index_handle
+    dict_handle_indices[corpus] = module_index_handle
 
 # from ..index.Handle_Index_Whoosh import Handle_Index_Whoosh as Handle_Index
 # from ..index.Handle_Index_Dictionary import Handle_Index_Dictionary as Handle_Index
@@ -44,7 +44,7 @@ class Manager_Data:
                 try:
                     self.dict_corpora[id_corpus].update(dict_corpora_cached[id_corpus])
                     if 'class_handle_index' in self.dict_corpora[id_corpus]:
-                        self.dict_corpora[id_corpus]['handle_index'] = getattr(dict_handle_index[self.dict_corpora[id_corpus]['class_handle_index']], self.dict_corpora[id_corpus]['class_handle_index'])(id_corpus, self.get_settings_for_corpus(id_corpus))
+                        self.dict_corpora[id_corpus]['handle_index'] = getattr(dict_handle_indices[self.dict_corpora[id_corpus]['class_handle_index']], self.dict_corpora[id_corpus]['class_handle_index'])(id_corpus, self.get_settings_for_corpus(id_corpus))
 
                 except KeyError:
                     print('SOME ERROR HAPPENEND')
@@ -94,10 +94,17 @@ class Manager_Data:
 
     def update_cache(self):
         list_keys = ['state_loaded', 'size', 'size_in_bytes']
+        list_keys_optional = ['class_handle_index']
 
         dict_tmp = {}
         for id_corpus, value in self.dict_corpora.items():
             dict_tmp[id_corpus] = {key: self.dict_corpora[id_corpus][key] for key in list_keys}
+
+            for key in list_keys_optional:
+                try:
+                    dict_tmp[id_corpus][key] =  self.dict_corpora[id_corpus][key]
+                except KeyError:
+                    pass
 
         cache.set('metadata_corpora', dict_tmp)
 
@@ -167,14 +174,14 @@ class Manager_Data:
     def get_number_of_indexed_items(self, id_corpus):
         return self.dict_corpora[id_corpus]['size']
 
-    def reindex_corpus(self, id_corpus):
+    def reindex_corpus(self, id_corpus, class_handle_index):
         settings_corpus = self.reload_settings(id_corpus)
-        self.index_corpus(id_corpus, settings_corpus)
+        self.index_corpus(id_corpus, settings_corpus, class_handle_index)
 
     def get_handle_index(self, id_corpus):
         return self.dict_corpora[id_corpus]['handle_index']
 
-    def index_corpus(self, id_corpus, settings_corpus):
+    def index_corpus(self, id_corpus, settings_corpus, class_handle_index):
         start_total = time.perf_counter()
         if self.debug == True:
             print('indexing \''+id_corpus+'\'')
@@ -185,9 +192,10 @@ class Manager_Data:
         self.dict_corpora[id_corpus]['size'] = 0
         self.dict_corpora[id_corpus]['size_in_bytes'] = 0
 
-        print('indexong!!!!!!!!!!!1')
-        return 
-        handle_index = self.dict_corpora[id_corpus]['handle_index']
+        handle_index = getattr(dict_handle_indices[class_handle_index], class_handle_index)(id_corpus, settings_corpus)
+        self.dict_corpora[id_corpus]['handle_index'] = handle_index
+        self.dict_corpora[id_corpus]['class_handle_index'] = class_handle_index
+        # handle_index = self.dict_corpora[id_corpus]['handle_index']
         handle_index.clear()
 
         
@@ -258,8 +266,11 @@ class Manager_Data:
     def get_active_handle_indices(self):
         list_handle_indices = []
 
-        for key in sorted(dict_handle_index.keys()):
-            list_handle_indices.append(key)
+        for key in sorted(dict_handle_indices.keys()):
+            dict_handle_index = {}
+            dict_handle_index['key'] = key            
+            dict_handle_index['name'] = getattr(dict_handle_indices[key], key).get_display_name()           
+            list_handle_indices.append(dict_handle_index)
 
         return list_handle_indices
 

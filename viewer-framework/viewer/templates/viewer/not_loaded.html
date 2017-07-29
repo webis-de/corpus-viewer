@@ -25,14 +25,13 @@
         <p class="lead">
             Start the indexing process by pressing the button below.<br>
             <div class="form-group">
-                <label for="input_handle_index">Example select</label>
+                <label for="input_handle_index">Select search engine</label>
                 <div class="row">
                     <div class="col-2">
                         <select id="input_handle_index" class="form-control  form-control-sm">
-                            <option>Disabled seeeelect</option>
-                            <option>Disabled seeeelect</option>
-                            <option>Disabled seeeelect</option>
-                            <option>Disabled seeeelect</option>
+                        {% for handle_index in handle_incides %}
+                            <option value="{{ handle_index.key }}">{{ handle_index.name }}</option>
+                        {% endfor %}
                         </select>
                     </div>
                 </div>
@@ -51,9 +50,8 @@
         $(document).on('click', '#submit_index_corpus', function(e) { 
             let data = {};
             data.task = 'reindex_corpus';
-            data.class_handle_index = 'reindex_corpus';
+            data.class_handle_index = $('#input_handle_index').val();
             data.id_corpus = $('#data_id_corpus').data('id_corpus');
-
 
             $.ajax({
                 url: 'get_page?',

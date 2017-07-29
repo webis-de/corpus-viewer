@@ -53,6 +53,12 @@ class Handle_Index_Whoosh(Handle_Index):
         else:
             self.ix = create_in(self.path_index, self.schema)
 
+    def get_display_name():
+        return 'Whoosh'
+
+    def get_description():
+        return 'test html'
+
     def start(self):
         self.writer = self.ix.writer(limitmb=512, procs=4, multisegment=True)
         pass

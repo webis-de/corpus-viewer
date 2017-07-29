@@ -7,6 +7,12 @@ class Handle_Index_Dictionary(Handle_Index):
         self.dict_data = {}
         for key, value in self.settings_corpus['data_fields'].items():
             self.dict_data[key] = {}
+    
+    def get_display_name():
+        return 'Dictionary'
+
+    def get_description():
+        return 'test html'
 
     def start(self):
         pass

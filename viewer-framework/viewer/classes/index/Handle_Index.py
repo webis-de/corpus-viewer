@@ -6,6 +6,16 @@ class Handle_Index(ABC):
         self.settings_corpus = settings_corpus
         self.is_active = is_active
 
+    @staticmethod
+    @abstractmethod
+    def get_display_name(self):
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def get_description(self):
+        pass
+
     @abstractmethod
     def start(self):
         pass
