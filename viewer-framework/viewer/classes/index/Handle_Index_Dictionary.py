@@ -2,11 +2,14 @@ from .Handle_Index import *
 
 class Handle_Index_Dictionary(Handle_Index):
     def __init__(self, id_corpus, settings_corpus):
-        Handle_Index.__init__(self, id_corpus, settings_corpus, False)
+        Handle_Index.__init__(self, id_corpus, settings_corpus)
 
         self.dict_data = {}
         for key, value in self.settings_corpus['data_fields'].items():
             self.dict_data[key] = {}
+    
+    def is_active():
+        return False
     
     def get_display_name():
         return 'Dictionary'

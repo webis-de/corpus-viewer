@@ -8,11 +8,11 @@ from whoosh.analysis import StemmingAnalyzer, RegexTokenizer, LowercaseFilter, N
 from whoosh.fields import Schema, TEXT, KEYWORD, NUMERIC, ID
 import os
 import time
-
+import shutil
 
 class Handle_Index_Whoosh(Handle_Index):
     def __init__(self, id_corpus, settings_corpus):
-        Handle_Index.__init__(self, id_corpus, settings_corpus, False)
+        Handle_Index.__init__(self, id_corpus, settings_corpus)
         self.path_index = os.path.join('../index_whoosh', id_corpus)
         self.field_internal_id = 'viewer__id'
 
@@ -53,6 +53,9 @@ class Handle_Index_Whoosh(Handle_Index):
         else:
             self.ix = create_in(self.path_index, self.schema)
 
+    def is_active():
+        return True
+
     def get_display_name():
         return 'Whoosh'
 
@@ -64,7 +67,6 @@ class Handle_Index_Whoosh(Handle_Index):
         pass
 
     def add_item(self, id_intern, item):
-        return True
         dict_data_fields = self.settings_corpus['data_fields']
 
         dict_document = {}
@@ -85,6 +87,9 @@ class Handle_Index_Whoosh(Handle_Index):
     def finish(self):
         self.writer.commit()
         pass
+
+    def delete(self):
+        shutil.rmtree(self.path_index)
 
     def add_string(self, data_field, value, id_intern):
         return []

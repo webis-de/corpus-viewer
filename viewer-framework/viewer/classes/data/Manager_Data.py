@@ -30,39 +30,54 @@ class Manager_Data:
 
         self.init_data()
 
+    def get_default_settings(self):
+        # singleton behaviour
+        try:
+            return self.dict_default_settings
+        except AttributeError:
+            self.dict_default_settings = {
+                'size_in_bytes': 0, 
+                'size': 0, 
+                'state_loaded': self.State_Loaded.NOT_LOADED
+            }
+            return self.dict_default_settings
+
     def init_data(self):
         self.create_paths_if_necessary()
-        
+        # for every settings-file in the directory load the settings into the empty dict_corpora
         for file in os.listdir(self.path_settings):
             id_corpus = file[:-3]
             self.dict_corpora[id_corpus] =  {}
             self.dict_corpora[id_corpus]['settings'] = self.load_corpus_from_file(file)
 
+        # get the previously cached data 
         dict_corpora_cached = cache.get('metadata_corpora')
         if(dict_corpora_cached != None):
+            # for each settings-file 
             for id_corpus in self.dict_corpora.keys():
+                # try to get the cached data (size/state_loaded-info)
                 try:
                     self.dict_corpora[id_corpus].update(dict_corpora_cached[id_corpus])
-                    if 'class_handle_index' in self.dict_corpora[id_corpus]:
-                        self.dict_corpora[id_corpus]['handle_index'] = getattr(dict_handle_indices[self.dict_corpora[id_corpus]['class_handle_index']], self.dict_corpora[id_corpus]['class_handle_index'])(id_corpus, self.get_settings_for_corpus(id_corpus))
-
+                    # if the corpus has information about the used index
                 except KeyError:
-                    print('SOME ERROR HAPPENEND')
+                    self.dict_corpora[id_corpus].update(self.get_default_settings())
+                # try to instantiate the index handle
+                try:
+                    self.dict_corpora[id_corpus]['handle_index'] = getattr(dict_handle_indices[self.dict_corpora[id_corpus]['class_handle_index']], self.dict_corpora[id_corpus]['class_handle_index'])(id_corpus, self.get_settings_for_corpus(id_corpus))
+                    print("index handle found for "+id_corpus)
+                except KeyError:
+                    print("no index handle found for "+id_corpus)
         else:
-            dict_tmp = {
-                'size_in_bytes': 0, 
-                'size': 0, 
-                'state_loaded': self.State_Loaded.NOT_LOADED
-            }
             for id_corpus in self.dict_corpora.keys():
-                self.dict_corpora[id_corpus].update(dict_tmp)
+                self.dict_corpora[id_corpus].update(self.get_default_settings())
+
+        for id_corpus, value in self.dict_corpora.items():
+            print(value.keys())
 
         self.update_cache()
         
         if self.debug == True:
             print('loaded metadata for {} corpora'.format(len(self.dict_corpora)))
-
-        #     # dict_corpora_cached[key]['handle_index'] = Handle_Index(id_corpus, settings_corpus)
 
     def get_ids_corpora(self, sorted_by=None):
         if sorted_by == None:
@@ -93,7 +108,7 @@ class Manager_Data:
             os.mkdir(self.path_cache)
 
     def update_cache(self):
-        list_keys = ['state_loaded', 'size', 'size_in_bytes']
+        list_keys = self.get_default_settings().keys()
         list_keys_optional = ['class_handle_index']
 
         dict_tmp = {}
@@ -160,12 +175,21 @@ class Manager_Data:
         self.update_cache()
 
     def delete_corpus(self, id_corpus):
+        # delete internal format of corpus
         path_corpus = os.path.join(self.path_cache, id_corpus)
         shutil.rmtree(path_corpus)
 
+        # delete index 
+        try:
+            self.dict_corpora[id_corpus]['handle_index'].delete()
+        except KeyError:
+            print('corpus was not loaded')
+            
+        # delete data from cache
         del self.dict_corpora[id_corpus]
         self.update_cache()
 
+        # remove/backup settings file
         file = id_corpus + '.py'
         path_settings = os.path.join(self.path_settings, file)
         path_settings_destination = os.path.join(self.path_backup, file)
@@ -192,15 +216,16 @@ class Manager_Data:
         self.dict_corpora[id_corpus]['size'] = 0
         self.dict_corpora[id_corpus]['size_in_bytes'] = 0
 
-        handle_index = getattr(dict_handle_indices[class_handle_index], class_handle_index)(id_corpus, settings_corpus)
-        self.dict_corpora[id_corpus]['handle_index'] = handle_index
-        self.dict_corpora[id_corpus]['class_handle_index'] = class_handle_index
-        # handle_index = self.dict_corpora[id_corpus]['handle_index']
+        if class_handle_index:
+            handle_index = getattr(dict_handle_indices[class_handle_index], class_handle_index)(id_corpus, settings_corpus)
+            self.dict_corpora[id_corpus]['handle_index'] = handle_index
+            self.dict_corpora[id_corpus]['class_handle_index'] = class_handle_index
+            self.update_cache()
+        else:
+            handle_index = self.dict_corpora[id_corpus]['handle_index']
+
         handle_index.clear()
-
         
-        # cache.set('metadata_corpora', self.dict_data)
-
         handle_index.start()
         path_corpus = os.path.join(self.path_cache, id_corpus)
         if not os.path.exists(path_corpus):
@@ -267,10 +292,12 @@ class Manager_Data:
         list_handle_indices = []
 
         for key in sorted(dict_handle_indices.keys()):
-            dict_handle_index = {}
-            dict_handle_index['key'] = key            
-            dict_handle_index['name'] = getattr(dict_handle_indices[key], key).get_display_name()           
-            list_handle_indices.append(dict_handle_index)
+            class_obj_handle_index = getattr(dict_handle_indices[key], key)
+            if class_obj_handle_index.is_active():
+                dict_handle_index = {}
+                dict_handle_index['key'] = key            
+                dict_handle_index['name'] = class_obj_handle_index.get_display_name()           
+                list_handle_indices.append(dict_handle_index)
 
         return list_handle_indices
 

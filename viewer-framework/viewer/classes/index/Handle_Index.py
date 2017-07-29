@@ -1,19 +1,23 @@
 from abc import ABC, abstractmethod
 
 class Handle_Index(ABC):
-    def __init__(self, id_corpus, settings_corpus, is_active):
+    def __init__(self, id_corpus, settings_corpus):
         self.id_corpus = id_corpus
         self.settings_corpus = settings_corpus
-        self.is_active = is_active
 
     @staticmethod
     @abstractmethod
-    def get_display_name(self):
+    def is_active():
         pass
 
     @staticmethod
     @abstractmethod
-    def get_description(self):
+    def get_display_name():
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def get_description():
         pass
 
     @abstractmethod
@@ -26,6 +30,10 @@ class Handle_Index(ABC):
 
     @abstractmethod
     def clear(self):
+        pass
+
+    @abstractmethod
+    def delete(self):
         pass
 
     @abstractmethod

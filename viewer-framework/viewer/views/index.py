@@ -48,6 +48,8 @@ def index(request):
             response = toggle_item_to_tag(obj, request)
         elif obj['task'] == 'check_if_tag_exists':
             response = check_if_tag_exists(obj, request)
+        elif obj['task'] == 'get_handle_indices':
+            response['data'] = glob_manager_data.get_active_handle_indices()
 
         return JsonResponse(response)
 

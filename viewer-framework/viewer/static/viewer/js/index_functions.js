@@ -497,7 +497,7 @@ function reindex_corpus(modal)
 {
     let data = {}
     data.task = 'reindex_corpus'
-    data.class_handle_index = 
+    data.class_handle_index = $('#input_handle_index').val()
     
     let url_params = refresh_url();
 
@@ -514,6 +514,32 @@ function reindex_corpus(modal)
         }
     })
     location.reload();
+}
+
+function handle_show_modal_reindex_corpus(e, modal)
+{
+    let data = {}
+    data.task = 'get_handle_indices'
+
+    $.ajax({
+        method: 'POST',
+        contentType: 'application/json',
+        headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+        data: JSON.stringify(data),
+        success: function(result) {
+            let input_select = $('#input_handle_index');
+            input_select.html('')
+            input_select.append('<option value="">keep current search engine</option>')
+            $.each(result.data, function(index, elem) {
+                input_select.append('<option value="' + elem.key + '">' + elem.name + '</option>')
+                
+            })
+        },
+        error: function(result) {
+            error_corpus_not_exists();
+        }
+    })
+    console.log(modal)
 }
 
 function delete_corpus(modal)

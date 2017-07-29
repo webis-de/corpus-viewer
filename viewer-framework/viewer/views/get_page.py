@@ -49,7 +49,7 @@ def get_page(request):
             try:
                 glob_manager_data.reindex_corpus(obj['id_corpus'], obj['class_handle_index'])
             except:
-                glob_manager_data.reindex_corpus(id_corpus)
+                glob_manager_data.reindex_corpus(id_corpus, obj['class_handle_index'])
         elif obj['task'] == 'get_number_of_indexed_items':
             response['number_of_indexed_items'] = glob_manager_data.get_number_of_indexed_items(obj['id_corpus'])
             response['state_loaded'] = glob_manager_data.get_state_loaded(obj['id_corpus'])

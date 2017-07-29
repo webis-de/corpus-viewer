@@ -7,7 +7,7 @@ def load_data(item_handle):
         obj = {}
         obj['id'] = x
         obj['string'] = 'Test string of item ' + str(x)
-        obj['text'] = 'This is only a longer test text of item ' + str(x) + 'to show the behaviour of long texts in the corpus viewer.'
+        obj['text'] = 'This is only a longer test text of item ' + str(x) + ' to show the behaviour of long texts in the corpus viewer.'
         item_handle.add(obj)
 
 DICT_SETTINGS_VIEWER = {
