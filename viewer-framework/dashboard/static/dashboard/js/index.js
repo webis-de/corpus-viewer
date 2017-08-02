@@ -36,7 +36,7 @@ let glob_template_state_loaded = `
             <i class="fa fa-square-o fa-stack-2x"></i>
             <i class="fa PLACEHOLDER_ICON fa-stack-1x" style="top: -1px;"></i>
         </span>
-    </span>;`
+    </span>`
 
 function get_html_state_loaded(state) 
 {
