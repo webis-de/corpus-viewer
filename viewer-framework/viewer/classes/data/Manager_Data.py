@@ -3,6 +3,10 @@ from .Handle_Item import *
 import glob
 import importlib
 import os
+import csv
+import json
+import traceback
+import sys
 
 modules = glob.glob('viewer/classes/index/Handle_Index_*.py')
 __all__ = [os.path.basename(f)[:-3] for f in modules]
@@ -15,12 +19,12 @@ for corpus in __all__:
 # from ..index.Handle_Index_Dictionary import Handle_Index_Dictionary as Handle_Index
 from enum import IntEnum, unique
 import time
-import os
 import shutil
 
 class Manager_Data:
     def __init__(self):
         self.debug = True
+        self.dict_exceptions = {}
         self.path_settings = '../settings'
         self.path_backup = 'backup_settings'
         self.path_cache = '../cache'
@@ -137,6 +141,14 @@ class Manager_Data:
                 except:
                     raise('NO CORPUS FOUND')
 
+    def pop_exception(self, id_corpus):
+        try:
+            exception = self.dict_exceptions[id_corpus]
+            del self.dict_exceptions[id_corpus]
+            return exception
+        except KeyError:
+            return None
+
     def get_setting_for_corpus(self, key, id_corpus):
         settings_corpus = self.dict_corpora[id_corpus]['settings']
         if key in settings_corpus:
@@ -174,7 +186,7 @@ class Manager_Data:
         self.dict_corpora = dict_tmp
         self.update_cache()
 
-    def delete_corpus(self, id_corpus):
+    def delete_corpus(self, id_corpus, remove_settings_file=False):
         # delete internal format of corpus
         path_corpus = os.path.join(self.path_cache, id_corpus)
         shutil.rmtree(path_corpus)
@@ -184,16 +196,17 @@ class Manager_Data:
             self.dict_corpora[id_corpus]['handle_index'].delete()
         except KeyError:
             print('corpus was not loaded')
-            
+
         # delete data from cache
         del self.dict_corpora[id_corpus]
         self.update_cache()
 
-        # remove/backup settings file
-        file = id_corpus + '.py'
-        path_settings = os.path.join(self.path_settings, file)
-        path_settings_destination = os.path.join(self.path_backup, file)
-        shutil.move(path_settings, path_settings_destination)
+        if remove_settings_file:
+            # remove/backup settings file
+            file = id_corpus + '.py'
+            path_settings = os.path.join(self.path_settings, file)
+            path_settings_destination = os.path.join(self.path_backup, file)
+            shutil.move(path_settings, path_settings_destination)
 
     def get_number_of_indexed_items(self, id_corpus):
         return self.dict_corpora[id_corpus]['size']
@@ -231,41 +244,37 @@ class Manager_Data:
         if not os.path.exists(path_corpus):
             os.mkdir(path_corpus)
 
+        error_happended = False
         with open(os.path.join(path_corpus, id_corpus + '.data'), 'wb') as handle_file_data:
             with open(os.path.join(path_corpus, id_corpus + '.metadata'), 'wb') as handle_file_metadata:
                 obj_handle_item = Handle_Item_Add(self.struct, handle_file_data, handle_file_metadata, self.dict_corpora[id_corpus], field_id, settings_corpus['data_fields'])
                 start = time.perf_counter()
-                settings_corpus['load_data_function'](obj_handle_item)
+                try:
+                    settings_corpus['load_data_function'](obj_handle_item)
+                except Exception as e:
+                    error_happended = True
+                    self.dict_exceptions[id_corpus] = traceback.format_exc(chain=False)
+
+                    if self.debug == True:
+                        print(self.dict_exceptions[id_corpus])
+
+                    self.delete_corpus(id_corpus, False)
+
                 indexing_only = round(float(time.perf_counter()-start_total) * 1000, 2)
 
-        # cache.set('metadata_corpora', glob_cache)
-        handle_index.finish()
+        if not error_happended:
+            handle_index.finish()
 
-        
-        print('size of corpus: '+str(self.dict_corpora[id_corpus]['size']))
-        print('size of corpus (bytes): '+str(self.dict_corpora[id_corpus]['size_in_bytes']))
-        print('')
-        # print(self.handle_index.dict_data)
+            
+            print('size of corpus: '+str(self.dict_corpora[id_corpus]['size']))
+            print('size of corpus (bytes): '+str(self.dict_corpora[id_corpus]['size_in_bytes']))
+            print('')
+            self.dict_corpora[id_corpus]['state_loaded'] = self.State_Loaded.LOADED
+            self.update_cache()
 
-        # with open(os.path.join(path_corpus, id_corpus + '_metadata.pickle'), 'rb') as handle_file_metadata:
-        #     start = time.perf_counter()
-        #     obj_handle_item = Item_Handle_Get_Metadata(self.struct, self.length_struct, handle_file_metadata)
-
-        #     for index, item in enumerate(dict_data['list']):   
-        #         obj_handle_item.get(index)
-        #     print('loading time: '+str(round(float(time.perf_counter()-start) * 1000, 2))+'ms')
-        self.dict_corpora[id_corpus]['state_loaded'] = self.State_Loaded.LOADED
-        self.update_cache()
-
-        if self.debug == True:
-            print('writing time: '+str(round(float(time.perf_counter()-start_total) * 1000, 2))+'ms')
-            print('indexing only: '+str(indexing_only)+'ms')
-
-        # print(self.dict_corpora[id_corpus]['handle_index'].dict_data)
-        # cache.set('metadata_corpora', self.dict_data)
-
-        # self.dict_data[id_corpus] = dict_data
-        # print(dict_data)
+            if self.debug == True:
+                print('writing time: '+str(round(float(time.perf_counter()-start_total) * 1000, 2))+'ms')
+                print('indexing only: '+str(indexing_only)+'ms')
 
     def get_all_ids_for_corpus(self, id_corpus, settings_corpus):
         if self.debug == True:

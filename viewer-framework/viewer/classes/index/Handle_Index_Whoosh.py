@@ -42,7 +42,7 @@ class Handle_Index_Whoosh(Handle_Index):
                 dict_fields[key + self.suffix_case_sensitive] = TEXT(analyzer=self.analyzer_text_case_sensitive)
                 dict_fields[key + self.suffix_case_insensitive] = TEXT(analyzer=self.analyzer_text_case_insensitive)
             elif type_data_field == 'number':
-                dict_fields[key] = NUMERIC
+                dict_fields[key] = NUMERIC(float, 64)
 
         dict_fields[self.field_internal_id] = NUMERIC(stored=True)
 
