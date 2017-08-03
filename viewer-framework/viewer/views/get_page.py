@@ -58,6 +58,8 @@ def get_page(request):
 
         return JsonResponse(response)
 ##### page the dataset
+    list_ids = sort_by_columns(request, list_ids)
+
     # paginator = Paginator(range(0, get_setting('page_size', request=request))
     paginator = Paginator(list_ids, glob_manager_data.get_setting_for_corpus('page_size', id_corpus))
     # paginator = Paginator(data, get_setting('page_size', request=request))
@@ -72,7 +74,7 @@ def get_page(request):
 ##### add tags to the dataset
 
     start_loading = time.perf_counter()
-    data = glob_manager_data.get_items(id_corpus, id_corpus, page_current)
+    data = glob_manager_data.get_items(id_corpus, page_current)
     print('loading time: '+str(round(float(time.perf_counter() - start_loading) * 1000, 2))+'ms')
 
     # add_tags(data, request)
@@ -100,6 +102,22 @@ def get_page(request):
             'next_page_number': next_page_number,
             'info_filter_values': info_filter_values
         })
+
+def function_sort(id_item, id_corpus, field):
+    return glob_manager_data.get_item(id_corpus, id_item)[field]
+
+def sort_by_columns(request, list_ids):
+    id_corpus = get_current_corpus(request)
+
+    list_sorted_columns = request.session[id_corpus]['viewer__viewer__sorted_columns']
+    for sorted_column in reversed(list_sorted_columns):
+        is_reversed = False
+        if sorted_column['order'] == 'desc':
+            is_reversed = True
+            
+        list_ids = sorted(list_ids, key=lambda id_item: function_sort(id_item, id_corpus, sorted_column['field']), reverse=is_reversed)
+        print(sorted_column)
+    return list_ids
 
 def export_data(obj, data, request):
     response = {}

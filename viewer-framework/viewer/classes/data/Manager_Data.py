@@ -289,13 +289,21 @@ class Manager_Data:
             # self.index_corpus(id_corpus, settings_corpus)
             # return range(0, self.dict_data[id_corpus]['size'])
 
-    def get_items(self, id_corpus, corpus, list_indices):       
+    def get_items(self, id_corpus, list_indices):       
         path_corpus = os.path.join(self.path_cache, id_corpus)
 
         with open(os.path.join(path_corpus, id_corpus + '.data'), 'rb') as handle_file_data:
             with open(os.path.join(path_corpus, id_corpus + '.metadata'), 'rb') as handle_file_metadata:
                 obj_handle_item = Handle_Item_Get_Item(self.struct, self.length_struct, handle_file_data, handle_file_metadata)
                 return obj_handle_item.get_items(list_indices)
+
+    def get_item(self, id_corpus, id_item):       
+        path_corpus = os.path.join(self.path_cache, id_corpus)
+
+        with open(os.path.join(path_corpus, id_corpus + '.data'), 'rb') as handle_file_data:
+            with open(os.path.join(path_corpus, id_corpus + '.metadata'), 'rb') as handle_file_metadata:
+                obj_handle_item = Handle_Item_Get_Item(self.struct, self.length_struct, handle_file_data, handle_file_metadata)
+                return obj_handle_item.get_item(id_item)
 
     def get_active_handle_indices(self):
         list_handle_indices = []

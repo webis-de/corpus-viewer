@@ -151,7 +151,7 @@ function refresh_url()
     data.viewer__current_corpus = glob_current_corpus;
     data.viewer__page = glob_current_page;
     data.viewer__columns = JSON.stringify(glob_columns);
-    data.viewer__filter_sorted_custom = JSON.stringify(glob_sorted_columns);
+    data.viewer__sorted_columns = JSON.stringify(glob_sorted_columns);
     data.viewer__filter_tags = JSON.stringify(glob_filter_tags);
     data.viewer__filter_custom = JSON.stringify(glob_filter_custom);
 

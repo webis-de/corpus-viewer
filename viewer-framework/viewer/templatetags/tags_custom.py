@@ -11,6 +11,8 @@ def get_state_sorted(context, field):
         if obj_sorted_column['field'] == field:
             return obj_sorted_column['order']
 
+    return 'None'
+
 @register.simple_tag(takes_context=True)
 def get_is_collapsed_div_filters(context):
     current_corpus = context.request.session['viewer__viewer__current_corpus']

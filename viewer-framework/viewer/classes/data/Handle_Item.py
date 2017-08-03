@@ -13,6 +13,18 @@ class Handle_Item_Get_Item(Handle_Item):
         self.handle_file_data = handle_file_data
         self.handle_file_metadata = handle_file_metadata
 
+    def get_item(self, id_item):
+        offset_in_bytes_metadata = id_item * self.length_struct
+
+        self.handle_file_metadata.seek(offset_in_bytes_metadata)
+        item_bin = self.handle_file_metadata.read(self.length_struct)
+        metadata = self.struct.unpack(item_bin) 
+        
+        self.handle_file_data.seek(metadata[0])
+        item_bin = self.handle_file_data.read(metadata[1])
+
+        return pickle.loads(item_bin)
+
     def get_items(self, list_indices):
         list_items = []
         for index in list_indices:
