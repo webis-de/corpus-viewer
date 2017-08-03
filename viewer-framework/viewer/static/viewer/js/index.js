@@ -3,6 +3,7 @@ let glob_selected_tags = {}
 
 let glob_filter_tags = []
 let glob_filter_custom = {}
+let glob_sorted_columns = []
 let glob_columns = []
 
 let glob_current_page = 1;
@@ -125,7 +126,8 @@ $(document).ready(function()
         template: '<div class="popover link_delete_tag" style="cursor:pointer" role="tooltip"><div class="popover-content" style="padding: 3px 5px"></div></div>'
     })
 
-    // $(document).on('contextmenu', '.row_viewer__item', function(e) {handle_rightclick_on_tr(e, $(this))})
+    $(document).on('click', 'th[data-sortable="sortable"]', function(e) {handle_click_on_sortable_column($(this))})
+    $(document).on('contextmenu', '.row_viewer__item', function(e) {handle_rightclick_on_tr(e, $(this))})
 
     $(document).on('click', '.link_add_tag', function(e) { handle_click_link_add_tag(e, $(this)) });
     $(document).on('show.bs.modal', '#modal_add_tag', function(e) { handle_show_modal(e, $(this)) });

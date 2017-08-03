@@ -362,6 +362,35 @@ function delete_tag_from_item(id_item, id_tag)
     })
 }
 
+function handle_click_on_sortable_column(th)
+{
+    const field = th.prop('class').substring(7);
+    const state_sorted = th.data('state_sorted');
+
+    if(state_sorted == 'None')
+    {
+        th.data('state_sorted', 'asc');
+        glob_sorted_columns = [{field: field, order: 'asc'}]; 
+    } 
+    else if(state_sorted == 'asc')
+    {
+        th.data('state_sorted', 'desc');
+        glob_sorted_columns = [{field: field, order: 'desc'}]; 
+    } 
+    else 
+    {
+        th.data('state_sorted', 'None');
+        glob_sorted_columns = [];
+    }
+
+    refresh_url();
+    set_session_entry('viewer__sorted_columns', glob_sorted_columns, function() {
+        glob_current_page = 1;
+        load_current_page();
+        console.log(JSON.stringify(glob_sorted_columns))
+    });
+}
+
 function handle_rightclick_on_tr(event, tr)
 {   
     event.preventDefault();
@@ -821,6 +850,8 @@ function load_page_parameters()
                 glob_current_corpus = value
             } else if(key == 'viewer__columns') {
                 glob_columns = value
+            } else if(key == 'viewer__sorted_columns') {
+                glob_sorted_columns = value
             } else if(key == 'viewer__filter_tags') {
                 glob_filter_tags = value
             } else if(key == 'viewer__filter_custom') {

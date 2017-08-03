@@ -3,6 +3,15 @@ from django import template
 register = template.Library()
 
 @register.simple_tag(takes_context=True)
+def get_state_sorted(context, field):
+    current_corpus = context.request.session['viewer__viewer__current_corpus']
+    list_sorted_columns = context.request.session[current_corpus]['viewer__viewer__sorted_columns']
+
+    for obj_sorted_column in list_sorted_columns:
+        if obj_sorted_column['field'] == field:
+            return obj_sorted_column['order']
+
+@register.simple_tag(takes_context=True)
 def get_is_collapsed_div_filters(context):
     current_corpus = context.request.session['viewer__viewer__current_corpus']
     return context.request.session[current_corpus]['viewer__is_collapsed_div_filters']

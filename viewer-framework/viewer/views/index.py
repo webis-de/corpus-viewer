@@ -140,6 +140,11 @@ def get_url_params(request):
     else:
         dict_url_params['viewer__columns'] = request.session[get_current_corpus(request)]['viewer__viewer__columns']
 
+    if 'viewer__sorted_columns' in dict_url_params:
+        dict_url_params['viewer__sorted_columns'] = json.loads(dict_url_params['viewer__sorted_columns'])
+    else:
+        dict_url_params['viewer__sorted_columns'] = request.session[get_current_corpus(request)]['viewer__viewer__sorted_columns']
+
     if 'viewer__filter_tags' in dict_url_params:
         dict_url_params['viewer__filter_tags'] = json.loads(dict_url_params['viewer__filter_tags'])
     else:
