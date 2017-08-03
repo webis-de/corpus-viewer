@@ -58,6 +58,10 @@ html {
             max-width: 50% !important;
         }
     }
+.indicator_sorting {
+    position: absolute;
+}
+
 /*.text-truncate {
     width: 5;
 }*/

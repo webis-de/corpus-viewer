@@ -5,7 +5,9 @@
             <th class="column_viewer__item_selection" {% if not "viewer__item_selection"|in_columns_checked:request %}style="display: none"{% endif %}><input id="input_select_all_items" type="checkbox"></th>
             {% for field in settings.displayed_fields %}
                 {% if not field == "viewer__item_selection" and not field == "viewer__tags" %}
-                <th class="column_{{ field }}" data-sortable="sortable" data-state_sorted="{% get_state_sorted field %}" {% if not field|in_columns_checked:request %}style="display: none"{% endif %}>{{ field|get_display_name:settings }}</th>
+                {% get_state_sorted field as state_sorted %}
+
+                <th class="column_{{ field }}" data-sortable="sortable" data-state_sorted="{{ state_sorted }}" {% if not field|in_columns_checked:request %}style="display: none"{% endif %}>{{ field|get_display_name:settings }} {% if state_sorted == 'asc' %}<i class="fa fa-caret-up indicator_sorting" aria-hidden="true">{% elif state_sorted == 'desc' %}<i class="fa fa-caret-down indicator_sorting" aria-hidden="true">{% endif %}</th>
                 {% endif %}
             {% endfor %}
             <th class="column_viewer__tags" {% if not "viewer__tags"|in_columns_checked:request %}style="display: none"{% endif %}>Tags</th>
