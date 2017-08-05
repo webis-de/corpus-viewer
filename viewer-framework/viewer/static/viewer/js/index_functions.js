@@ -267,16 +267,17 @@ function handle_selection_all_items(input)
 
 function handle_select_item(input)
 {
+    const id_item = input.data('id_item')
+
     if(glob_mode_add_tag.status == 'inactive')
     {
         if(input.prop('checked'))
         {
-            glob_selected_items[input.data('id_item')] = true;
-            $('.row_viewer__item[data-id_item="'+input.data('id_item')+'"]').addClass('table-info');
-            input.data('id_item')
+            glob_selected_items[id_item] = true;
+            $('.row_viewer__item[data-id_item="'+id_item+'"]').addClass('table-info');
         } else {
-            $('.row_viewer__item[data-id_item="'+input.data('id_item')+'"]').removeClass('table-info');
-            delete glob_selected_items[input.data('id_item')];
+            $('.row_viewer__item[data-id_item="'+id_item+'"]').removeClass('table-info');
+            delete glob_selected_items[id_item];
         }
         update_checkbox_select_all('input_select_item', 'input_select_all_items')
         update_info_selected_items()
@@ -608,10 +609,14 @@ function add_tag(modal)
         // if the modal was triggered by the button
         if(id_item == undefined)
         {
-            data.ids = Object.keys(glob_selected_items)
+            data.ids = [];
+            const tmp_list = Object.keys(glob_selected_items)
+            for (var i = 0; i < tmp_list.length; i++) {
+                data.ids.push(parseInt(tmp_list[i]));
+            }
         // if the modal was triggered by a link
         } else {
-            data.ids = [String(id_item)]
+            data.ids = [id_item]
         }
     }
 

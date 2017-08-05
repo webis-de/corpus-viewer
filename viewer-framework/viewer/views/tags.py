@@ -1,25 +1,18 @@
-from .shared_code import get_current_corpus
+from .shared_code import get_current_corpus, glob_manager_data
 from django.http import JsonResponse
 from django.shortcuts import render
 from viewer.models import m_Tag, m_Entity
 import json
 
 def tags(request):
-    tags = m_Tag.objects.filter(key_corpus=get_current_corpus(request))
+    id_corpus = get_current_corpus(request)
+
+    tags = m_Tag.objects.filter(key_corpus=id_corpus)
 
 
     # with open('int.bin', 'w') as f:
     #     for x in range(0, 20 * 100 000 000):
     #             f.write(1)
-
-    with open('int.bin', 'bw') as f:
-        f.write(bytes(1324324234)) 
-    with open('float.bin', 'bw') as f:
-        f.write(bytes(1.0)) 
-    with open('string.bin', 'bw') as f:
-        f.write('e') 
-    with open('text.bin', 'bw') as f:
-        f.write('asdds') 
 
     if request.method == 'POST':
         cookie_id = request.COOKIES['csrftoken']
@@ -45,7 +38,8 @@ def tags(request):
         return JsonResponse(response)
 
     context = {}
-    context['settings'] = get_setting(request=request)
+    
+    context['settings'] = glob_manager_data.get_settings_for_corpus(id_corpus)
     context['tags'] = tags
     if request.is_ajax():
         return render(request, 'viewer/tags.html', context)
@@ -53,6 +47,8 @@ def tags(request):
         return render(request, 'viewer/tags.html', context)
 
 def import_tags(obj, request):
+    id_corpus = get_current_corpus(request)
+
     response = {}
 
     if os.path.isfile(obj['path']):
@@ -60,7 +56,7 @@ def import_tags(obj, request):
             for line in f:
                 obj_json = json.loads(line)
 
-                obj_tag = m_Tag.objects.create(name = obj_json['name'], key_corpus=get_current_corpus(request), color = obj_json['color'])
+                obj_tag = m_Tag.objects.create(name = obj_json['name'], key_corpus=id_corpus, color = obj_json['color'])
 
                 if get_setting('data_type', request=request) == 'database':
                     ThroughModel = m_Tag.m2m_custom_model.through
@@ -79,7 +75,7 @@ def import_tags(obj, request):
                     list_tmp = []
 
                     for id_item in obj_json['ids']:
-                        obj_db_entity = m_Entity.objects.get(id_item=id_item, key_corpus=get_current_corpus(request))
+                        obj_db_entity = m_Entity.objects.get(id_item=id_item, key_corpus=id_corpus)
                         list_tmp.append(ThroughModel(m_tag_id=obj_tag.pk, m_entity_id=obj_db_entity.pk))
 
                     ThroughModel.objects.bulk_create(list_tmp)
@@ -87,6 +83,8 @@ def import_tags(obj, request):
     return response
 
 def export_tags(obj, request):
+    id_corpus = get_current_corpus(request)
+
     response = {}
 
     if obj['path'].strip() != '':
@@ -98,8 +96,8 @@ def export_tags(obj, request):
 
 
     with open(path_file, 'w') as f:
-        queryset_tags = m_Tag.objects.filter(key_corpus=get_current_corpus(request))
-        if get_setting('data_type', request=request) == 'database':
+        queryset_tags = m_Tag.objects.filter(key_corpus=id_corpus)
+        if glob_manager_data.get_settings_for_corpus('data_type', id_corpus) == 'database':
             queryset_tags = queryset_tags.prefetch_related('m2m_custom_model')
         else:
             queryset_tags = queryset_tags.prefetch_related('m2m_entity')
@@ -108,7 +106,7 @@ def export_tags(obj, request):
             obj_tag['name'] = tag.name
             obj_tag['color'] = tag.color
             list_ids = []
-            if get_setting('data_type', request=request) == 'database':
+            if glob_manager_data.get_settings_for_corpus('data_type', id_corpus) == 'database':
                 for entity in tag.m2m_custom_model.all():
                     list_ids.append(entity.id)
             else:
@@ -153,6 +151,8 @@ def update_color(obj):
     return response
 
 def update_name(obj, request):
+    id_corpus = get_current_corpus(request)
+
     response = {}
     tag = m_Tag.objects.filter(id=obj['id_tag'])
     new_name = obj['new_name'].strip().replace(' ', '-')
@@ -162,7 +162,7 @@ def update_name(obj, request):
         response['status'] = 'success'
     except:
         print('non unique name')
-        existing_tag = m_Tag.objects.get(name=new_name, key_corpus=get_current_corpus(request))
+        existing_tag = m_Tag.objects.get(name=new_name, key_corpus=id_corpus)
         response['status'] = 'error'
         response['data'] = {'id_tag': tag[0].id, 'id_tag_name': tag[0].name, 'existing_tag': existing_tag.id, 'existing_tag_name': existing_tag.name}
 

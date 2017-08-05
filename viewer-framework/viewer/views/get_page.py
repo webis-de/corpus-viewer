@@ -40,7 +40,7 @@ def get_page(request):
         response = {}
         obj = json.loads(request.body.decode("utf-8"))
         if obj['task'] == 'add_tag':
-            response['data'] = add_tag(obj, data, request)
+            response['data'] = add_tag(obj, list_ids, request)
         elif obj['task'] == 'export_data':
             response = export_data(obj, data, request)
         elif obj['task'] == 'reload_settings':
@@ -114,7 +114,7 @@ def sort_by_columns(request, list_ids):
         is_reversed = False
         if sorted_column['order'] == 'desc':
             is_reversed = True
-            
+
         list_ids = sorted(list_ids, key=lambda id_item: function_sort(id_item, id_corpus, sorted_column['field']), reverse=is_reversed)
         print(sorted_column)
     return list_ids
@@ -521,22 +521,27 @@ def filter_data_tags(data, list_tags, request):
 
     return data
 
-def add_tag(obj, data, request):
-    [db_obj_tag, created_tag] = get_or_create_tag(obj['tag'], defaults={'color': obj['color']}, request=request)
+def add_tag(obj, list_ids, request):
+    id_corpus = get_current_corpus(request)
 
+    [db_obj_tag, created_tag] = get_or_create_tag(obj['tag'], defaults={'color': obj['color']}, request=request)
     entities = []
     if obj['ids'] == 'all':
-        if get_setting('data_type', request=request) == 'database':
-            entities = data
+        if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
+            entities = list_ids
         else:
-            entities = [str(item[get_setting('id', request=request)]) for item in data]
+            for id_item in list_ids:
+                obj_item = glob_manager_data.get_item(id_corpus, id_item)
+                entities.append(str(obj_item[glob_manager_data.get_setting_for_corpus('id', id_corpus)]))
     else:
-        if get_setting('data_type', request=request) == 'database':
+        if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
             entities = list(model_custom.objects.filter(post_id_str__in=obj['ids']))
         else:
-            entities = obj['ids']
+            for id_item in obj['ids']:
+                obj_item = glob_manager_data.get_item(id_corpus, id_item)
+                entities.append(str(obj_item[glob_manager_data.get_setting_for_corpus('id', id_corpus)]))
 
-    if get_setting('data_type', request=request) == 'database':
+    if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
         n = 900
         chunks = [entities[x:x+n] for x in range(0, len(entities), n)]
         for chunk in chunks:
@@ -547,7 +552,7 @@ def add_tag(obj, data, request):
         n = 900
         chunks = [entities[x:x+n] for x in range(0, len(entities), n)]
         for chunk in chunks:
-            db_obj_entities = m_Entity.objects.filter(id_item__in=chunk, key_corpus=get_current_corpus(request))
+            db_obj_entities = m_Entity.objects.filter(id_item__in=chunk, key_corpus=id_corpus)
             db_obj_tag.m2m_entity.add(*db_obj_entities)
 
     if db_obj_tag.color != obj['color']:
@@ -557,13 +562,15 @@ def add_tag(obj, data, request):
     return {'created_tag': created_tag, 'tag': {'id': db_obj_tag.id, 'name': db_obj_tag.name, 'color': db_obj_tag.color} }
 
 def index_missing_entities(entities, request):
-    queryset = m_Entity.objects.filter(key_corpus=get_current_corpus(request))
+    id_corpus = get_current_corpus(request)
+    
+    queryset = m_Entity.objects.filter(key_corpus=id_corpus)
     set_new_entities = set(entities)
 
     set_new_entities.difference_update({entity.id_item for entity in queryset})
 
     if len(set_new_entities) > 0:
-        m_Entity.objects.bulk_create([m_Entity(id_item=entity, key_corpus=get_current_corpus(request)) for entity in set_new_entities])
+        m_Entity.objects.bulk_create([m_Entity(id_item=entity, key_corpus=id_corpus) for entity in set_new_entities])
 
 
 def get_tags_filtered_items(list_ids, request):

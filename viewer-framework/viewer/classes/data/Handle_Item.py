@@ -104,6 +104,9 @@ class Handle_Item_Add(Handle_Item):
                 elif type_data_field == 'number':
                     self.handle_index.add_number(key, value, id_intern)
 
+            # for key, data_field in self.dict_data_fields.items():
+            #     value = item[key]
+
         # self.dict_data['list'].append(id_intern)
         # self.dict_data['list'].append((self.dict_data['size'], item[self.field_id]))
         self.dict_data['size'] += 1

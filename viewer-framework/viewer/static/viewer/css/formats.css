@@ -58,8 +58,18 @@ html {
             max-width: 50% !important;
         }
     }
-.indicator_sorting {
+
+#table_entities thead th span {
+    position: relative;
+}
+
+#table_entities .indicator_sorting {
+    right: -10px;
     position: absolute;
+    top: 50%;
+    transform: translate(0, -50%);
+    height: 50%;
+
 }
 
 /*.text-truncate {
