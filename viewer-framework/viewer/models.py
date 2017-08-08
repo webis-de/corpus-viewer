@@ -11,6 +11,7 @@ class m_Entity(models.Model):
         
     key_corpus = models.CharField(max_length=200)
     id_item = models.CharField(max_length=200, db_index=True)
+    id_item_internal = models.BigIntegerField(db_index=True)
 
 class m_Tag(models.Model):
     class Meta:

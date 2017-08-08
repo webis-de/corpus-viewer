@@ -15,6 +15,7 @@ def index(request):
 
         return redirect('dashboard:index')
 
+    print(5)
     id_corpus = get_current_corpus(request)
 
     state_loaded = glob_manager_data.get_state_loaded(id_corpus)

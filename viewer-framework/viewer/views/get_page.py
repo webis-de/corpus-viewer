@@ -12,6 +12,7 @@ from django.template.loader import get_template
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from viewer.models import m_Tag, m_Entity
 import hashlib
+import csv
 
 regex_filter_numbers_negative = re.compile('(?<![>|\.|>=|<=|<|<|0|1|2|3|4|5|6|7|8|9|0])(-[0-9]+\.?[0-9]*)')
 regex_filter_numbers_positive = re.compile('(?<![>|\.|>=|<=|<|<|0|1|2|3|4|5|6|7|8|9|0|-])([0-9]+\.?[0-9]*)')
@@ -19,6 +20,82 @@ regex_filter_numbers_lt = re.compile('<(-?[0-9]+\.?[0-9]*)')
 regex_filter_numbers_lte = re.compile('<=(-?[0-9]+\.?[0-9]*)')
 regex_filter_numbers_gt = re.compile('>(-?[0-9]+\.?[0-9]*)')
 regex_filter_numbers_gte = re.compile('>=(-?[0-9]+\.?[0-9]*)')
+
+def temporary(id_corpus, request):
+    path = "../corpora/webis-query-speller-corpus-error-annotations.csv"
+    dict_errors = {
+        'spaces': [],
+        'special_characters': [],
+        'insertion': [],
+        'deletion': [],
+        'substitution': [],
+        'transposition': [],
+    }
+    dict_ids_internal = {}
+
+    for id_item_internal in glob_manager_data.get_all_ids_for_corpus(id_corpus, None):
+        obj_item = glob_manager_data.get_item(id_corpus, id_item_internal)
+        id_item = obj_item['id']
+        dict_ids_internal[id_item] = id_item_internal
+
+    with open(path, 'r') as csvfile:
+        spamreader = csv.reader(csvfile, delimiter=';', quotechar='"')
+        for index, row in enumerate(spamreader):
+            if index == 0:
+                continue
+
+            id_query = row[0]
+            # obj_item = glob_manager_data.get_item(id_corpus, index)
+            # if int(obj_item['id']) != index:
+            #     print('error for '+str(index)) 
+            # spaces = None
+            if row[3] != '0':
+                dict_errors['spaces'].append({'id_item': id_query, 'id_item_internal': dict_ids_internal[id_query]})
+                # spaces = int(row[3])
+                # special_characters = None
+            if row[4] != '0':
+                dict_errors['special_characters'].append({'id_item': id_query, 'id_item_internal': dict_ids_internal[id_query]})
+                # special_characters = int(row[4])
+                # insertion = None
+            if row[5] != '0':
+                dict_errors['insertion'].append({'id_item': id_query, 'id_item_internal': dict_ids_internal[id_query]})
+                # insertion = int(row[5])
+                # deletion = None
+            if row[6] != '0':
+                dict_errors['deletion'].append({'id_item': id_query, 'id_item_internal': dict_ids_internal[id_query]})
+                # deletion = int(row[6])
+                # substitution = None
+            if row[7] != '0':
+                dict_errors['substitution'].append({'id_item': id_query, 'id_item_internal': dict_ids_internal[id_query]})
+                # substitution = int(row[7])
+                # transposition = None
+            if row[8] != '0':
+                dict_errors['transposition'].append({'id_item': id_query, 'id_item_internal': dict_ids_internal[id_query]})
+                # transposition = int(row[8])   
+
+            # dict_annotations[id_query] = {
+            # 'spaces': spaces,
+            # 'special_characters': special_characters,
+            # 'insertion': insertion,
+            # 'deletion': deletion,
+            # 'substitution': substitution,
+            # 'transposition': transposition,
+            # }
+
+            # print(id_query, spaces, special_characters, insertion, deletion, substitution, transposition)
+            # if index == 50:
+            #     break
+    # print(len(dict_annotations ))
+
+    for tag_name, entities in dict_errors.items():
+        obj = {
+            'tag': tag_name,
+            'color': '#000000',
+            'ids': entities
+        }
+        add_tag(obj, None, request)
+
+
 
 def get_page(request):
 ##### handle session entries
@@ -30,11 +107,14 @@ def get_page(request):
 
     id_corpus = get_current_corpus(request)
 
+    print('START TEMPORARY')
+    temporary(id_corpus, request)
+    print('END TEMPORARY')
 ##### load data and apply filters
     list_ids, info_filter_values = get_filtered_data(request)
     # return JsonResponse({})
-    list_tags = []
-    # list_tags = get_tags_filtered_items(data_only_ids, request)
+    # list_tags = []
+    list_tags = get_tags_filtered_items(list_ids, request)
 ##### handle post requests
     if request.method == 'POST':
         response = {}
@@ -77,11 +157,10 @@ def get_page(request):
     data = glob_manager_data.get_items(id_corpus, page_current)
     print('loading time: '+str(round(float(time.perf_counter() - start_loading) * 1000, 2))+'ms')
 
-    # add_tags(data, request)
+    add_tags(data, request)
 ##### handle post requests
     context = {}
     context['settings'] = glob_manager_data.get_settings_for_corpus(id_corpus)
-    # context['page_current'] = page_current
     context['data'] = data
 
     previous_page_number = None
@@ -165,24 +244,28 @@ def get_filtered_data(request):
         except:
             pass
     # print(hash_customs)
+    list_data = None
     #
     # FILTER BY TAGS 
     #
-    # values_filter_tags = request.session[get_current_corpus(request)]['viewer__viewer__filter_tags']
-    # if len(values_filter_tags) > 0:
-    #     if get_setting('data_type', request=request) == 'database':
-    #         # iterate over tag and return only items tagged with them
-    #         for tag in values_filter_tags:
-    #             data = data.filter(viewer_tags__name=tag)
-    #     else:
-    #         # filter the data by tags
-    #         data = filter_data_tags(data, values_filter_tags, request)
+    values_filter_tags = request.session[id_corpus]['viewer__viewer__filter_tags']
+    print(values_filter_tags)
+    if len(values_filter_tags) > 0:
+        print('TAGSSSS')
+        
+        if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
+            # iterate over tag and return only items tagged with them
+            raise NotImplementedError()
+            for tag in values_filter_tags:
+                data = data.filter(viewer_tags__name=tag)
+        else:
+            # filter the data by tags
+            list_data = filter_data_tags(values_filter_tags, id_corpus)
 
     #
     # FILTERS
     #
 
-    list_data = None
     for obj_filter in glob_manager_data.get_setting_for_corpus('filters', id_corpus):
         # filter the data by the current filter
         list_data_new, info_values, skipped = filter_data(request, obj_filter)
@@ -375,6 +458,7 @@ def filter_data(request, obj_filter):
 
 def get_filters_if_not_empty(request, id_corpus):
     dict_filters = request.session[id_corpus]['viewer__viewer__filter_custom']
+    dict_filters['viewer__filter_tags'] = request.session[id_corpus]['viewer__viewer__filter_tags']
 
     is_empty = True
     for values in dict_filters.values():
@@ -509,25 +593,35 @@ def parse_values(values):
 #                         data = [item for item in data if item[obj_filter['data_field']] >= number]
 #     return data, info_values
 
-def filter_data_tags(data, list_tags, request):
+def filter_data_tags(list_tags, id_corpus):
+    set_ids_result = None
     # get the database objects for each tag
-    queryset_tags = m_Tag.objects.filter(name__in=list_tags, key_corpus=get_current_corpus(request)).prefetch_related('m2m_entity')
+    queryset_tags = m_Tag.objects.filter(name__in=list_tags, key_corpus=id_corpus).prefetch_related('m2m_entity')
     # for each tag
     for db_obj_tag in queryset_tags:
         # get all entities for the current tag 
-        list_ids = [entity.id_item for entity in db_obj_tag.m2m_entity.all()]
-        # only keep items, which id is in the entities list
-        data = [item for item in data if str(item[get_setting('id', request=request)]) in list_ids]
+        set_ids = {entity.id_item_internal for entity in db_obj_tag.m2m_entity.all()}
 
-    return data
+        if set_ids_result == None:
+            set_ids_result = set_ids
+        else:
+            set_ids_result.intersection_update(set_ids)
+        # only keep items, which id is in the entities list
+        # data = [item for item in data if str(item[glob_manager_data.get_setting_for_corpus('id', id_corpus)]) in list_ids]
+
+    return sorted(set_ids_result)
 
 def add_tag(obj, list_ids, request):
     id_corpus = get_current_corpus(request)
+    # print('################################################')
+    # print(obj)
 
     [db_obj_tag, created_tag] = get_or_create_tag(obj['tag'], defaults={'color': obj['color']}, request=request)
+
     entities = []
     if obj['ids'] == 'all':
         if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
+            raise NotImplementedError()
             entities = list_ids
         else:
             for id_item in list_ids:
@@ -535,24 +629,26 @@ def add_tag(obj, list_ids, request):
                 entities.append(str(obj_item[glob_manager_data.get_setting_for_corpus('id', id_corpus)]))
     else:
         if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
+            raise NotImplementedError()
             entities = list(model_custom.objects.filter(post_id_str__in=obj['ids']))
         else:
-            for id_item in obj['ids']:
-                obj_item = glob_manager_data.get_item(id_corpus, id_item)
-                entities.append(str(obj_item[glob_manager_data.get_setting_for_corpus('id', id_corpus)]))
+            entities = obj['ids']
 
     if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
+        raise NotImplementedError()
         n = 900
         chunks = [entities[x:x+n] for x in range(0, len(entities), n)]
         for chunk in chunks:
             db_obj_tag.m2m_custom_model.add(*chunk)
     else:
         index_missing_entities(entities, request)
-
+        # print(entities)
         n = 900
         chunks = [entities[x:x+n] for x in range(0, len(entities), n)]
         for chunk in chunks:
+            chunk = [foo['id_item'] for foo in chunk]
             db_obj_entities = m_Entity.objects.filter(id_item__in=chunk, key_corpus=id_corpus)
+            print(db_obj_entities)
             db_obj_tag.m2m_entity.add(*db_obj_entities)
 
     if db_obj_tag.color != obj['color']:
@@ -565,26 +661,38 @@ def index_missing_entities(entities, request):
     id_corpus = get_current_corpus(request)
     
     queryset = m_Entity.objects.filter(key_corpus=id_corpus)
-    set_new_entities = set(entities)
 
-    set_new_entities.difference_update({entity.id_item for entity in queryset})
+    list_tupels = []
+    for entity in entities:
+        list_tupels.append((entity['id_item'], entity['id_item_internal']))
+    set_new_entities = set(list_tupels)
+    # set_new_entities = {entity['id_item_internal'] for entity in entities}
+
+    # set_new_entities.difference_update(tuple(entity.id_item, entity.id_item_internal for entity in queryset))
+    set_new_entities.difference_update({(entity.id_item, entity.id_item_internal) for entity in queryset})
 
     if len(set_new_entities) > 0:
-        m_Entity.objects.bulk_create([m_Entity(id_item=entity, key_corpus=id_corpus) for entity in set_new_entities])
-
+        result = m_Entity.objects.bulk_create([m_Entity(id_item=entity[0], id_item_internal=entity[1], key_corpus=id_corpus) for entity in set_new_entities])
 
 def get_tags_filtered_items(list_ids, request):
-    if get_setting('data_type', request=request) == 'database':
+    id_corpus = get_current_corpus(request)
+
+    # if glob_manager_data.get_number_of_indexed_items(id_corpus) == len(list_ids):
+    #     list_tags = []
+    #     for tag in m_Tag.objects.filter(key_corpus=id_corpus):
+    #         list_tags.append({'id': tag.id, 'name': tag.name, 'color': tag.color, 'is_selected': str(tag.id) in request.session[id_corpus]['viewer__viewer__selected_tags']})
+    #     return list_tags
+    if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
         list_tags = []
         n = 900
         chunks = [list_ids[x:x+n] for x in range(0, len(list_ids), n)]
         for chunk in chunks:
-            list_tags += m_Tag.objects.filter(m2m_custom_model__in=chunk, key_corpus=get_current_corpus(request)).distinct()
+            list_tags += m_Tag.objects.filter(m2m_custom_model__in=chunk, key_corpus=id_corpus).distinct()
 
         dict_ordered_tags = collections.OrderedDict()
         for tag in list_tags:
             if tag.name not in dict_ordered_tags:
-                dict_ordered_tags[tag.name] = {'id': tag.id, 'name': tag.name, 'color': tag.color, 'is_selected': str(tag.id) in request.session[get_current_corpus(request)]['viewer__viewer__selected_tags']}
+                dict_ordered_tags[tag.name] = {'id': tag.id, 'name': tag.name, 'color': tag.color, 'is_selected': str(tag.id) in request.session[id_corpus]['viewer__viewer__selected_tags']}
         return list(dict_ordered_tags.values())
     else:
         n = 900
@@ -592,12 +700,16 @@ def get_tags_filtered_items(list_ids, request):
 
         list_tags = []
         for chunk in chunks:
-            list_tags += m_Tag.objects.filter(m2m_entity__id_item__in=chunk, key_corpus=get_current_corpus(request)).distinct()
+            # list_tmp = []
+            # for id_item in chunk:
+            #     obj_item = glob_manager_data.get_item(id_corpus, id_item)
+            #     list_tmp.append(obj_item[glob_manager_data.get_setting_for_corpus('id', id_corpus)])
+            list_tags += m_Tag.objects.filter(m2m_entity__id_item_internal__in=chunk, key_corpus=id_corpus).distinct()
 
         dict_ordered_tags = collections.OrderedDict()
         for tag in list_tags:
             if tag.name not in dict_ordered_tags:
-                dict_ordered_tags[tag.name] = {'id': tag.id, 'name': tag.name, 'color': tag.color, 'is_selected': str(tag.id) in request.session[get_current_corpus(request)]['viewer__viewer__selected_tags']}
+                dict_ordered_tags[tag.name] = {'id': tag.id, 'name': tag.name, 'color': tag.color, 'is_selected': str(tag.id) in request.session[id_corpus]['viewer__viewer__selected_tags']}
 
         return list(dict_ordered_tags.values())
 
@@ -605,14 +717,19 @@ def replacement(matchobj):
     return '<span style="background-color: lightblue">'+matchobj.group(1)+'</span>'
 
 def add_tags(data, request):
-    if get_setting('data_type', request=request) != 'database':
-        list_ids = [item[get_setting('id', request=request)] for item in data]
-        db_obj_entities = m_Entity.objects.filter(id_item__in=list_ids, key_corpus=get_current_corpus(request)).prefetch_related('viewer_tags')
-        dict_entities = {entity.id_item: entity for entity in db_obj_entities}
+    id_corpus = get_current_corpus(request)
 
+    if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) != 'database':
+        list_ids = [item[glob_manager_data.get_setting_for_corpus('id', id_corpus)] for item in data]
+        print(list_ids)
+        db_obj_entities = m_Entity.objects.filter(id_item__in=list_ids, key_corpus=id_corpus).prefetch_related('viewer_tags')
+        print(db_obj_entities)
+        dict_entities = {entity.id_item: entity for entity in db_obj_entities}
+        print(dict_entities)
         for item in data:
             try:
-                item['viewer_tags'] = dict_entities[str(item[get_setting('id', request=request)])].viewer_tags.all()
+                id_item = str(item[glob_manager_data.get_setting_for_corpus('id', id_corpus)])
+                item['viewer_tags'] = dict_entities[id_item].viewer_tags.all()
             except KeyError:
                 # if there is no entity entry in the database
                 item['viewer_tags'] = []
@@ -622,7 +739,7 @@ def add_tags(data, request):
                 # filter the data by the current filter+
                 # print(obj_filter)
 
-                # values = request.session[get_current_corpus(request)]['viewer__viewer__filter_custom'][obj_filter['data_field']]
+                # values = request.session[id_corpus]['viewer__viewer__filter_custom'][obj_filter['data_field']]
 
                 # for value in values:
                 #     if obj_filter['type'] == 'contains':

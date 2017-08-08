@@ -268,16 +268,18 @@ function handle_selection_all_items(input)
 function handle_select_item(input)
 {
     const id_item = input.data('id_item')
+    const id_item_internal = input.data('id_item_internal')
 
     if(glob_mode_add_tag.status == 'inactive')
     {
         if(input.prop('checked'))
         {
-            glob_selected_items[id_item] = true;
+            const obj_tmp = {'id_item': id_item, 'id_item_internal': id_item_internal};
+            glob_selected_items.push(obj_tmp);
             $('.row_viewer__item[data-id_item="'+id_item+'"]').addClass('table-info');
         } else {
             $('.row_viewer__item[data-id_item="'+id_item+'"]').removeClass('table-info');
-            delete glob_selected_items[id_item];
+            remove_element_from_array(glob_selected_items, obj_tmp)
         }
         update_checkbox_select_all('input_select_item', 'input_select_all_items')
         update_info_selected_items()
@@ -294,7 +296,7 @@ function handle_select_item(input)
 function handle_deselect_all_items(event)
 {
     event.preventDefault()
-    glob_selected_items = {}
+    glob_selected_items = []
     $('.input_select_item').prop('checked', false);
     $('.row_viewer__item').removeClass('table-info');
     update_checkbox_select_all('input_select_item', 'input_select_all_items')
@@ -412,6 +414,7 @@ function handle_click_link_add_tag(event, link)
     {
         event.preventDefault();
         $('#modal_add_tag').data('id_item', link.data('id_item'));
+        $('#modal_add_tag').data('id_item_internal', link.data('id_item_internal'));
         glob_trigger_modal = 'link';
         $('#modal_add_tag').modal('show')
     }
@@ -427,7 +430,7 @@ function handle_show_modal(event, modal)
             let count = 1
             if(modal.data('id_item') == undefined)
             {
-                count = Object.keys(glob_selected_items).length
+                count = glob_selected_items.length
             }
             $('#info_count_selected_items').text(count)
             $('#input_name_new_tag').val('');
@@ -597,6 +600,7 @@ function delete_corpus(modal)
 function add_tag(modal)
 {
     const id_item = modal.data('id_item');
+    const id_item_internal = modal.data('id_item_internal');
     let data = {}
     data.task = 'add_tag'
     data.tag = $('#input_name_new_tag').val()
@@ -609,14 +613,10 @@ function add_tag(modal)
         // if the modal was triggered by the button
         if(id_item == undefined)
         {
-            data.ids = [];
-            const tmp_list = Object.keys(glob_selected_items)
-            for (var i = 0; i < tmp_list.length; i++) {
-                data.ids.push(parseInt(tmp_list[i]));
-            }
+            data.ids = glob_selected_items;
         // if the modal was triggered by a link
         } else {
-            data.ids = [id_item]
+            data.ids = [{'id_item': id_item, 'id_item_internal': id_item_internal}]
         }
     }
 
@@ -673,7 +673,7 @@ function handle_change_add_to_all_filtered_items(input)
     } else {
         if($('#modal_add_tag').data('id_item') == undefined)
         {
-            count = Object.keys(glob_selected_items).length
+            count = glob_selected_items.length
         } else {
             count = 1
         }
