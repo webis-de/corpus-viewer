@@ -18,6 +18,17 @@ By default the tool uses the pure-Python search-engine [Whoosh](https://pypi.pyt
 ## Quickstart
 1. run `python3  viewer-framework/manage.py runserver` to start the server _([more](https://docs.djangoproject.com/en/1.10/ref/django-admin/#django-admin-runserver) on how to start a django server)_
 
+## Current Features
+* loading of arbitrary corpora
+* no need to preprocess the corpus due to custom loading function (scripted in python)
+* integrated loading of corpora stored in a in ldjson- or csv-file
+* multiple convenient ways to assign tags to your corpus items
+* export the whole or parts of the corpus into a ldjson- or csv-file
+
+## Upcomming Features
+
+## Known Bugs
+
 ## Contributors
 * Kristof Komlossy
 * Martin Potthast

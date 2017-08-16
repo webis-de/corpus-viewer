@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"set",
+				"set_ids"
+			],
+			[
 				"id_item_",
 				"id_item_internal"
 			],
@@ -114,10 +118,6 @@
 			[
 				"score",
 				"score_roc_auc"
-			],
-			[
-				"set",
-				"set_2"
 			],
 			[
 				"query",
@@ -379,7 +379,7 @@
 			"file": "viewer-framework/viewer/views/get_page.py",
 			"settings":
 			{
-				"buffer_size": 34676,
+				"buffer_size": 34682,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -394,19 +394,29 @@
 			}
 		},
 		{
-			"file": "corpora/webis-query-speller-corpus.csv",
+			"file": "/C/Users/micro/AppData/Local/Temp/fz3temp-3/get_page.py",
 			"settings":
 			{
-				"buffer_size": 3864027,
+				"buffer_size": 34682,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "viewer-framework/viewer/classes/data/Handle_Item.py",
+			"file": "viewer-framework/viewer/templates/viewer/documentation.html",
 			"settings":
 			{
-				"buffer_size": 5028,
+				"buffer_size": 21076,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "viewer-framework/viewer/views/documentation.py",
+			"settings":
+			{
+				"buffer_size": 326,
+				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
@@ -414,7 +424,7 @@
 			"file": "settings/settings_viewer_query_speller.py",
 			"settings":
 			{
-				"buffer_size": 2312,
+				"buffer_size": 2733,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -442,6 +452,7 @@
 			"settings":
 			{
 				"buffer_size": 13021,
+				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
@@ -571,6 +582,13 @@
 	],
 	"file_history":
 	[
+		"/C/Users/micro/Documents/uni/master/hiwi/wstud-viewer-framework-django/install.sh",
+		"/C/Users/micro/Documents/uni/master/hiwi/wstud-viewer-framework-django/viewer-framework/install_django.sh",
+		"/C/Users/micro/AppData/Local/Temp/fz3temp-3/settings.py",
+		"/C/Users/micro/Documents/uni/master/hiwi/wstud-viewer-framework-django/setup_django.sh",
+		"/C/Users/micro/AppData/Local/Temp/fz3temp-3/settings_viewer_query_speller.py",
+		"/C/Users/micro/Documents/uni/master/hiwi/wstud-viewer-framework-django/corpora/webis-query-speller-corpus.csv",
+		"/C/Users/micro/AppData/Local/Temp/fz3temp-2/settings_viewer_query_speller.py",
 		"/C/Users/micro/AppData/Local/Temp/fz3temp-3/Readme.md",
 		"/C/Users/micro/AppData/Local/Temp/fz3temp-3/webis-query-speller-corpus-error-annotations.csv",
 		"/C/Users/micro/AppData/Local/Temp/fz3temp-3/webis-query-speller-corpus-bing-performance.csv",
@@ -691,14 +709,7 @@
 		"/home/yiro4618/hiwi/wstud-netspeak-log-analysis/data/datasets/language-de/features/time_gap.tsv",
 		"/home/yiro4618/hiwi/wstud-netspeak-log-analysis/data/datasets/language-de/features/containment_in_next.tsv",
 		"/home/yiro4618/hiwi/wstud-netspeak-log-analysis/data/datasets/language-de/features/1gram_similarity.tsv",
-		"/home/yiro4618/hiwi/wstud-netspeak-log-analysis/data/datasets/language-de/target.tsv",
-		"/home/yiro4618/hiwi/wstud-netspeak-log-analysis/data/datasets/annotated-by-amir/target.tsv",
-		"/home/yiro4618/hiwi/webis-cbc-16-old-corpus/messages.txt",
-		"/home/yiro4618/hiwi/webis-cbc-16-old-corpus/title-extractor.py",
-		"/home/yiro4618/hiwi/wstud-netspeak-log-analysis/src-py/django-project/data_manager/templates/data_manager/index.html",
-		"/home/yiro4618/hiwi/wstud-netspeak-log-analysis/src-py/django-project/log_browser/templates/log_browser/identify_queries.html",
-		"/home/yiro4618/hiwi/wstud-netspeak-log-analysis/data/datasets/annotated-by-komlossy/target.tsv",
-		"/home/yiro4618/hiwi/wstud-netspeak-log-analysis/data/datasets/annotated-by-komlossy/features/1gram_similarity.tsv"
+		"/home/yiro4618/hiwi/wstud-netspeak-log-analysis/data/datasets/language-de/target.tsv"
 	],
 	"find":
 	{
@@ -724,6 +735,13 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"<ol",
+			"secure",
+			"3667866473;winston salem forsyth county schools;winston-salem/forsyth county schools",
+			"1415889675",
+			"3667866473",
+			"3667866473;winston salem forsyth county schools;winston-salem/forsyth county schools;;;;;;",
+			"])",
 			"id_query",
 			"add_tag",
 			" != '0'",
@@ -844,14 +862,7 @@
 			"print(number)",
 			" {0,1}",
 			"result_gte",
-			"regex_filter_numbers_gt",
-			"regex_filter_numbers_lt",
-			"result_lt",
-			"result",
-			"count_of_something",
-			"text",
-			"count",
-			"C:/xampp/htdocs"
+			"regex_filter_numbers_gt"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -874,7 +885,7 @@
 	"groups":
 	[
 		{
-			"selected": 4,
+			"selected": 7,
 			"sheets":
 			[
 				{
@@ -902,7 +913,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
@@ -936,7 +947,7 @@
 						"translation.y": 2806.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 16,
+					"stack_index": 17,
 					"type": "text"
 				},
 				{
@@ -966,7 +977,7 @@
 						"translation.y": 1538.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
@@ -993,10 +1004,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 795.0,
+						"translation.y": 344.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 14,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
@@ -1005,15 +1016,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 34676,
+						"buffer_size": 34682,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								32641,
-								32641
+								5210,
+								5210
 							]
 						],
 						"settings":
@@ -1023,10 +1034,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 10685.0,
+						"translation.y": 1167.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
@@ -1054,52 +1065,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
 					"buffer": 6,
-					"file": "corpora/webis-query-speller-corpus.csv",
+					"file": "/C/Users/micro/AppData/Local/Temp/fz3temp-3/get_page.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3864027,
+						"buffer_size": 34682,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2249,
-								2249
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "viewer-framework/viewer/classes/data/Handle_Item.py",
-					"semi_transient": true,
-					"settings":
-					{
-						"buffer_size": 5028,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
+								6697,
+								6630
 							]
 						],
 						"settings":
@@ -1109,27 +1092,57 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 375.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
-					"buffer": 8,
-					"file": "settings/settings_viewer_query_speller.py",
+					"buffer": 7,
+					"file": "viewer-framework/viewer/templates/viewer/documentation.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2312,
+						"buffer_size": 21076,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								539,
-								297
+								19320,
+								19320
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 6737.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "viewer-framework/viewer/views/documentation.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 326,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								223,
+								223
 							]
 						],
 						"settings":
@@ -1137,14 +1150,43 @@
 							"syntax": "Packages/Python/Python.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 492.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
 					"buffer": 9,
+					"file": "settings/settings_viewer_query_speller.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2733,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								522,
+								522
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
 					"file": "viewer-framework/viewer/static/viewer/js/index_functions.js",
 					"semi_transient": false,
 					"settings":
@@ -1170,11 +1212,11 @@
 						"translation.y": 11887.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
-					"buffer": 10,
+					"buffer": 11,
 					"file": "viewer-framework/viewer/static/viewer/js/helper_functions.js",
 					"semi_transient": false,
 					"settings":
@@ -1200,11 +1242,11 @@
 						"translation.y": 7175.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 13,
 					"type": "text"
 				},
 				{
-					"buffer": 11,
+					"buffer": 12,
 					"file": "viewer-framework/viewer/classes/data/Manager_Data.py",
 					"semi_transient": false,
 					"settings":
@@ -1216,8 +1258,8 @@
 						"selection":
 						[
 							[
-								10779,
-								10794
+								3758,
+								3758
 							]
 						],
 						"settings":
@@ -1226,15 +1268,15 @@
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
-						"translation.x": -0.0,
-						"translation.y": 5107.0,
+						"translation.x": 0.0,
+						"translation.y": 1515.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 12,
+					"buffer": 13,
 					"file": "viewer-framework/viewer/templates/viewer/table.html",
 					"semi_transient": false,
 					"settings":
@@ -1260,11 +1302,11 @@
 						"translation.y": 426.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
-					"buffer": 13,
+					"buffer": 14,
 					"file": "viewer-framework/viewer/views/index.py",
 					"semi_transient": false,
 					"settings":
@@ -1290,11 +1332,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
+					"stack_index": 14,
 					"type": "text"
 				},
 				{
-					"buffer": 14,
+					"buffer": 15,
 					"file": "viewer-framework/viewer/static/viewer/js/index.js",
 					"semi_transient": false,
 					"settings":
@@ -1316,15 +1358,15 @@
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
-						"translation.x": -0.0,
+						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
-					"buffer": 15,
+					"buffer": 16,
 					"file": "settings/settings_viewer_test.py",
 					"semi_transient": false,
 					"settings":
@@ -1350,11 +1392,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 17,
+					"stack_index": 18,
 					"type": "text"
 				},
 				{
-					"buffer": 16,
+					"buffer": 17,
 					"file": "viewer-framework/viewer/static/viewer/css/formats.css",
 					"semi_transient": false,
 					"settings":
@@ -1380,11 +1422,11 @@
 						"translation.y": 752.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 15,
+					"stack_index": 16,
 					"type": "text"
 				},
 				{
-					"buffer": 17,
+					"buffer": 18,
 					"file": "viewer-framework/viewer/templatetags/tags_custom.py",
 					"semi_transient": false,
 					"settings":
@@ -1410,11 +1452,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 18,
+					"stack_index": 19,
 					"type": "text"
 				},
 				{
-					"buffer": 18,
+					"buffer": 19,
 					"file": "viewer-framework/viewer/views/shared_code.py",
 					"semi_transient": false,
 					"settings":
@@ -1440,7 +1482,7 @@
 						"translation.y": 4781.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 13,
+					"stack_index": 15,
 					"type": "text"
 				}
 			]
@@ -1523,7 +1565,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 309.0,
+	"side_bar_width": 353.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

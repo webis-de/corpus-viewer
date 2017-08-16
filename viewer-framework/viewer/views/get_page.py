@@ -106,10 +106,6 @@ def get_page(request):
         raise Http404("Corpus does not exist")
 
     id_corpus = get_current_corpus(request)
-
-    print('START TEMPORARY')
-    temporary(id_corpus, request)
-    print('END TEMPORARY')
 ##### load data and apply filters
     list_ids, info_filter_values = get_filtered_data(request)
     # return JsonResponse({})
@@ -139,6 +135,10 @@ def get_page(request):
         return JsonResponse(response)
 ##### page the dataset
     list_ids = sort_by_columns(request, list_ids)
+
+    # print('START TEMPORARY')
+    # temporary(id_corpus, request)
+    # print('END TEMPORARY')
 
     # paginator = Paginator(range(0, get_setting('page_size', request=request))
     paginator = Paginator(list_ids, glob_manager_data.get_setting_for_corpus('page_size', id_corpus))
