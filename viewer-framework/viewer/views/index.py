@@ -7,15 +7,12 @@ from threading import Thread
 
 def index(request):
 ##### set sessions
-    try:
-        set_sessions(request)
-    except:
+    # try:
+    if not set_sessions(request):
         if request.is_ajax():
             raise Http404("Corpus does not exist")
-
         return redirect('dashboard:index')
 
-    print(5)
     id_corpus = get_current_corpus(request)
 
     state_loaded = glob_manager_data.get_state_loaded(id_corpus)

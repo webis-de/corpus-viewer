@@ -100,9 +100,7 @@ def temporary(id_corpus, request):
 def get_page(request):
 ##### handle session entries
     start_total = time.perf_counter()
-    try:
-        set_sessions(request)
-    except:
+    if not set_sessions(request):
         raise Http404("Corpus does not exist")
 
     id_corpus = get_current_corpus(request)

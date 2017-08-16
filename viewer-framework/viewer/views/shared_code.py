@@ -260,6 +260,10 @@ def set_sessions(request):
     glob_manager_data.set_current_corpus(request)
     id_corpus = get_current_corpus(request)
 
+    # check if the corpus is still loaded
+    if not glob_manager_data.check_if_corpus_available(id_corpus):
+        return False
+
     set_session(request, 'is_collapsed_div_filters', default=True)
     set_session(request, 'is_collapsed_div_tags', default=True)
     set_session(request, 'viewer__selected_tags', default=[])
@@ -276,6 +280,8 @@ def set_sessions(request):
     dict_tmp = {obj_filter['data_field']:obj_filter['default_value'] for obj_filter in glob_manager_data.get_setting_for_corpus('filters', id_corpus)}
     dict_tmp.update(request.session[get_current_corpus(request)]['viewer__viewer__filter_custom'])
     request.session[get_current_corpus(request)]['viewer__viewer__filter_custom'] = dict_tmp.copy()
+
+    return True
 
 def set_session(request, key, default):
     sessionkey = 'viewer__'+key

@@ -149,15 +149,23 @@ class Manager_Data:
         except KeyError:
             return None
 
+    def check_if_corpus_available(self, id_corpus):
+        return id_corpus in self.dict_corpora
+
     def get_setting_for_corpus(self, key, id_corpus):
         settings_corpus = self.dict_corpora[id_corpus]['settings']
         if key in settings_corpus:
             return settings_corpus[key]
 
         if key == 'use_cache':
-            return False;
+            return False
         elif key == 'page_size':
-            return 25;
+            return 25
+        elif key == 'filters':
+            return []
+        elif key == 'description':
+            return ''
+
 
         raise ValueError('setting-key \''+key+'\' not found')
 
