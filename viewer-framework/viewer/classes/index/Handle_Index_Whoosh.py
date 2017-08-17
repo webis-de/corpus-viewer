@@ -70,13 +70,13 @@ class Handle_Index_Whoosh(Handle_Index):
         dict_data_fields = self.settings_corpus['data_fields']
 
         dict_document = {}
-        for key, value in item.items():
-            type_data_field = dict_data_fields[key]['type']
+        for key, value in dict_data_fields.items():
+            type_data_field = value['type']
             if type_data_field == 'number':
-                dict_document[key] = value                
+                dict_document[key] = item[key]                
             else:
-                dict_document[key + self.suffix_case_sensitive] = value                
-                dict_document[key + self.suffix_case_insensitive] = value                
+                dict_document[key + self.suffix_case_sensitive] = item[key]                
+                dict_document[key + self.suffix_case_insensitive] = item[key]                
         
         dict_document[self.field_internal_id] = id_intern
 

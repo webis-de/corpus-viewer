@@ -8,6 +8,8 @@ import json
 import traceback
 import sys
 
+import errno, stat
+
 modules = glob.glob('viewer/classes/index/Handle_Index_*.py')
 __all__ = [os.path.basename(f)[:-3] for f in modules]
 dict_handle_indices = {}
@@ -195,15 +197,29 @@ class Manager_Data:
         self.update_cache()
 
     def delete_corpus(self, id_corpus, remove_settings_file=False):
+        # def handleRemoveReadonly(func, path, exc):
+        #     excvalue = exc[1]
+        #     if func in (os.rmdir, os.remove) and excvalue.errno == errno.EACCES:
+        #         os.chmod(path, stat.S_IRWXU| stat.S_IRWXG| stat.S_IRWXO) # 0777
+        #         func(path)
+        #     else:
+        #         raise
+            # shutil.rmtree(path_corpus, ignore_errors=False, onerror=handleRemoveReadonly)
+
         # delete internal format of corpus
         path_corpus = os.path.join(self.path_cache, id_corpus)
-        shutil.rmtree(path_corpus)
+        try:
+            shutil.rmtree(path_corpus)
+        except PermissionError:
+            print('PERMISSION ERROR ON CACHE DELETION')
 
         # delete index 
         try:
             self.dict_corpora[id_corpus]['handle_index'].delete()
         except KeyError:
             print('corpus was not loaded')
+        except PermissionError:
+            print('PERMISSION ERROR ON INDEX DELETION')
 
         # delete data from cache
         del self.dict_corpora[id_corpus]
@@ -263,17 +279,17 @@ class Manager_Data:
                     error_happended = True
                     self.dict_exceptions[id_corpus] = traceback.format_exc(chain=False)
 
-                    if self.debug == True:
-                        print(self.dict_exceptions[id_corpus])
+                    # if self.debug == True:
+                        # print(self.dict_exceptions[id_corpus])
 
-                    self.delete_corpus(id_corpus, False)
+                    # self.delete_corpus(id_corpus, False)
+                self.dict_corpora[id_corpus]['state_loaded'] = self.State_Loaded.NOT_LOADED
 
                 indexing_only = round(float(time.perf_counter()-start_total) * 1000, 2)
 
         if not error_happended:
             handle_index.finish()
 
-            
             print('size of corpus: '+str(self.dict_corpora[id_corpus]['size']))
             print('size of corpus (bytes): '+str(self.dict_corpora[id_corpus]['size_in_bytes']))
             print('')

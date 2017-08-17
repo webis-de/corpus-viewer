@@ -19,6 +19,11 @@
             Number of indexed items: <span id="span_number_of_indexed_items" class="font-weight-bold">{{ number_of_indexed_items|intcomma }}</span>
         </p>
     {% else %}
+        {% if not exception == '' %}
+            <div class="alert alert-danger" role="alert">
+                {{ exception }}
+            </div>
+        {% endif %}
         <p class="lead">
             The corpus has to be indexed. This has to be done once but may take some time.
         </p>
@@ -62,7 +67,8 @@
                 success: function(result) {
                 }
             });
-            location.reload();
+
+            setTimeout(reload, 1000);
         });
 
         // if its currently indexing
@@ -71,6 +77,11 @@
             update_number_of_indexed_items()
         }
     });
+
+    function reload()
+    {
+        location.reload();
+    }
 
     function update_number_of_indexed_items()
     {
@@ -87,6 +98,8 @@
             headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
             data: JSON.stringify(data),
             success: function(result) {
+                console.log(result)
+                return;
                 if(result.state_loaded == 0)
                 {
                     location.reload();

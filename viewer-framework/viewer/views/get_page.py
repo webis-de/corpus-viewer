@@ -95,8 +95,6 @@ def temporary(id_corpus, request):
         }
         add_tag(obj, None, request)
 
-
-
 def get_page(request):
 ##### handle session entries
     start_total = time.perf_counter()

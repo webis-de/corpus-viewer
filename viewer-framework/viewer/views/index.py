@@ -11,6 +11,8 @@ def index(request):
     if not set_sessions(request):
         if request.is_ajax():
             raise Http404("Corpus does not exist")
+
+        # if not get_current_corpus(request) in glob_manager_data.dict_exceptions:
         return redirect('dashboard:index')
 
     id_corpus = get_current_corpus(request)
@@ -24,6 +26,11 @@ def index(request):
             context['number_of_indexed_items'] = glob_manager_data.get_number_of_indexed_items(id_corpus)
         except:
             context['number_of_indexed_items'] = 0
+
+        if id_corpus in glob_manager_data.dict_exceptions:
+            context['exception'] = glob_manager_data.dict_exceptions[id_corpus]
+        else:
+            context['exception'] = ''
 
         context['handle_incides'] = glob_manager_data.get_active_handle_indices()
         context['settings'] = glob_manager_data.get_settings_for_corpus(id_corpus)
