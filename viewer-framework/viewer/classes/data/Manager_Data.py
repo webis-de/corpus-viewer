@@ -279,8 +279,8 @@ class Manager_Data:
                     error_happended = True
                     self.dict_exceptions[id_corpus] = traceback.format_exc(chain=False)
 
-                    # if self.debug == True:
-                        # print(self.dict_exceptions[id_corpus])
+                    if self.debug == True:
+                        print(self.dict_exceptions[id_corpus])
 
                     # self.delete_corpus(id_corpus, False)
                 self.dict_corpora[id_corpus]['state_loaded'] = self.State_Loaded.NOT_LOADED

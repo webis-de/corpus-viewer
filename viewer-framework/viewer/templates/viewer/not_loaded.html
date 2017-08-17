@@ -98,8 +98,11 @@
             headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
             data: JSON.stringify(data),
             success: function(result) {
-                console.log(result)
-                return;
+                if(result.exception_occured == true) 
+                {
+                    reload();
+                } 
+
                 if(result.state_loaded == 0)
                 {
                     location.reload();

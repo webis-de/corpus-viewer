@@ -123,6 +123,11 @@ def get_page(request):
             except:
                 glob_manager_data.reindex_corpus(id_corpus, obj['class_handle_index'])
         elif obj['task'] == 'get_number_of_indexed_items':
+            if id_corpus in glob_manager_data.dict_exceptions:
+                response['exception_occured'] = True
+            else:
+                response['exception_occured'] = False
+
             response['number_of_indexed_items'] = glob_manager_data.get_number_of_indexed_items(obj['id_corpus'])
             response['state_loaded'] = glob_manager_data.get_state_loaded(obj['id_corpus'])
         elif obj['task'] == 'delete_corpus':
