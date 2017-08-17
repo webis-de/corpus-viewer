@@ -21,7 +21,7 @@
     {% else %}
         {% if not exception == '' %}
             <div class="alert alert-danger" role="alert">
-                {{ exception }}
+                {{ exception|prepare_for_html|linebreaksbr }}
             </div>
         {% endif %}
         <p class="lead">
