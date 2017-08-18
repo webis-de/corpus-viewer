@@ -11,5 +11,6 @@ def check_is_loading(context):
 
 @register.filter
 def prepare_for_html(value):
+	value = value.replace('<', '&lt;').replace('>', '&gt;')
 	value = mark_safe("&nbsp;".join(value.split(' ')))
 	return value
