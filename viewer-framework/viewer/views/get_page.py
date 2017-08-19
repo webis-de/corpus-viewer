@@ -131,7 +131,7 @@ def get_page(request):
             response['number_of_indexed_items'] = glob_manager_data.get_number_of_indexed_items(obj['id_corpus'])
             response['state_loaded'] = glob_manager_data.get_state_loaded(obj['id_corpus'])
         elif obj['task'] == 'delete_corpus':
-            glob_manager_data.delete_corpus(id_corpus)
+            glob_manager_data.delete_corpus(id_corpus, obj['keep_settings_file'])
 
         return JsonResponse(response)
 ##### page the dataset

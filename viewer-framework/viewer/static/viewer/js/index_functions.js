@@ -579,7 +579,8 @@ function delete_corpus(modal)
 {
     let data = {}
     data.task = 'delete_corpus'
-    
+    data.keep_settings_file = modal.find('input[name="keep_settings_file"]').prop('checked');
+
     let url_params = refresh_url();
 
     $.ajax({
