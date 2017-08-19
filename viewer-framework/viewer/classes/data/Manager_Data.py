@@ -196,7 +196,7 @@ class Manager_Data:
         self.dict_corpora = dict_tmp
         self.update_cache()
 
-    def delete_corpus(self, id_corpus, remove_settings_file=False):
+    def delete_corpus(self, id_corpus, keep_settings_file=True):
         # def handleRemoveReadonly(func, path, exc):
         #     excvalue = exc[1]
         #     if func in (os.rmdir, os.remove) and excvalue.errno == errno.EACCES:
@@ -225,7 +225,7 @@ class Manager_Data:
         del self.dict_corpora[id_corpus]
         self.update_cache()
 
-        if remove_settings_file:
+        if keep_settings_file:
             # remove/backup settings file
             file = id_corpus + '.py'
             path_settings = os.path.join(self.path_settings, file)
