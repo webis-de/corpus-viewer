@@ -27,9 +27,9 @@ class Manager_Data:
     def __init__(self):
         self.debug = True
         self.dict_exceptions = {}
-        self.path_settings = '../settings'
+        self.path_settings = os.path.join('..', 'settings')
         self.path_backup = 'backup_settings'
-        self.path_cache = '../cache'
+        self.path_cache = os.path.join('..', 'cache')
         self.struct = struct.Struct('<Q L')
         self.length_struct = self.struct.size
         self.dict_corpora = {}
