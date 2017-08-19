@@ -26,6 +26,7 @@ By default the tool uses the pure-Python search-engine [Whoosh](https://pypi.pyt
 * export the whole or parts of the corpus into a ldjson- or csv-file
 
 ## Upcomming Features
+* better support for mobile devices 
 
 ## Known Bugs
 
