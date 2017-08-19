@@ -225,7 +225,7 @@ class Manager_Data:
         del self.dict_corpora[id_corpus]
         self.update_cache()
 
-        if keep_settings_file:
+        if not keep_settings_file:
             # remove/backup settings file
             file = id_corpus + '.py'
             path_settings = os.path.join(self.path_settings, file)

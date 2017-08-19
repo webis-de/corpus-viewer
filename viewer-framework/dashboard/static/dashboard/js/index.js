@@ -1,5 +1,9 @@
 $(document).ready(function()
 {
+    $(document).on('click', '#submit_refresh_corpora', function(event) {
+        refresh_corpora();
+    });
+
     $(document).on('click', 'a', function(event) { 
         event.stopPropagation();
     })
@@ -8,8 +12,8 @@ $(document).ready(function()
         let key = $(this).data('key');
         window.location.href = 'viewer?viewer__current_corpus='+key;
     });
-
   	load_corpora();
+
 });
 
 let glob_template_corpus = `
@@ -63,6 +67,41 @@ function get_html_state_loaded(state)
     }
 }
 
+function update_corpora_cards(result)
+{
+    let wrapper_corpora = $('#wrapper_corpora');
+    
+    wrapper_corpora.html('');
+
+    $.each(result.data.corpora, function(id_corpus, corpus) {
+        wrapper_corpora.append(
+            glob_template_corpus
+                .replace('PLACEHOLDER_ID_CORPUS', id_corpus)
+                .replace('PLACEHOLDER_NAME', corpus.name)
+                .replace('PLACEHOLDER_DESCRIPTION', corpus.description)
+                .replace('PLACEHOLDER_STATE_LOADED', get_html_state_loaded(corpus.state_loaded))
+        );
+    });
+
+    $('[data-toggle="tooltip"]').tooltip();
+}
+
+function refresh_corpora()
+{
+    let data = {};
+    data.task = 'refresh_corpora';
+
+    $.ajax({
+        method: 'POST',
+        contentType: 'application/json',
+        headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+        data: JSON.stringify(data),
+        success: function(result) {
+            update_corpora_cards(result);
+        }
+    });   
+}
+
 function load_corpora() 
 {
 	let data = {};
@@ -74,19 +113,7 @@ function load_corpora()
         headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
         data: JSON.stringify(data),
         success: function(result) {
-            let wrapper_corpora = $('#wrapper_corpora');
-
-            $.each(result.data.corpora, function(id_corpus, corpus) {
-                wrapper_corpora.append(
-                    glob_template_corpus
-                        .replace('PLACEHOLDER_ID_CORPUS', id_corpus)
-                        .replace('PLACEHOLDER_NAME', corpus.name)
-                        .replace('PLACEHOLDER_DESCRIPTION', corpus.description)
-                        .replace('PLACEHOLDER_STATE_LOADED', get_html_state_loaded(corpus.state_loaded))
-                );
-            });
-
-            $('[data-toggle="tooltip"]').tooltip();
+            update_corpora_cards(result);
         }
     });
 
