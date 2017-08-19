@@ -51,16 +51,16 @@
                 </div>
                 <h2 id="link_add_new_corpus">Add a new corpus</h2>
                 <p>
-                    To add a new corpus to the viewer on <a href="{{ url_host }}">{{ name_host }}</a> you'll have to do the following steps:
+                    To add a new corpus to the viewer on <a href="{{ url_host }}">{{ name_host }}</a> or to your own server you'll have to do the following steps:
                     <ol>
-                        <li>Make your corpus accessible to {{ name_host }}</li>
+                        <li>Make your corpus accessible to {{ name_host }} or your own server</li>
                         <li>Create your settings file for your corpus</li>
                         <li>Load your settings file into the server</li>
                     </ol>
                     <h3 id="link_make_corpus_accessible">Make corpus accessible</h3>
                     <p>
                         You'll have to specify the data path to the corpus data in the <a href="#link_create_settings_file">settings file</a>. 
-                        This means that you have to make the corpus accessible to the host, either by directly copying the corpus to {{ name_host }} or by mounting the corpus to {{ name_host }}. 
+                        This means that you have to make the corpus accessible to the host, either by directly copying or by mounting the corpus to {{ name_host }} or your own server. 
                     </p>
 
                     <h3 id="link_create_settings_file">Create settings file</h3>
@@ -69,7 +69,18 @@
                         All these informations are stored in the settings file, written in Python.
                     </p>
                     <p>
-                        Mainly the settings file consists of a python dictionary which has to be called 'DICT_SETTINGS_VIEWER'. The keys specify the names of the settings and the values the corresponding values.
+                        You'll find an example settings file in the <code>settings/</code> directory or by expanding the spoiler below.<br>
+                        <button type="button" class="btn btn-secondary btn-sm" data-toggle="collapse" data-target="#spoiler_example_settigs_file">spoiler</button>
+                    </p>
+                        <div class="collapse" id="spoiler_example_settigs_file">
+                        <pre><code class="python">{{example_setting_file}}</code></pre>
+                        </div>
+                    <p>
+                        Mainly the settings file consists of a python dictionary which has to be called 'DICT_SETTINGS_VIEWER'. The keys specify the names of the settings and the values the corresponding values. 
+                        <div class="alert alert-info">Note that the example settings file contains all available dictionary keys for presentation purporse. Unused or incorrect keys are ignored by the viewer.</div>
+                    </p>
+                    <p>
+                        Try to choose a descriptive name for the settings file. The name has to be unique related to the other settings files in the <code>settings/</code> directory.
                     </p>
                     <h4>Options</h4>
                     <p>
@@ -150,24 +161,9 @@
                                     </p>
                                     <p>
                                         Parameters:<br>
-                                            <code>'metadata'</code>
-                                            This metadata has to be passed to the function you call to add <br>
-                                            <code>'function_add_item'</code>
-                                            Use this for any numeric value<br>
-                                    </p>
-                                    <p>
-                                        This function has to return a list of dictionaries. Each dictionary corresponds to one item in the corpus.
-                                    </p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>use_cache</td>
-                                <td>boolean</td>
-                                <td class="text-success">optional</td>
-                                <td>False</td>
-                                <td>
-                                    <p>
-                                        Determines whether the corpus is cached once loaded or if it's loaded each time a request to the server is made.
+                                            <code>item_handle</code>
+                                            This is the handle you have to use to add items of your corpus to the viewer.<br>
+                                            For this <code>item_handle</code> provides the function <code>add(dict_item)</code> which takes a dictionary with the corresponding fields of your corpus as keys.
                                     </p>
                                 </td>
                             </tr>
@@ -347,7 +343,7 @@ d
                     <p>
                         <ol>
                             <li>Copy the created settings file into the <code>settings/</code>-folder</li>
-                            <li>Click on 'reload setting files' on the dashboard</li>
+                            <li>Click on the 'refresh'-icon in the dashboard</li>
                     </p>
                 </p>
             </div>

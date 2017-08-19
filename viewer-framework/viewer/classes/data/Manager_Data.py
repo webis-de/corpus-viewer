@@ -159,9 +159,7 @@ class Manager_Data:
         if key in settings_corpus:
             return settings_corpus[key]
 
-        if key == 'use_cache':
-            return False
-        elif key == 'page_size':
+        if key == 'page_size':
             return 25
         elif key == 'filters':
             return []
