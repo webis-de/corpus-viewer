@@ -17,7 +17,7 @@ By default the tool uses the pure-Python search-engine [Whoosh](https://pypi.pyt
 3. run `./setup_django.sh` to setup the required Django database tables
 
 ## Quickstart
-1. run 'cd viewer-framework'
+1. run `cd viewer-framework`
 1. run `python manage.py runserver` to start the server _([more](https://docs.djangoproject.com/en/1.10/ref/django-admin/#django-admin-runserver) on how to start a django server)_
 
 ## Supported Features
