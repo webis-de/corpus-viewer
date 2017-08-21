@@ -13,7 +13,8 @@ By default the tool uses the pure-Python search-engine [Whoosh](https://pypi.pyt
 
 ## Installation
 1. run `./setup_virtualenv.sh` to setup the virtual environment and to install Django and Whoosh
-2. run `./setup_django.sh` to setup the required Django database tables
+2. run `source venv_viewer/bin/activate` to active the virtual environment
+3. run `./setup_django.sh` to setup the required Django database tables
 
 ## Quickstart
 1. run 'cd viewer-framework'
