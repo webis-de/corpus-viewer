@@ -9,14 +9,15 @@ By default the tool uses the pure-Python search-engine [Whoosh](https://pypi.pyt
 
 ## Requirements
 * Python 3.x _(tested with version 3.5)_
-* Pip _(tested with version 9.0.1)_
+* virtualenv
 
 ## Installation
-1. run `sudo ./install.sh` to install Django and Whoosh
+1. run `./setup_virtualenv.sh` to setup the virtual environment and to install Django and Whoosh
 2. run `./setup_django.sh` to setup the required Django database tables
 
 ## Quickstart
-1. run `python3  viewer-framework/manage.py runserver` to start the server _([more](https://docs.djangoproject.com/en/1.10/ref/django-admin/#django-admin-runserver) on how to start a django server)_
+1. run 'cd viewer-framework'
+1. run `python manage.py runserver` to start the server _([more](https://docs.djangoproject.com/en/1.10/ref/django-admin/#django-admin-runserver) on how to start a django server)_
 
 ## Supported Features
 * loading of arbitrary corpora
