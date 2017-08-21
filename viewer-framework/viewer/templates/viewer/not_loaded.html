@@ -19,7 +19,7 @@
             Number of indexed items: <span id="span_number_of_indexed_items" class="font-weight-bold">{{ number_of_indexed_items|intcomma }}</span>
         </p>
     {% else %}
-        {% if not exception == '' %}
+        {% if exception != None %}
             <div class="alert alert-danger" role="alert">
                 {{ exception|prepare_for_html|linebreaksbr }}
             </div>

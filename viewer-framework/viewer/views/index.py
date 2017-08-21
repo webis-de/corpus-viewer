@@ -27,10 +27,10 @@ def index(request):
         except:
             context['number_of_indexed_items'] = 0
 
-        if id_corpus in glob_manager_data.dict_exceptions:
-            context['exception'] = glob_manager_data.dict_exceptions[id_corpus]
-        else:
-            context['exception'] = ''
+        # if glob_manager_data.has_exception_for_corpus(id_corpus):
+        context['exception'] = glob_manager_data.pop_exception(id_corpus)
+        # else:
+            # context['exception'] = ''
 
         context['handle_incides'] = glob_manager_data.get_active_handle_indices()
         context['settings'] = glob_manager_data.get_settings_for_corpus(id_corpus)

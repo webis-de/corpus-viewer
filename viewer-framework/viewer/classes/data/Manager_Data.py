@@ -146,10 +146,11 @@ class Manager_Data:
     def pop_exception(self, id_corpus):
         try:
             exception = self.dict_exceptions[id_corpus]
-            del self.dict_exceptions[id_corpus]
-            return exception
         except KeyError:
             return None
+
+        del self.dict_exceptions[id_corpus]
+        return exception
 
     def check_if_corpus_available(self, id_corpus):
         return id_corpus in self.dict_corpora
@@ -194,6 +195,23 @@ class Manager_Data:
         self.dict_corpora = dict_tmp
         self.update_cache()
 
+    # delete internal format of corpus
+    def delete_cache_for_corpus(self, id_corpus):
+        path_corpus = os.path.join(self.path_cache, id_corpus)
+        try:
+            shutil.rmtree(path_corpus)
+        except PermissionError:
+            print('PERMISSION ERROR ON CACHE DELETION')
+
+    def delete_index_for_corpus(self, id_corpus):
+        # delete index 
+        try:
+            self.dict_corpora[id_corpus]['handle_index'].delete()
+        except KeyError:
+            print('corpus was not loaded')
+        except PermissionError:
+            print('PERMISSION ERROR ON INDEX DELETION')
+
     def delete_corpus(self, id_corpus, keep_settings_file=True):
         # def handleRemoveReadonly(func, path, exc):
         #     excvalue = exc[1]
@@ -204,20 +222,9 @@ class Manager_Data:
         #         raise
             # shutil.rmtree(path_corpus, ignore_errors=False, onerror=handleRemoveReadonly)
 
-        # delete internal format of corpus
-        path_corpus = os.path.join(self.path_cache, id_corpus)
-        try:
-            shutil.rmtree(path_corpus)
-        except PermissionError:
-            print('PERMISSION ERROR ON CACHE DELETION')
+        self.delete_cache_for_corpus(id_corpus)
 
-        # delete index 
-        try:
-            self.dict_corpora[id_corpus]['handle_index'].delete()
-        except KeyError:
-            print('corpus was not loaded')
-        except PermissionError:
-            print('PERMISSION ERROR ON INDEX DELETION')
+        self.delete_index_for_corpus(id_corpus)
 
         # delete data from cache
         del self.dict_corpora[id_corpus]
@@ -281,6 +288,12 @@ class Manager_Data:
                         print(self.dict_exceptions[id_corpus])
 
                     # self.delete_corpus(id_corpus, False)
+                    self.delete_cache_for_corpus(id_corpus)
+                    self.delete_index_for_corpus(id_corpus)
+
+                    self.dict_corpora[id_corpus]['state_loaded'] = self.State_Loaded.NOT_LOADED
+                    self.update_cache()
+
                 self.dict_corpora[id_corpus]['state_loaded'] = self.State_Loaded.NOT_LOADED
 
                 indexing_only = round(float(time.perf_counter()-start_total) * 1000, 2)
