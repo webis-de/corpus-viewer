@@ -1,43 +1,10 @@
 {% load staticfiles %}
-<!DOCTYPE html>
-<html>
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <link rel="stylesheet" href="{% static 'viewer/css/bootstrap.css' %}">
-    <link rel="stylesheet" href="{% static 'viewer/css/font-awesome.min.css' %}">
+{% include "viewer/header_pure.html" %}
+<body data-spy="scroll" data-target="#navigationtest">
+{% include "viewer/header_navbar.html" %}
     <link rel="stylesheet" href="{% static 'viewer/css/formats_documentation.css' %}">
-    <!-- <link rel="stylesheet" href="{% static 'viewer/css/default.css' %}"> -->
     <link rel="stylesheet" href="{% static 'viewer/css/monokai-sublime.css' %}">
     <link rel="stylesheet" href="{% static 'dashboard/css/formats.css' %}">
-    <!-- Bootstrap CSS -->
-    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous"> -->
-  </head>
-<body data-spy="scroll" data-target="#navigationtest">
-    <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
-        <div class="container">
-            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <a class="navbar-brand" href="{% url 'dashboard:index' %}">Corpus-Viewer</a>
-
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'viewer:documentation' %}">Documentation</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'dashboard:index' %}">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'viewer:index' %}">Viewer</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
     <div class="container-fluid">
         <div class="row">
             <div class="col">
@@ -371,7 +338,8 @@
         </div>
 
     <script src="{% static 'viewer/js/jquery-3.1.1.min.js' %}"></script>
-    <script src="{% static 'viewer/js/tether.js' %}"></script>
+    <!-- <script src="{% static 'viewer/js/tether.js' %}"></script> -->
+    <script src="{% static 'viewer/js/popper.js' %}"></script>
     <script src="{% static 'viewer/js/bootstrap.js' %}"></script>
     <script src="{% static 'viewer/js/helper_functions.js' %}"></script>
     <script src="{% static 'viewer/js/tags.js' %}"></script>

@@ -20,10 +20,10 @@ let glob_template_corpus = `
     <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
         <div class="card card_corpus" data-key="PLACEHOLDER_ID_CORPUS">
             <h3 class="card-header">
-                <span>PLACEHOLDER_NAME</span>
+                PLACEHOLDER_NAME
                 PLACEHOLDER_STATE_LOADED
             </h3>                
-            <div class="card-block">
+            <div class="card-body">
                 <p class="card-text">
                     PLACEHOLDER_DESCRIPTION
                 </p>
