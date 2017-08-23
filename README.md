@@ -27,7 +27,7 @@ By default the tool uses the pure-Python search-engine [Whoosh](https://pypi.pyt
 * multiple convenient ways to assign tags to your corpus items
 * export the whole or parts of the corpus into a ldjson- or csv-file
 
-## Upcomming Features
+## Upcoming Features
 * (better) support for mobile devices 
 * configurable item view with web components
 
