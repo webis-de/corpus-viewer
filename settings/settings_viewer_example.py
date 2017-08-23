@@ -31,11 +31,11 @@ DICT_SETTINGS_VIEWER = {
             'display_name': 'ID'
         },
         'some_short_text': {
-            'type': 'text',
+            'type': 'string',
             'display_name': 'Text'
         },
         'some_longer_text': {
-            'type': 'string',
+            'type': 'text',
             'display_name': 'String'
         }
     },
@@ -48,19 +48,19 @@ DICT_SETTINGS_VIEWER = {
         {
             'data_field': 'some_longer_text',
             'description': 'Text',
-            'placeholder': 'Text Input',
+            'placeholder': 'Text input',
             'default_value': '',
         },
         {
             'data_field': 'some_short_text',
             'description': 'String',
-            'placeholder': 'String Input',
+            'placeholder': 'String input',
             'default_value': '',
         },
         {
             'data_field': 'id',
             'description': 'Id',
-            'placeholder': 'Count Input',
+            'placeholder': 'Count input',
             'default_value': '',
         },
     ],
