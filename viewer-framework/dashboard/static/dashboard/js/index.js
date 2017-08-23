@@ -1,6 +1,7 @@
 $(document).ready(function()
 {
     $(document).on('click', '#submit_refresh_corpora', function(event) {
+        $('#submit_refresh_corpora').blur();
         refresh_corpora();
     });
 
@@ -8,9 +9,20 @@ $(document).ready(function()
         event.stopPropagation();
     })
 
-    $(document).on('click', '.card', function() { 
+    $(document).on('click auxclick', '.card', function(event) { 
         let key = $(this).data('key');
-        window.location.href = 'viewer?viewer__current_corpus='+key;
+
+        const url = 'viewer?viewer__current_corpus='+key;
+
+        switch(event.which)
+        {
+            case 1:
+                window.location.href = url;
+                break;
+            case 2:
+                window.open(url);
+                break;
+        }
     });
   	load_corpora();
 
