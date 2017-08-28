@@ -132,7 +132,7 @@ function create_filter_active_number(value, data_field, info_filter_values)
 
 function update_info_selected_items()
 {
-    $('#info_selected_items span').text(glob_selected_items.length)
+    $('#info_selected_items span').text(Object.keys(glob_selected_items).length)
 }
 
 function update_checkbox_select_all(checkbox_class, checkbox_id)
@@ -383,11 +383,7 @@ function update_ui(info_filter_values)
     $('.input_select_item').each(function(index, element) {
         const elem = $(element)
 
-        let obj_tmp = {}
-        for (var i = 0; i < glob_selected_items.length; i++) {
-            obj_tmp[glob_selected_items[i]] = glob_selected_items[i];
-        }
-        if(elem.data('id_item') in obj_tmp)
+        if(glob_selected_items.hasOwnProperty(elem.data('id_item') + '-' + elem.data('id_item_internal')))
         {
             elem.prop('checked', true)
             $('.row_viewer__item[data-id_item="'+elem.data('id_item')+'"]').addClass('table-info');

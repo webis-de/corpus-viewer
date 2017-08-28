@@ -272,14 +272,18 @@ function handle_select_item(input)
 
     if(glob_mode_add_tag.status == 'inactive')
     {
+        const obj_tmp = {'id_item': id_item, 'id_item_internal': id_item_internal};
+        const obj_tmp_key = id_item + '-' + id_item_internal
+
         if(input.prop('checked'))
         {
-            const obj_tmp = {'id_item': id_item, 'id_item_internal': id_item_internal};
-            glob_selected_items.push(obj_tmp);
+            glob_selected_items[obj_tmp_key] = obj_tmp;
+
             $('.row_viewer__item[data-id_item="'+id_item+'"]').addClass('table-info');
         } else {
             $('.row_viewer__item[data-id_item="'+id_item+'"]').removeClass('table-info');
-            remove_element_from_array(glob_selected_items, obj_tmp)
+
+            delete glob_selected_items[obj_tmp_key]            
         }
         update_checkbox_select_all('input_select_item', 'input_select_all_items')
         update_info_selected_items()
@@ -296,7 +300,7 @@ function handle_select_item(input)
 function handle_deselect_all_items(event)
 {
     event.preventDefault()
-    glob_selected_items = []
+    glob_selected_items = {}
     $('.input_select_item').prop('checked', false);
     $('.row_viewer__item').removeClass('table-info');
     update_checkbox_select_all('input_select_item', 'input_select_all_items')
@@ -430,7 +434,7 @@ function handle_show_modal(event, modal)
             let count = 1
             if(modal.data('id_item') == undefined)
             {
-                count = glob_selected_items.length
+                count = Object.keys(glob_selected_items).length
             }
             $('#info_count_selected_items').text(count)
             $('#input_name_new_tag').val('');
@@ -614,7 +618,10 @@ function add_tag(modal)
         // if the modal was triggered by the button
         if(id_item == undefined)
         {
-            data.ids = glob_selected_items;
+            data.ids = []
+            $.each(glob_selected_items, function(key, value) {
+                data.ids.push(value)
+            });
         // if the modal was triggered by a link
         } else {
             data.ids = [{'id_item': id_item, 'id_item_internal': id_item_internal}]
@@ -622,7 +629,6 @@ function add_tag(modal)
     }
 
     let url_params = refresh_url();
-
     $.ajax({
         url: 'get_page?'+url_params,
         method: 'POST',
@@ -645,8 +651,8 @@ function add_tag(modal)
                         $(element).addClass('tag_'+result.data.tag.id)
                     })
                 } else {
-                    $.each(data.ids, function(index, id_item) {
-                        $('#table_entities tr[data-id_item="'+id_item+'"] .wrapper_tags').addClass('tag_'+result.data.tag.id)
+                    $.each(data.ids, function(index, value) {
+                        $('#table_entities tr[data-id_item="'+value['id_item']+'"] .wrapper_tags').addClass('tag_'+result.data.tag.id)
                     })
                     add_tag_marker(result.data.tag.id, result.data.tag.name, result.data.tag.color)
                 }  
@@ -674,7 +680,7 @@ function handle_change_add_to_all_filtered_items(input)
     } else {
         if($('#modal_add_tag').data('id_item') == undefined)
         {
-            count = glob_selected_items.length
+            count = Object.keys(glob_selected_items).length
         } else {
             count = 1
         }
