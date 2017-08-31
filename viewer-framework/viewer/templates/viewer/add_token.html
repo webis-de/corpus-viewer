@@ -1,0 +1,28 @@
+{% include "viewer/header.html" %}
+{% load staticfiles %}
+
+<div class="row">
+    <div class="col">
+        <h1>Enter token</h1>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="input_secret_token">Secret token</label>
+                <input type="text" class="form-control" name="secret_token" id="input_secret_token">
+            </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
+
+<script src="{% static 'viewer/js/jquery-3.1.1.min.js' %}"></script>
+<!-- <script src="{% static 'viewer/js/tether.js' %}"></script> -->
+<script src="{% static 'viewer/js/popper.js' %}"></script>
+<script src="{% static 'viewer/js/bootstrap.js' %}"></script>
+<script src="{% static 'viewer/js/helper_functions.js' %}"></script>
+<!-- <link rel="stylesheet" type="text/css" href="{% static 'viewer/css/formats.css' %}" /> -->
+{% include "viewer/footer.html" %}
