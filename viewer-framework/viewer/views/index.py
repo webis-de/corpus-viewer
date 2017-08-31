@@ -9,6 +9,9 @@ def index(request):
 ##### set sessions
     # try:
     if not set_sessions(request):
+        # exception = glob_manager_data.pop_exception(get_current_corpus(request))
+        # print(exception)
+
         if request.is_ajax():
             raise Http404("Corpus does not exist")
 
@@ -16,6 +19,18 @@ def index(request):
         return redirect('dashboard:index')
 
     id_corpus = get_current_corpus(request)
+
+    if glob_manager_data.has_corpus_secret_token(id_corpus):
+        try:
+            secret_token = request.session[id_corpus]['viewer__secret_token']
+        except KeyError:
+            secret_token = None
+        # secret_token = request.GET.get('secret_token')
+        if not glob_manager_data.is_secret_token_valid(id_corpus, secret_token):
+            # if request.is_ajax():
+            #     raise Http404("Corpus does not exist")
+            return redirect('viewer:add_token', id_corpus=id_corpus)           
+
 
     state_loaded = glob_manager_data.get_state_loaded(id_corpus)
     if state_loaded != glob_manager_data.State_Loaded.LOADED:

@@ -64,4 +64,5 @@ DICT_SETTINGS_VIEWER = {
             'default_value': '',
         },
     ],
+    'secret_token': 'test'
 }

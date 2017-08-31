@@ -53,22 +53,42 @@
     $(document).ready(function()
     {
         $(document).on('click', '#submit_index_corpus', function(e) { 
-            let data = {};
-            data.task = 'reindex_corpus';
-            data.class_handle_index = $('#input_handle_index').val();
-            data.id_corpus = $('#data_id_corpus').data('id_corpus');
+            let data_reload_settings = {};
+            data_reload_settings.task = 'reload_settings';
 
             $.ajax({
                 url: 'get_page?',
                 method: 'POST',
                 contentType: 'application/json',
                 headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
-                data: JSON.stringify(data),
+                data: JSON.stringify(data_reload_settings),
                 success: function(result) {
+                    console.log();
+                    if(result.success == false)
+                    {
+                        reload();
+                    } else {
+                        let data = {};
+                        data.task = 'reindex_corpus';
+                        data.class_handle_index = $('#input_handle_index').val();
+                        data.id_corpus = $('#data_id_corpus').data('id_corpus');
+
+                        $.ajax({
+                            url: 'get_page?',
+                            method: 'POST',
+                            contentType: 'application/json',
+                            headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+                            data: JSON.stringify(data),
+                            success: function(result) {
+                            }
+                        });
+
+                        setTimeout(reload, 1000);
+                    }
                 }
             });
 
-            setTimeout(reload, 1000);
+
         });
 
         // if its currently indexing

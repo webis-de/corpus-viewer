@@ -400,3 +400,8 @@ function error_corpus_not_exists()
 {
     location.reload();
 }
+
+function reload()
+{
+    location.reload();
+}

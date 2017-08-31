@@ -102,6 +102,14 @@ def get_page(request):
         raise Http404("Corpus does not exist")
 
     id_corpus = get_current_corpus(request)
+
+    if glob_manager_data.has_corpus_secret_token(id_corpus):
+        try:
+            secret_token = request.session[id_corpus]['viewer__secret_token']
+        except KeyError:
+            secret_token = None
+        if not glob_manager_data.is_secret_token_valid(id_corpus, secret_token):
+            return redirect('viewer:add_token')           
 ##### load data and apply filters
     list_ids, info_filter_values = get_filtered_data(request)
     # return JsonResponse({})
@@ -116,7 +124,10 @@ def get_page(request):
         elif obj['task'] == 'export_data':
             response = export_data(obj, data, request)
         elif obj['task'] == 'reload_settings':
-            glob_manager_data.reload_settings(id_corpus)
+            if glob_manager_data.reload_settings(id_corpus) == None:
+                response['success'] = False
+            else:
+                response['success'] = True
         elif obj['task'] == 'reindex_corpus':
             try:
                 glob_manager_data.reindex_corpus(obj['id_corpus'], obj['class_handle_index'])

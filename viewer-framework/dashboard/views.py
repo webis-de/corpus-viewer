@@ -40,10 +40,13 @@ def get_corpora():
         settings_total = glob_manager_data.get_settings_for_corpus(id_corpus)
         settings = {key: settings_total[key] for key in list_keys}
         settings['state_loaded'] = glob_manager_data.get_state_loaded(id_corpus)
+        settings['has_secret_token'] = glob_manager_data.has_corpus_secret_token(id_corpus)
         dict_ordered[id_corpus] = settings
 
     # print(dict_ordered)
     response['corpora'] = dict_ordered
+
+    response['corpora_with_exceptions'] = glob_manager_data.get_corpora_with_exceptions()
 
     return response
 

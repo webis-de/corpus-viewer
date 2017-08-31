@@ -550,7 +550,7 @@ function reindex_corpus(modal)
             error_corpus_not_exists();
         }
     })
-    location.reload();
+    setTimeout(reload, 1000);
 }
 
 function handle_show_modal_reindex_corpus(e, modal)
@@ -636,7 +636,6 @@ function add_tag(modal)
         headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
         data: JSON.stringify(data),
         success: function(result) {
-
             if(glob_trigger_modal == 'mode_add_tag')
             {
                 let button = $('button_start_mode_add_tag');

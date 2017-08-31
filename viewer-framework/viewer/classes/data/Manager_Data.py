@@ -39,14 +39,15 @@ class Manager_Data:
     def get_default_settings(self):
         # singleton behaviour
         try:
-            return self.dict_default_settings
+            return self.dict_default_settings.copy()
         except AttributeError:
             self.dict_default_settings = {
                 'size_in_bytes': 0, 
                 'size': 0, 
-                'state_loaded': self.State_Loaded.NOT_LOADED
+                'state_loaded': self.State_Loaded.NOT_LOADED,
+                'exception': None
             }
-            return self.dict_default_settings
+            return self.dict_default_settings.copy()
 
     def init_data(self):
         self.create_paths_if_necessary()
@@ -54,7 +55,12 @@ class Manager_Data:
         for file in os.listdir(self.path_settings):
             id_corpus = file[:-3]
             self.dict_corpora[id_corpus] =  {}
-            self.dict_corpora[id_corpus]['settings'] = self.load_corpus_from_file(file)
+            try:
+                self.dict_corpora[id_corpus]['settings'] = self.load_corpus_from_file(file)
+                self.dict_corpora[id_corpus]['exception'] = None
+            except SyntaxError as err:
+                self.dict_corpora[id_corpus]['exception'] = err.lineno
+                self.dict_corpora[id_corpus]['settings'] = {}
 
         # get the previously cached data 
         dict_corpora_cached = cache.get('metadata_corpora')
@@ -86,16 +92,20 @@ class Manager_Data:
             print('loaded metadata for {} corpora'.format(len(self.dict_corpora)))
 
     def get_ids_corpora(self, sorted_by=None):
+        list_ids_corpora = [key for key in self.dict_corpora.keys() if self.dict_corpora[key]['exception'] == None]
+        print(list_ids_corpora)
+
         if sorted_by == None:
-            return self.dict_corpora.keys()
+            return list_ids_corpora
         elif sorted_by == 'name':
-            return sorted(self.dict_corpora.keys(), key=lambda id_corpus: self.dict_corpora[id_corpus]['settings']['name'])
+            return sorted(list_ids_corpora, key=lambda id_corpus: self.dict_corpora[id_corpus]['settings']['name'])
 
     def load_corpus_from_file(self, file):
         with open(os.path.join(self.path_settings, file), 'r') as f:
-            compiled = compile(f.read(), '<string>', 'exec')
             global_env = {}
             local_env = {}
+
+            compiled = compile(f.read(), '<string>', 'exec')
             exec(compiled, global_env, local_env)
 
             if self.debug == True:
@@ -144,16 +154,27 @@ class Manager_Data:
                     raise('NO CORPUS FOUND')
 
     def pop_exception(self, id_corpus):
-        try:
-            exception = self.dict_exceptions[id_corpus]
-        except KeyError:
-            return None
+        exception = self.dict_corpora[id_corpus]['exception']
+        self.dict_corpora[id_corpus]['exception'] = None
 
-        del self.dict_exceptions[id_corpus]
         return exception
 
     def check_if_corpus_available(self, id_corpus):
-        return id_corpus in self.dict_corpora
+        is_known = id_corpus in self.dict_corpora
+        if not is_known:
+            return False
+
+        has_exception = self.dict_corpora[id_corpus]['exception']
+        if has_exception:
+            return False
+
+        return True
+
+    def has_corpus_secret_token(self, id_corpus):
+        return self.get_setting_for_corpus('secret_token', id_corpus) != None
+
+    def is_secret_token_valid(self, id_corpus, secret_token):
+        return self.get_setting_for_corpus('secret_token', id_corpus) == secret_token
 
     def get_setting_for_corpus(self, key, id_corpus):
         settings_corpus = self.dict_corpora[id_corpus]['settings']
@@ -166,6 +187,8 @@ class Manager_Data:
             return []
         elif key == 'description':
             return ''
+        elif key == 'secret_token':
+            return None
 
 
         raise ValueError('setting-key \''+key+'\' not found')
@@ -175,26 +198,65 @@ class Manager_Data:
 
     def reload_settings(self, id_corpus):
         file = id_corpus + '.py'
-        settings = self.load_corpus_from_file(file)
-        self.dict_corpora[id_corpus]['settings'] = settings
+        settings = None
+        
+        try:
+            settings = self.load_corpus_from_file(file)
+            self.dict_corpora[id_corpus]['settings'] = settings
+            self.dict_corpora[id_corpus]['exception'] = None
+        except SyntaxError as err:
+            self.dict_corpora[id_corpus]['exception'] = err.lineno
+            self.dict_corpora[id_corpus]['settings'] = {}
 
         return settings
 
     def check_for_new_corpora(self):
         dict_tmp = {}
 
+        # if len(self.get_corpora_with_exceptions()) > 0:
         for file in os.listdir(self.path_settings):
             id_corpus = file[:-3]
 
             try:
                 dict_tmp[id_corpus] = self.dict_corpora[id_corpus]
             except KeyError:
-                dict_tmp[id_corpus] = {'size_in_bytes': 0, 'size': 0, 'state_loaded': self.State_Loaded.NOT_LOADED}
+                dict_tmp[id_corpus] = self.get_default_settings()
+
+            try:
                 dict_tmp[id_corpus]['settings'] = self.load_corpus_from_file(file)
+                dict_tmp[id_corpus]['exception'] = None
+            except SyntaxError as err:
+                dict_tmp[id_corpus]['exception'] = err.lineno
+                dict_tmp[id_corpus]['settings'] = {}
+        # else:
+        #     for file in os.listdir(self.path_settings):
+        #         id_corpus = file[:-3]
+
+        #         try:
+        #             dict_tmp[id_corpus] = self.dict_corpora[id_corpus]
+        #         except KeyError:
+        #             dict_tmp[id_corpus] = self.get_default_settings()
+        #             try:
+        #                 dict_tmp[id_corpus]['settings'] = self.load_corpus_from_file(file)
+        #             except SyntaxError:
+        #                 self.dict_corpora[id_corpus]['exception'] = traceback.format_exc(chain=False)
+
+        
 
         self.dict_corpora = dict_tmp
+        for id_corpus, value in self.dict_corpora.items():
+            print(value.keys())
+
         self.update_cache()
 
+    def get_corpora_with_exceptions(self):
+        list_ids_corpora = [id_corpus for id_corpus in self.dict_corpora.keys() if self.dict_corpora[id_corpus]['exception'] != None]
+        dict_corpora_with_exceptions = {}
+        
+        for id_corpus in list_ids_corpora:
+            dict_corpora_with_exceptions[id_corpus] = self.dict_corpora[id_corpus]['exception']
+
+        return dict_corpora_with_exceptions
     # delete internal format of corpus
     def delete_cache_for_corpus(self, id_corpus):
         path_corpus = os.path.join(self.path_cache, id_corpus)
@@ -241,7 +303,7 @@ class Manager_Data:
         return self.dict_corpora[id_corpus]['size']
 
     def reindex_corpus(self, id_corpus, class_handle_index):
-        settings_corpus = self.reload_settings(id_corpus)
+        settings_corpus = self.get_settings_for_corpus(id_corpus)
         self.index_corpus(id_corpus, settings_corpus, class_handle_index)
 
     def get_handle_index(self, id_corpus):
@@ -282,10 +344,10 @@ class Manager_Data:
                     settings_corpus['load_data_function'](obj_handle_item)
                 except Exception as e:
                     error_happended = True
-                    self.dict_exceptions[id_corpus] = traceback.format_exc(chain=False)
+                    self.dict_corpora[id_corpus]['exception'] = traceback.format_exc(chain=False)
 
                     if self.debug == True:
-                        print(self.dict_exceptions[id_corpus])
+                        print(self.dict_corpora[id_corpus]['exception'])
 
                     # self.delete_corpus(id_corpus, False)
                     self.delete_cache_for_corpus(id_corpus)

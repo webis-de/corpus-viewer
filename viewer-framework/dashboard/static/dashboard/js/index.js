@@ -32,6 +32,7 @@ let glob_template_corpus = `
     <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
         <div class="card card_corpus" data-key="PLACEHOLDER_ID_CORPUS">
             <h3 class="card-header">
+                PLACEHOLDER_LOCKED
                 PLACEHOLDER_NAME
                 PLACEHOLDER_STATE_LOADED
             </h3>                
@@ -53,6 +54,11 @@ let glob_template_state_loaded = `
             <i class="fa PLACEHOLDER_ICON fa-stack-1x" style="top: -1px;"></i>
         </span>
     </span>`
+
+let glob_template_alert_exception = `
+    <div class="alert alert-danger" role="alert">
+        The file <b>PLACEHOLDER_FILE</b> has incorrect syntax at line PLACEHOLDER_EXCEPTION!<br>
+    </div>`
 
 function get_html_state_loaded(state) 
 {
@@ -79,23 +85,52 @@ function get_html_state_loaded(state)
     }
 }
 
-function update_corpora_cards(result)
+function get_html_locked(has_secret_token)
 {
-    let wrapper_corpora = $('#wrapper_corpora');
+    if(has_secret_token)
+    {
+        return '<i class="fa fa-lock" aria-hidden="true"></i>'
+    }
+    else
+    {
+        return ''
+    }
+}
+
+function update_corpora_cards(corpora)
+{
+    const wrapper_corpora = $('#wrapper_corpora');
     
     wrapper_corpora.html('');
 
-    $.each(result.data.corpora, function(id_corpus, corpus) {
+    $.each(corpora, function(id_corpus, corpus) {
         wrapper_corpora.append(
             glob_template_corpus
                 .replace('PLACEHOLDER_ID_CORPUS', id_corpus)
                 .replace('PLACEHOLDER_NAME', corpus.name)
                 .replace('PLACEHOLDER_DESCRIPTION', corpus.description)
                 .replace('PLACEHOLDER_STATE_LOADED', get_html_state_loaded(corpus.state_loaded))
+                .replace('PLACEHOLDER_LOCKED', get_html_locked(corpus.has_secret_token))
         );
     });
 
     $('[data-toggle="tooltip"]').tooltip();
+}
+
+function update_corpora_with_exceptions(corpora)
+{
+    const wrapper_corpora = $('#wrapper_corpora_with_exceptions')
+
+    wrapper_corpora.html('');
+    
+    $.each(corpora, function(id_corpus, exception) {
+        let exception_processed = exception;
+        // let exception_processed = exception.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/ /g, '&nbsp;').replace(/\n/g, '<br>');
+        wrapper_corpora.append(glob_template_alert_exception
+            .replace('PLACEHOLDER_FILE', id_corpus+'.py')
+            .replace('PLACEHOLDER_EXCEPTION', exception_processed)
+        );
+    });
 }
 
 function refresh_corpora()
@@ -109,7 +144,8 @@ function refresh_corpora()
         headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
         data: JSON.stringify(data),
         success: function(result) {
-            update_corpora_cards(result);
+            update_corpora_cards(result.data.corpora);
+            update_corpora_with_exceptions(result.data.corpora_with_exceptions);
         }
     });   
 }
@@ -125,7 +161,8 @@ function load_corpora()
         headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
         data: JSON.stringify(data),
         success: function(result) {
-            update_corpora_cards(result);
+            update_corpora_cards(result.data.corpora);
+            update_corpora_with_exceptions(result.data.corpora_with_exceptions);
         }
     });
 
