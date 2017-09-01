@@ -373,6 +373,7 @@ function update_ui(info_filter_values)
     });
 
     // reset the custom filters
+    console.log(glob_filter_custom)
     $.each(glob_filter_custom, function(key, value) {
         $('.viewer__column_filter_active[data-data_field="'+ key +'"]').html('');
         $.each(value, function(index, element) {

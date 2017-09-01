@@ -145,7 +145,6 @@ def get_tag_recommendations(request, obj):
     return array_tag_recommendations
 
 def get_tag_filter_active(id_corpus, list_tags):
-    print(list_tags)
     dict_tags = {}
     queryset_tags = m_Tag.objects.filter(name__in=list_tags, key_corpus=id_corpus)
     for tag in queryset_tags:

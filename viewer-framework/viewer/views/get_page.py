@@ -244,7 +244,8 @@ def get_filtered_data(request):
 
     dict_filters = get_filters_if_not_empty(request, id_corpus)
     if dict_filters == None:
-            return glob_manager_data.get_all_ids_for_corpus(id_corpus, glob_manager_data.get_settings_for_corpus(id_corpus)), info_filter_values
+        # print('######### ALL IDS')    
+        return glob_manager_data.get_all_ids_for_corpus(id_corpus, glob_manager_data.get_settings_for_corpus(id_corpus)), info_filter_values
     else:
         bytes_dict_filters = json.dumps(dict_filters, sort_keys=True).encode()
         hash_custom = hashlib.sha1(bytes_dict_filters).hexdigest()
@@ -252,9 +253,12 @@ def get_filtered_data(request):
         try:
             # checks if the hash corresponds to the last hash
             if hash_custom == request.session[id_corpus]['viewer__last_hash']:
+                # print('######### LAST RESULT')    
                 return request.session[id_corpus]['viewer__last_result']
         except:
             pass
+    
+    # print('######### NEW RESULT')    
     # print(hash_customs)
     list_data = None
     #
@@ -469,8 +473,8 @@ def filter_data(request, obj_filter):
     return list_data, info_values, skipped
 
 def get_filters_if_not_empty(request, id_corpus):
-    dict_filters = request.session[id_corpus]['viewer__viewer__filter_custom']
-    dict_filters['viewer__filter_tags'] = request.session[id_corpus]['viewer__viewer__filter_tags']
+    dict_filters = request.session[id_corpus]['viewer__viewer__filter_custom'].copy()
+    dict_filters['viewer__filter_tags'] = request.session[id_corpus]['viewer__viewer__filter_tags'].copy()
 
     is_empty = True
     for values in dict_filters.values():
@@ -733,11 +737,11 @@ def add_tags(data, request):
 
     if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) != 'database':
         list_ids = [item[glob_manager_data.get_setting_for_corpus('id', id_corpus)] for item in data]
-        print(list_ids)
+        # print(list_ids)
         db_obj_entities = m_Entity.objects.filter(id_item__in=list_ids, key_corpus=id_corpus).prefetch_related('viewer_tags')
-        print(db_obj_entities)
+        # print(db_obj_entities)
         dict_entities = {entity.id_item: entity for entity in db_obj_entities}
-        print(dict_entities)
+        # print(dict_entities)
         for item in data:
             try:
                 id_item = str(item[glob_manager_data.get_setting_for_corpus('id', id_corpus)])

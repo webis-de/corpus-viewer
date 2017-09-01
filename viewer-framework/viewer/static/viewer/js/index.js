@@ -162,7 +162,5 @@ $(document).ready(function()
     $(document).on('change', '.checkbox_tag_selection', function(e) { handle_change_displayed_tag($(this)) });
 
     load_page_parameters()
-    // FILTERS
-    // load_filters()
     load_current_page();
 });
