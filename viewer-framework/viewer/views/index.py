@@ -76,7 +76,9 @@ def index(request):
     # index_example_data()
     # print('final value: '+str(request.session[id_corpus]['viewer__settings_viewer_large_corpus']))
     context = {}
-    context['json_url_params'] = json.dumps(get_url_params(request))
+    dict_tmp = get_url_params(request)
+    context['json_url_params'] = json.dumps(dict_tmp)
+    context['tag_filter_active'] = json.dumps(get_tag_filter_active(id_corpus, dict_tmp['viewer__filter_tags']))
     context['json_filters'] = json.dumps(glob_manager_data.get_setting_for_corpus('filters', id_corpus))
     context['settings'] = glob_manager_data.get_settings_for_corpus(id_corpus)
     return render(request, 'viewer/index.html', context)
@@ -141,6 +143,15 @@ def get_tag_recommendations(request, obj):
         array_tag_recommendations.append({'id':tag.id ,'name':tag.name, 'color':tag.color});
 
     return array_tag_recommendations
+
+def get_tag_filter_active(id_corpus, list_tags):
+    print(list_tags)
+    dict_tags = {}
+    queryset_tags = m_Tag.objects.filter(name__in=list_tags, key_corpus=id_corpus)
+    for tag in queryset_tags:
+        dict_tags[tag.name] = {'color': tag.color, 'name': tag.name, 'id': tag.id}
+
+    return dict_tags
 
 def get_url_params(request):
     dict_url_params = request.GET.copy()

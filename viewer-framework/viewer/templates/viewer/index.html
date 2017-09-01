@@ -5,12 +5,12 @@
 
 {% get_is_collapsed_div_filters as is_collapsed_div_filters %}
 {% get_is_collapsed_div_tags as is_collapsed_div_tags %}
-
 <div class="row">
 	<div class="col">
 		<h1>{{ settings.name }}</h1>
         <div id="json_url_params" data-json_url_params="{{ json_url_params }}" style="display: none"></div>
         <div id="json_filters" data-json_filters="{{ json_filters }}" style="display: none"></div>
+        <div id="tag_filter_active" data-tag_filter_active="{{ tag_filter_active }}" style="display: none"></div>
     </div>
     <div class="col d-flex justify-content-end align-items-center">
         <div id="wrapper_loading" class="mr-2">
@@ -75,12 +75,17 @@
                                 <label for="input_filter_tags">Filter by tag(s)</label>
                                 <input name="tag" type="text" id="input_filter_tags" class="form-control form-control-sm" placeholder="Enter tag name(s)" value="">
                                 <div id="wrapper_tag_recommendations_filter" class="wrapper_recommendation" style="display: none"></div>
-                                <ul id="list_filter_tags" class="list-unstyled">
+                                <div class="row pl-1 pr-1">
+                                    <div class="col viewer__wrapper_filter_active" id="wrapper_tag_filter_active">
+                                        
+                                    </div>
+                                </div>
+                                <!-- <ul id="list_filter_tags" class="list-unstyled"> -->
                                     <!-- {% get_tags as tags %}
                                     {% for tag in tags %}
                                         <li data-tag="{{ tag }}"><span class="badge badge-default">{{ tag }} <i class="fa fa-times" aria-hidden="true"></i></span></li>
                                     {% endfor %} -->
-                                </ul>
+                                <!-- </ul> -->
                             </div>
                         {% for filter_custom in settings.filters %}
                             {% if filter_custom.data_field|get_is_filter_for_alphanumeric:settings %}
@@ -110,7 +115,7 @@
                                         </span>
                                     </div>
                                     <div class="row pl-1 pr-1">
-                                        <div class="col viewer__column_filter_active" data-data_field="{{ filter_custom.data_field }}">
+                                        <div class="col viewer__column_filter_active viewer__wrapper_filter_active" data-data_field="{{ filter_custom.data_field }}">
                                         </div>
                                     </div>
                                 </div>
@@ -134,7 +139,7 @@
                                         </span>
                                     </div>
                                     <div class="row pl-1 pr-1">
-                                        <div class="col viewer__column_filter_active" data-data_field="{{ filter_custom.data_field }}">
+                                        <div class="col viewer__column_filter_active viewer__wrapper_filter_active" data-data_field="{{ filter_custom.data_field }}">
                                         </div>
                                     </div>
                                 </div>

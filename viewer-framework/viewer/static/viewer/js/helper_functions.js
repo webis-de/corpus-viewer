@@ -7,8 +7,8 @@ function trigger_tag_add_change(tag)
 }
 function trigger_tag_filter_change(tag)
 {
-    $('#list_filter_tags').append('<li data-tag="' + tag.name + '"><span class="badge badge-default">' + tag.name + ' <span class="fa fa-times"></span></span></li>')
     glob_filter_tags.push(tag.name);
+    glob_dict_filter_tags[tag.name] = tag;
     set_session_entry('viewer__filter_tags', glob_filter_tags, function() {
         glob_current_page = 1;
         load_current_page();
@@ -363,15 +363,18 @@ function update_ui(info_filter_values)
     $('#info_number_of_items').text('Filtered items: '+glob_count_entries.toLocaleString()+' ('+glob_count_pages.toLocaleString()+' page(s))');
 
     // reset the tag filters
-    $('#list_filter_tags').html('');
-    for (let i = 0; i < glob_filter_tags.length; i++) {
-        $('#list_filter_tags').append('<li data-tag="' + glob_filter_tags[i] + '"><span class="badge badge-default">' + glob_filter_tags[i] + ' <i class="fa fa-times" aria-hidden="true"></i></span></li>')
-    }
+    $('#wrapper_tag_filter_active').html('');
+    $.each(glob_filter_tags, function(index, tag) {
+        let obj_tag = glob_dict_filter_tags[tag];
+        $('#wrapper_tag_filter_active').append(glob_template_filter_active_tag
+            .replace(/PLACEHOLDER_VALUE/g, obj_tag.name)
+            .replace(/PLACEHOLDER_COLOR/g, obj_tag.color));
+        // '<li data-tag="' + tag + '"><span class="badge badge-default">' + tag + ' <i class="fa fa-times" aria-hidden="true"></i></span></li>')
+    });
 
     // reset the custom filters
     $.each(glob_filter_custom, function(key, value) {
         $('.viewer__column_filter_active[data-data_field="'+ key +'"]').html('');
-
         $.each(value, function(index, element) {
             $('.viewer__column_filter_active[data-data_field="'+ key +'"]').append(create_filter_active(element, key, info_filter_values[key][element]));
             hightlight_results(key, element)

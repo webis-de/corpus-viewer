@@ -2,6 +2,7 @@ let glob_selected_items = {}
 let glob_selected_tags = {}
 
 let glob_filter_tags = []
+let glob_dict_filter_tags = {}
 let glob_filter_custom = {}
 let glob_sorted_columns = []
 let glob_columns = []
@@ -35,6 +36,15 @@ let glob_template_filter_active_number = `
         </span>
     </div>`;
 
+let glob_template_filter_active_tag = `
+    <div data-value="PLACEHOLDER_VALUE" class="pl-1 pr-1 filter_active_tag">
+        <div data-type="color" class="d-inline-block" style="background-color: PLACEHOLDER_COLOR"></div>
+        <span>PLACEHOLDER_VALUE</span>
+        <span class="float-right">
+            <span class="fa fa-times" data-value="PLACEHOLDER_VALUE"></span>
+        </span>
+    </div>`;
+
 let glob_template_info_filter_values_contains = escape_html(`
     <table class="table table-bordered table-sm">
         <tr>
@@ -60,7 +70,7 @@ $(document).ready(function()
     $(document).on('change', '#input_page', function() { handle_page_input($(this)) });
     $(document).on('click', '#info_paginator button', function(e) { e.preventDefault(); handle_pager_click($(this)) });
 
-    $(document).on('click', '#list_filter_tags .badge .fa-times', function(){handle_remove_tag_from_filter($(this).parent().text().trim())});
+    $(document).on('click', '#wrapper_tag_filter_active .fa-times', function(){handle_remove_tag_from_filter($(this))});
     $(document).on('input', '#input_filter_tags', function(){handle_recommendation_filter($(this), $('#wrapper_tag_recommendations_filter'))});
     $(document).on('click', '#wrapper_tag_recommendations_filter .recommendation', function(){handle_click_on_recommendation_filter($(this), trigger_tag_filter_change)});
 
@@ -152,7 +162,6 @@ $(document).ready(function()
     $(document).on('change', '.checkbox_tag_selection', function(e) { handle_change_displayed_tag($(this)) });
 
     load_page_parameters()
-
     // FILTERS
     // load_filters()
     load_current_page();

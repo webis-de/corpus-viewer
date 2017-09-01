@@ -36,12 +36,8 @@ function handle_pager_click(button)
 
 function handle_remove_tag_from_filter(tag)
 {
-    index = glob_filter_tags.indexOf(tag);
-    if(index > -1)
-    {
-        glob_filter_tags.splice(index, 1);
-    }
-    $('#list_filter_tags li[data-tag="' + tag + '"').remove();
+    let name_tag = tag.data('value');
+    remove_element_from_array(glob_filter_tags, name_tag);
 
     set_session_entry('viewer__filter_tags', glob_filter_tags, function() {
         glob_current_page = 1;
@@ -198,6 +194,7 @@ function handle_reset_filters()
 {
     glob_current_page = 1;
     glob_filter_tags = [];
+    glob_dict_filter_tags = {};
 
     $.each(glob_filter_custom, function(key, value){
         glob_filter_custom[key] = [];
@@ -870,6 +867,10 @@ function load_page_parameters()
             }
         }
     })
+
+    $.each($('#tag_filter_active').data('tag_filter_active'), function(key, value){
+        glob_dict_filter_tags[key] = value;
+    });
 }
 
 // function load_filters()
