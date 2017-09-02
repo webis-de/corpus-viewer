@@ -52,12 +52,14 @@
 <script>
     $(document).ready(function()
     {
+        glob_current_corpus = $('input[name="id_corpus"]').val();
+
         $(document).on('click', '#submit_index_corpus', function(e) { 
             let data_reload_settings = {};
             data_reload_settings.task = 'reload_settings';
 
             $.ajax({
-                url: 'get_page?',
+                url: glob_current_corpus+'/get_page',
                 method: 'POST',
                 contentType: 'application/json',
                 headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
@@ -74,7 +76,7 @@
                         data.id_corpus = $('#data_id_corpus').data('id_corpus');
 
                         $.ajax({
-                            url: 'get_page?',
+                            url: glob_current_corpus+'/get_page',
                             method: 'POST',
                             contentType: 'application/json',
                             headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
@@ -112,7 +114,7 @@
         let span = $('#span_number_of_indexed_items');
 
         $.ajax({
-            url: 'get_page?',
+            url: glob_current_corpus+'/get_page',
             method: 'POST',
             contentType: 'application/json',
             headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},

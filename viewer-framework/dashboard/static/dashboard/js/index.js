@@ -12,7 +12,8 @@ $(document).ready(function()
     $(document).on('click auxclick', '.card', function(event) { 
         let key = $(this).data('key');
 
-        const url = 'viewer?viewer__current_corpus='+key;
+        // const url = 'viewer?viewer__current_corpus='+key;
+        const url = 'viewer/'+key;
 
         switch(event.which)
         {

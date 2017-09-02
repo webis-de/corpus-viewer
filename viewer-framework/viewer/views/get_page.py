@@ -95,13 +95,14 @@ def temporary(id_corpus, request):
         }
         add_tag(obj, None, request)
 
-def get_page(request):
+def get_page(request, id_corpus):
 ##### handle session entries
     start_total = time.perf_counter()
-    if not set_sessions(request):
+
+    if not set_sessions(request, id_corpus):
         raise Http404("Corpus does not exist")
 
-    id_corpus = get_current_corpus(request)
+    # id_corpus = get_current_corpus(request)
 
     if glob_manager_data.has_corpus_secret_token(id_corpus):
         try:
@@ -109,7 +110,7 @@ def get_page(request):
         except KeyError:
             secret_token = None
         if not glob_manager_data.is_secret_token_valid(id_corpus, secret_token):
-            return redirect('viewer:add_token')           
+            return redirect('viewer:add_token')    
 ##### load data and apply filters
     list_ids, info_filter_values = get_filtered_data(request)
     # return JsonResponse({})

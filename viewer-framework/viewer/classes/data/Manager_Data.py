@@ -139,11 +139,13 @@ class Manager_Data:
 
         cache.set('metadata_corpora', dict_tmp)
 
-    def set_current_corpus(self, request):
+    def set_current_corpus(self, request, id_corpus):
         default = list(self.dict_corpora.keys())[0]
         key = 'viewer__current_corpus'
         sessionkey = 'viewer__' + key
 
+        request.session[sessionkey] = id_corpus
+        return
         if request.GET.get(key) != None:
             request.session[sessionkey] = request.GET.get(key)
         else:

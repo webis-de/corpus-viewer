@@ -490,7 +490,7 @@ function export_data(modal)
     let url_params = refresh_url();
 
     $.ajax({
-        url: 'get_page?'+url_params,
+        url: glob_current_corpus+'/get_page?'+url_params,
         method: 'POST',
         contentType: 'application/json',
         headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
@@ -513,7 +513,7 @@ function reload_settings()
     let url_params = refresh_url();
 
     $.ajax({
-        url: 'get_page?'+url_params,
+        url: glob_current_corpus+'/get_page?'+url_params,
         method: 'POST',
         contentType: 'application/json',
         headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
@@ -536,7 +536,7 @@ function reindex_corpus(modal)
     let url_params = refresh_url();
 
     $.ajax({
-        url: 'get_page?'+url_params,
+        url: glob_current_corpus+'/get_page?'+url_params,
         method: 'POST',
         contentType: 'application/json',
         headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
@@ -585,7 +585,7 @@ function delete_corpus(modal)
     let url_params = refresh_url();
 
     $.ajax({
-        url: 'get_page?'+url_params,
+        url: glob_current_corpus+'/get_page?'+url_params,
         method: 'POST',
         contentType: 'application/json',
         headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
@@ -627,7 +627,7 @@ function add_tag(modal)
 
     let url_params = refresh_url();
     $.ajax({
-        url: 'get_page?'+url_params,
+        url: glob_current_corpus+'/get_page?'+url_params,
         method: 'POST',
         contentType: 'application/json',
         headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
@@ -815,7 +815,7 @@ function load_current_page(update_tags = true)
     let url_params = refresh_url();
 
     $.ajax({
-        url: 'get_page?'+url_params,
+        url: glob_current_corpus+'/get_page?'+url_params,
         beforeSend: function() {
             start_loading();
         },
@@ -848,14 +848,14 @@ function load_current_page(update_tags = true)
 
 function load_page_parameters()
 {
+    glob_current_corpus = $('input[name=id_corpus]').val();
+
     $.each($('#json_url_params').data('json_url_params'), function(key, value){
         if(key.startsWith('viewer__'))
         {
             if(key == 'viewer__page')
             {
                 glob_current_page = parseInt(value)
-            } else if(key == 'viewer__current_corpus') {
-                glob_current_corpus = value
             } else if(key == 'viewer__columns') {
                 glob_columns = value
             } else if(key == 'viewer__sorted_columns') {

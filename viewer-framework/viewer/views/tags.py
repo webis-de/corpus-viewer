@@ -4,9 +4,7 @@ from django.shortcuts import render
 from viewer.models import m_Tag, m_Entity
 import json
 
-def tags(request):
-    id_corpus = get_current_corpus(request)
-
+def tags(request, id_corpus):
     tags = m_Tag.objects.filter(key_corpus=id_corpus)
 
 
@@ -40,6 +38,7 @@ def tags(request):
     context = {}
     
     context['settings'] = glob_manager_data.get_settings_for_corpus(id_corpus)
+    context['id_corpus'] = id_corpus
     context['tags'] = tags
     if request.is_ajax():
         return render(request, 'viewer/tags.html', context)

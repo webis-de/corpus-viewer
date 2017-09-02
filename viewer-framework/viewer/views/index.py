@@ -5,10 +5,10 @@ from viewer.models import m_Tag, m_Entity
 import json
 from threading import Thread
 
-def index(request):
+def index(request, id_corpus):
 ##### set sessions
     # try:
-    if not set_sessions(request):
+    if not set_sessions(request, id_corpus):
         # exception = glob_manager_data.pop_exception(get_current_corpus(request))
         # print(exception)
 
@@ -18,7 +18,7 @@ def index(request):
         # if not get_current_corpus(request) in glob_manager_data.dict_exceptions:
         return redirect('dashboard:index')
 
-    id_corpus = get_current_corpus(request)
+    # id_corpus = get_current_corpus(request)
 
     if glob_manager_data.has_corpus_secret_token(id_corpus):
         try:
@@ -49,6 +49,7 @@ def index(request):
 
         context['handle_incides'] = glob_manager_data.get_active_handle_indices()
         context['settings'] = glob_manager_data.get_settings_for_corpus(id_corpus)
+        context['id_corpus'] = id_corpus
         return render(request, 'viewer/not_loaded.html', context)
 ##### handle post requests
     if request.method == 'POST':
@@ -81,6 +82,8 @@ def index(request):
     context['tag_filter_active'] = json.dumps(get_tag_filter_active(id_corpus, dict_tmp['viewer__filter_tags']))
     context['json_filters'] = json.dumps(glob_manager_data.get_setting_for_corpus('filters', id_corpus))
     context['settings'] = glob_manager_data.get_settings_for_corpus(id_corpus)
+    context['id_corpus'] = id_corpus
+
     return render(request, 'viewer/index.html', context)
 
 def check_if_tag_exists(obj, request):
@@ -160,10 +163,10 @@ def get_url_params(request):
     else:
         dict_url_params['viewer__page'] = request.session[get_current_corpus(request)]['viewer__viewer__page']
 
-    if 'viewer__current_corpus' in dict_url_params:
-        dict_url_params['viewer__current_corpus'] = dict_url_params['viewer__current_corpus']
-    else:
-        dict_url_params['viewer__current_corpus'] = get_current_corpus(request)
+    # if 'viewer__current_corpus' in dict_url_params:
+    #     dict_url_params['viewer__current_corpus'] = dict_url_params['viewer__current_corpus']
+    # else:
+    #     dict_url_params['viewer__current_corpus'] = get_current_corpus(request)
 
     if 'viewer__columns' in dict_url_params:
         dict_url_params['viewer__columns'] = json.loads(dict_url_params['viewer__columns'])
@@ -186,7 +189,3 @@ def get_url_params(request):
         dict_url_params['viewer__filter_custom'] = request.session[get_current_corpus(request)]['viewer__viewer__filter_custom']
 
     return dict_url_params
-
-def delete_session(request):
-    request.session.flush()
-    return JsonResponse({})

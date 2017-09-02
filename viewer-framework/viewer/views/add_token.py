@@ -8,6 +8,6 @@ def add_token(request, id_corpus):
         input_secret_token = request.POST.get('secret_token')
         request.session[id_corpus]['viewer__secret_token'] = input_secret_token
         request.session.modified = True
-        return redirect('viewer:index')
+        return redirect('viewer:index', id_corpus=id_corpus)
 
     return render(request, 'viewer/add_token.html', context)

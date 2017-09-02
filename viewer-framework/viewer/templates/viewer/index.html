@@ -186,7 +186,7 @@
                 <div class="card">
                     <div class="card-header py-1 px-2">
                         <a data-toggle="collapse" href="#div_tags" class="text-muted">Tags</a>
-                        <a href="{% url 'viewer:tags' %}" id="view_tags" class="float-right">View tags</a>
+                        <a href="{% url 'viewer:tags' id_corpus %}" id="view_tags" class="float-right">View tags</a>
                     </div>
                     <div class="collapse {% if is_collapsed_div_tags == False %}show{% endif %}" id="div_tags">
                         <div class="card-body py-1 px-2">

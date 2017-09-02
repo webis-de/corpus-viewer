@@ -21,9 +21,23 @@ def index(request):
         return JsonResponse(response)
 
     context = {}
-    # print(context['corpora'].items())
+    # context['id_corpus'] = id_corpus
     return render(request, 'dashboard/index.html', context)
 
+def documentation(request):
+    context = {}
+
+    with open(os.path.join('..', 'settings', 'settings_viewer_example.py')) as f:
+        context['example_setting_file'] = f.read()
+
+    context['url_host'] = 'http://webis24.medien.uni-weimar.de:8080'
+    context['name_host'] = 'webis24'
+    return render(request, 'dashboard/documentation.html', context)
+
+def delete_session(request):
+    request.session.flush()
+    return JsonResponse({})
+    
 def refresh_corpora():
     # print(glob_manager_data.dict_corpora)
     glob_manager_data.check_for_new_corpora()

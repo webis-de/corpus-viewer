@@ -256,9 +256,8 @@ def load_file_ldjson(request):
 
 #     model_custom.objects.bulk_create(list_entries)
 
-def set_sessions(request):
-    glob_manager_data.set_current_corpus(request)
-    id_corpus = get_current_corpus(request)
+def set_sessions(request, id_corpus):
+    glob_manager_data.set_current_corpus(request, id_corpus)
 
     # check if the corpus is still loaded
     if not glob_manager_data.check_if_corpus_available(id_corpus):
