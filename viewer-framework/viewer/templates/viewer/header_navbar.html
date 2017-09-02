@@ -9,9 +9,11 @@
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <div class="navbar-nav ml-auto">
+                    {% if id_corpus %}
+                        <a class="nav-item nav-link" href="{% url 'viewer:index' id_corpus %}">Viewer</a>
+                    {% endif %}
                     <a class="nav-item nav-link" href="{% url 'dashboard:documentation' %}">Documentation</a>
                     <a class="nav-item nav-link" href="{% url 'dashboard:index' %}">Dashboard</a>
-                    <!-- <a class="nav-item nav-link" href="{-% url 'viewer:index' id_corpus %}">Viewer</a> -->
                 </div>
             </div>
         </div>
