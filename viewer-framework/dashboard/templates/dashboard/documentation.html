@@ -14,7 +14,7 @@
         <div class="row">
             <div class="col-md-9">
                 <div class="alert alert-info" role="alert">
-                    This documentation describes the usage of the corpus-viewer. To get information about the installation please refer to the <a href="https://git.webis.de/webisstud/wstud-viewer-framework-django" class="alert-link">gitlab-page</a>.
+                    This documentation describes the usage of the corpus-viewer. To get information about the installation please refer to the <a href="https://git.webis.de/webisstud/wstud-viewer-framework-django" class="alert-link">GitLab-page</a>.
                 </div>
                 <h2 id="link_add_new_corpus">Add a new corpus</h2>
                 To add a new corpus to the viewer on <a href="{{ url_host }}">{{ name_host }}</a> or to your own server you'll have to do the following steps:
@@ -43,7 +43,7 @@
                 </div>
                 <p>
                     Mainly the settings file consists of a python dictionary which has to be called 'DICT_SETTINGS_VIEWER'. The keys specify the names of the settings and the values the corresponding values. 
-                    <div class="alert alert-info">Note that the example settings file contains all available dictionary keys for presentation purporse. Unused or incorrect keys are ignored by the viewer.</div>
+                    <div class="alert alert-info">Note that the example settings file contains all available dictionary keys for presentation purpose. Unused or incorrect keys are ignored by the viewer.</div>
                 </p>
                 <p>
                     Try to choose a descriptive name for the settings file. The name has to be unique related to the other settings files in the <code>settings/</code> directory.
@@ -200,6 +200,28 @@
                                 </p>
                             </td>
                         </tr>
+                        <tr>
+                            <td>secret_token</td>
+                            <td>string</td>
+                            <td class="text-success">optional</td>
+                            <td>None</td>
+                            <td>
+                                <p>
+                                    Specifies the token string necessary to access the corpus. 
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>template</td>
+                            <td>string</td>
+                            <td class="text-success">optional</td>
+                            <td>None</td>
+                            <td>
+                                <p>
+                                    Specifies the path to the web component file. 
+                                </p>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
                 <h4 id="link_data_fields">Data Fields</h4>
@@ -282,7 +304,7 @@
                             <td>''</td>
                             <td>
                                 <p>
-                                    This specifies the placholder displayed inside of the input field.
+                                    This specifies the placeholder displayed inside of the input field.
                                 </p>
                             </td>
                         </tr>
