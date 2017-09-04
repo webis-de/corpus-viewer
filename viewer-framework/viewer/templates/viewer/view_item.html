@@ -1,0 +1,10 @@
+{% include "viewer/header.html" %}
+{% load staticfiles %}
+<script src="{% static 'viewer/bower_components/webcomponentsjs/webcomponents-loader.js' %}"></script>
+<link rel="import" href="{% static 'viewer/bower_components/polymer/polymer.html' %}">
+<link rel="import" href="{% static 'viewer/bower_components/viewer-template.html' %}">
+<viewer-template obj-item='{{ json_item }}'></viewer-template>
+<viewer-root>
+    
+</viewer-root>
+{% include "viewer/footer.html" %}
