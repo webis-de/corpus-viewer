@@ -1,0 +1,113 @@
+<dom-module id="viewer-template">
+
+    <template>
+        <link rel="stylesheet" href="[[ bootstrapCss ]]">
+        <style>
+            /* shadow DOM styles go here */
+            :host {
+                /*display: inline-block;*/
+            }
+
+        </style>
+        <div class="row">
+            <div class="col">
+                <h1>Query: "{{ objItem.query }}"</h1>
+
+                <table id="table_test" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Variants</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        function get_position_of_first_difference(a, b) {
+            let length_a = a.length;
+            let length_b = b.length;
+
+            let position = -1;
+
+            for (let i = 0; i < a.length; i++) 
+            {
+                character_current_a = a[i];
+                if(i < length_b)
+                {
+                    character_current_b = b[i];
+                    if(character_current_a != character_current_b)
+                    {
+                        return i
+                    }
+                } else {
+                    return position;
+                }
+            }
+            return position;
+        }
+
+        class ViewerTemplate extends Polymer.Element {
+            static get is() {
+                return 'viewer-template';
+            }
+            static get properties() {
+                return {
+                    objItem: {
+                        type: Object,
+                    },
+                    bootstrapCss: {
+                        type: String
+                    },
+                    bootstrapJs: {
+                        type: String
+                    },
+                    jqueryJs: {
+                        type: String
+                    }
+                }
+            }
+            constructor() {
+                super();
+            }
+            ready() {
+                super.ready()
+                this.objItem.corrections = this.objItem.corrections.split(',')
+                let element_table = this.shadowRoot.querySelector('#table_test tbody');
+                const replacement = '<span class="bg-warning">PLACEHOLDER</span>'
+
+                for (let i = 0; i < this.objItem.corrections.length; i++) {
+                    let correction = this.objItem.corrections[i].trim();
+                    let position_of_first_difference = -1;
+                    if(i > 0)
+                    {
+                        let string_a = correction;
+                        let string_b = this.objItem.corrections[i-1].trim();
+                        position_of_first_difference = get_position_of_first_difference(string_a, string_b);
+                    }
+
+                    if(position_of_first_difference != -1)
+                    {
+                        correction[position_of_first_difference]
+                        const replacement_custom = replacement.replace('PLACEHOLDER', correction[position_of_first_difference])
+                        correction = correction.substr(0, position_of_first_difference) + replacement_custom + correction.substr(position_of_first_difference + 1)
+                    }
+
+                    let row_new = `
+                        <row>
+                            <td>`+(i+1)+`</td>
+                            <td>`+correction+`</td>
+                        </row>
+                    `
+                    element_table.innerHTML = element_table.innerHTML + row_new;
+                }
+            }
+        }
+        customElements.define(ViewerTemplate.is, ViewerTemplate);
+    </script>
+
+</dom-module>

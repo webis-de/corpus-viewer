@@ -373,7 +373,6 @@ function update_ui(info_filter_values)
     });
 
     // reset the custom filters
-    console.log(glob_filter_custom)
     $.each(glob_filter_custom, function(key, value) {
         $('.viewer__column_filter_active[data-data_field="'+ key +'"]').html('');
         $.each(value, function(index, element) {
@@ -387,7 +386,7 @@ function update_ui(info_filter_values)
     $('.input_select_item').each(function(index, element) {
         const elem = $(element)
 
-        if(glob_selected_items.hasOwnProperty(elem.data('id_item') + '-' + elem.data('id_item_internal')))
+        if(glob_selected_items.hasOwnProperty(elem.data('id_item') + '-' + elem.data('viewer__id_item_internal')))
         {
             elem.prop('checked', true)
             $('.row_viewer__item[data-id_item="'+elem.data('id_item')+'"]').addClass('table-info');

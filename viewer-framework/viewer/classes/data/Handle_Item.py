@@ -38,7 +38,7 @@ class Handle_Item_Get_Item(Handle_Item):
             item_bin = self.handle_file_data.read(metadata[1])
 
             obj_item = pickle.loads(item_bin)
-            obj_item['id_item_internal'] = index
+            obj_item['viewer__id_item_internal'] = index
             list_items.append(obj_item)
 
         return list_items

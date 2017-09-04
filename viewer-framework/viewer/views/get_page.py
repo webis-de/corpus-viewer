@@ -175,6 +175,7 @@ def get_page(request, id_corpus):
     context = {}
     context['settings'] = glob_manager_data.get_settings_for_corpus(id_corpus)
     context['data'] = data
+    context['id_corpus'] = id_corpus
 
     previous_page_number = None
     next_page_number = None
@@ -681,7 +682,7 @@ def index_missing_entities(entities, request):
 
     list_tupels = []
     for entity in entities:
-        list_tupels.append((entity['id_item'], entity['id_item_internal']))
+        list_tupels.append((entity['id_item'], entity['viewer__id_item_internal']))
     set_new_entities = set(list_tupels)
     # set_new_entities = {entity['id_item_internal'] for entity in entities}
 

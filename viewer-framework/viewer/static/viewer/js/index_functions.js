@@ -265,7 +265,7 @@ function handle_selection_all_items(input)
 function handle_select_item(input)
 {
     const id_item = input.data('id_item')
-    const id_item_internal = input.data('id_item_internal')
+    const id_item_internal = input.data('viewer__id_item_internal')
 
     if(glob_mode_add_tag.status == 'inactive')
     {
@@ -415,7 +415,7 @@ function handle_click_link_add_tag(event, link)
     {
         event.preventDefault();
         $('#modal_add_tag').data('id_item', link.data('id_item'));
-        $('#modal_add_tag').data('id_item_internal', link.data('id_item_internal'));
+        $('#modal_add_tag').data('viewer__id_item_internal', link.data('viewer__id_item_internal'));
         glob_trigger_modal = 'link';
         $('#modal_add_tag').modal('show')
     }
@@ -602,7 +602,7 @@ function delete_corpus(modal)
 function add_tag(modal)
 {
     const id_item = modal.data('id_item');
-    const id_item_internal = modal.data('id_item_internal');
+    const id_item_internal = modal.data('viewer__id_item_internal');
     let data = {}
     data.task = 'add_tag'
     data.tag = $('#input_name_new_tag').val()
@@ -621,7 +621,7 @@ function add_tag(modal)
             });
         // if the modal was triggered by a link
         } else {
-            data.ids = [{'id_item': id_item, 'id_item_internal': id_item_internal}]
+            data.ids = [{'id_item': id_item, 'viewer__id_item_internal': id_item_internal}]
         }
     }
 

@@ -5,6 +5,8 @@
 
 {% get_is_collapsed_div_filters as is_collapsed_div_filters %}
 {% get_is_collapsed_div_tags as is_collapsed_div_tags %}
+
+{% get_has_template_view_item as has_template_view_item %}
 <div class="row">
 	<div class="col">
 		<h1>{{ settings.name }}</h1>
@@ -174,6 +176,14 @@
                                     Tags
                                 </label>
                             </div>
+                            {% if has_template_view_item %}
+                            <div class="form-check mb-0">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input input_toggle_columns" data-column="viewer__view_item" {% if "viewer__view_item"|in_columns_checked:request %}checked{% endif %}>
+                                    View Item
+                                </label>
+                            </div>
+                            {% endif %}
                         </fieldset>
                         </div>
                     </div>

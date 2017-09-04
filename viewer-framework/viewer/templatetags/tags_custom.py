@@ -1,4 +1,5 @@
 from django import template
+from viewer.views.shared_code import glob_manager_data 
 
 register = template.Library()
 
@@ -17,6 +18,11 @@ def get_state_sorted(context, field):
 def get_is_collapsed_div_filters(context):
     current_corpus = context.request.session['viewer__viewer__current_corpus']
     return context.request.session[current_corpus]['viewer__is_collapsed_div_filters']
+
+@register.simple_tag(takes_context=True)
+def get_has_template_view_item(context):
+    id_corpus = context.request.session['viewer__viewer__current_corpus']
+    return glob_manager_data.get_setting_for_corpus('template', id_corpus) != None
 
 @register.simple_tag(takes_context=True)
 def get_is_collapsed_div_tags(context):

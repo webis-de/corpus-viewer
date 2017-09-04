@@ -33,6 +33,7 @@ class Manager_Data:
         self.struct = struct.Struct('<Q L')
         self.length_struct = self.struct.size
         self.dict_corpora = {}
+        self.path_templates = os.path.join('viewer', 'static', 'viewer', 'bower_components', 'templates')
 
         self.init_data()
 
@@ -58,6 +59,7 @@ class Manager_Data:
             try:
                 self.dict_corpora[id_corpus]['settings'] = self.load_corpus_from_file(file)
                 self.dict_corpora[id_corpus]['exception'] = None
+                self.update_template_view_item(id_corpus)
             except SyntaxError as err:
                 self.dict_corpora[id_corpus]['exception'] = err.lineno
                 self.dict_corpora[id_corpus]['settings'] = {}
@@ -191,7 +193,8 @@ class Manager_Data:
             return ''
         elif key == 'secret_token':
             return None
-
+        elif key == 'template':
+            return None
 
         raise ValueError('setting-key \''+key+'\' not found')
 
@@ -206,11 +209,28 @@ class Manager_Data:
             settings = self.load_corpus_from_file(file)
             self.dict_corpora[id_corpus]['settings'] = settings
             self.dict_corpora[id_corpus]['exception'] = None
+            self.update_template_view_item(id_corpus)
+
         except SyntaxError as err:
             self.dict_corpora[id_corpus]['exception'] = err.lineno
             self.dict_corpora[id_corpus]['settings'] = {}
 
         return settings
+
+    def update_template_view_item(self, id_corpus):
+        # if available copy the template to the directory
+        path_template_destination = os.path.join(self.path_templates, str(id_corpus)+'.html')
+        path_template = self.get_setting_for_corpus('template', id_corpus)
+
+        if path_template == None:
+            try:
+                os.remove(path_template_destination)
+            except FileNotFoundError:
+                pass
+            return
+
+        path_template = os.path.join(self.path_settings, path_template)
+        shutil.copy(path_template, path_template_destination)
 
     def check_for_new_corpora(self):
         dict_tmp = {}
@@ -227,6 +247,7 @@ class Manager_Data:
             try:
                 dict_tmp[id_corpus]['settings'] = self.load_corpus_from_file(file)
                 dict_tmp[id_corpus]['exception'] = None
+                self.update_template_view_item(id_corpus)
             except SyntaxError as err:
                 dict_tmp[id_corpus]['exception'] = err.lineno
                 dict_tmp[id_corpus]['settings'] = {}

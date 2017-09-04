@@ -1,9 +1,18 @@
 {% include "viewer/header.html" %}
 {% load staticfiles %}
+<style>html {overflow-y: scroll}</style>
 <script src="{% static 'viewer/bower_components/webcomponentsjs/webcomponents-loader.js' %}"></script>
 <link rel="import" href="{% static 'viewer/bower_components/polymer/polymer.html' %}">
-<link rel="import" href="{% static 'viewer/bower_components/viewer-template.html' %}">
-<viewer-template obj-item='{{ json_item }}'></viewer-template>
+
+{% with 'viewer/bower_components/templates/'|add:id_corpus|add:'.html' as path_template %}
+<link rel="import" href="{% static path_template %}">
+{% endwith %}
+<viewer-template 
+    obj-item='{{ json_item }}' 
+    bootstrap-css='{% static 'viewer/css/bootstrap.css' %}'
+    bootstrap-js='{% static 'viewer/js/bootstrap.js' %}' 
+    jquery-js='{% static 'viewer/js/jquery-3.1.1.min.js' %}'>
+</viewer-template>
 <viewer-root>
     
 </viewer-root>
