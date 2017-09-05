@@ -247,7 +247,6 @@ class Manager_Data:
             try:
                 dict_tmp[id_corpus]['settings'] = self.load_corpus_from_file(file)
                 dict_tmp[id_corpus]['exception'] = None
-                self.update_template_view_item(id_corpus)
             except SyntaxError as err:
                 dict_tmp[id_corpus]['exception'] = err.lineno
                 dict_tmp[id_corpus]['settings'] = {}
@@ -267,7 +266,9 @@ class Manager_Data:
         
 
         self.dict_corpora = dict_tmp
+
         for id_corpus, value in self.dict_corpora.items():
+            self.update_template_view_item(id_corpus)
             print(value.keys())
 
         self.update_cache()
