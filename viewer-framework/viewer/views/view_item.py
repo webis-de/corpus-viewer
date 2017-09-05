@@ -23,5 +23,7 @@ def view_item(request, id_corpus, id_internal_item):
 
     context['json_item'] = json.dumps(obj_item)
     context['id_corpus'] = id_corpus
+    with open(glob_manager_data.get_setting_for_corpus('template', id_corpus), 'r') as f:
+        context['template'] = f.read()
     # context['link_template'] = link_template
     return render(request, 'viewer/view_item.html', context)
