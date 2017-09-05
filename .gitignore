@@ -2,3 +2,4 @@ __pycache__
 *.pyc
 migrations/
 db.sqlite3
+viewer-framework/viewer/static/viewer/bower_components/templates
