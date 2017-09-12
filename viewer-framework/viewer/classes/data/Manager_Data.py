@@ -49,6 +49,25 @@ class Manager_Data:
             }
             return self.dict_default_settings.copy()
 
+    def update_template(self, id_corpus):
+        template_html = self.get_setting_for_corpus('template_html', id_corpus)
+        # if no template was specified as html
+        if template_html == None:
+            # check if there is an path to the template
+            template_path = self.get_setting_for_corpus('template_path', id_corpus)
+
+            # if there is an path specified
+            if template_path != None:
+                try:
+                    with open(template_path, 'r') as f:
+                        self.dict_corpora[id_corpus]['settings']['template_html'] = f.read()
+                except FileNotFoundError:
+                    pass
+
+
+            
+        # self.dict_corpora[id_corpus]['template']
+
     def init_data(self):
         self.create_paths_if_necessary()
         # for every settings-file in the directory load the settings into the empty dict_corpora
@@ -58,6 +77,7 @@ class Manager_Data:
             try:
                 self.dict_corpora[id_corpus]['settings'] = self.load_corpus_from_file(file)
                 self.dict_corpora[id_corpus]['exception'] = None
+                self.update_template(id_corpus)
             except SyntaxError as err:
                 self.dict_corpora[id_corpus]['exception'] = err.lineno
                 self.dict_corpora[id_corpus]['settings'] = {}
@@ -191,7 +211,9 @@ class Manager_Data:
             return ''
         elif key == 'secret_token':
             return None
-        elif key == 'template':
+        elif key == 'template_path':
+            return None
+        elif key == 'template_html':
             return None
 
         raise ValueError('setting-key \''+key+'\' not found')
@@ -207,7 +229,7 @@ class Manager_Data:
             settings = self.load_corpus_from_file(file)
             self.dict_corpora[id_corpus]['settings'] = settings
             self.dict_corpora[id_corpus]['exception'] = None
-
+            self.update_template(id_corpus)
         except SyntaxError as err:
             self.dict_corpora[id_corpus]['exception'] = err.lineno
             self.dict_corpora[id_corpus]['settings'] = {}
@@ -229,6 +251,7 @@ class Manager_Data:
             try:
                 dict_tmp[id_corpus]['settings'] = self.load_corpus_from_file(file)
                 dict_tmp[id_corpus]['exception'] = None
+                self.update_template(id_corpus)
             except SyntaxError as err:
                 dict_tmp[id_corpus]['exception'] = err.lineno
                 dict_tmp[id_corpus]['settings'] = {}

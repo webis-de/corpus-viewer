@@ -22,7 +22,7 @@ def get_is_collapsed_div_filters(context):
 @register.simple_tag(takes_context=True)
 def get_has_template_view_item(context):
     id_corpus = context.request.session['viewer__viewer__current_corpus']
-    return glob_manager_data.get_setting_for_corpus('template', id_corpus) != None
+    return glob_manager_data.get_setting_for_corpus('template_html', id_corpus) != None
 
 @register.simple_tag(takes_context=True)
 def get_is_collapsed_div_tags(context):

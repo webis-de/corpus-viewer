@@ -27,10 +27,11 @@ def view_item(request, id_corpus, id_internal_item):
 
     context['json_item'] = json.dumps(obj_item)
     context['id_corpus'] = id_corpus
-    try:
-        with open(glob_manager_data.get_setting_for_corpus('template', id_corpus), 'r') as f:
-            context['template'] = f.read()
-    except FileNotFoundError:
+
+    template_html = glob_manager_data.get_setting_for_corpus('template_html', id_corpus)
+    if template_html == None:
         return redirect('viewer:index', id_corpus=id_corpus) 
+    else:
+        context['template'] = template_html
 
     return render(request, 'viewer/view_item.html', context)
