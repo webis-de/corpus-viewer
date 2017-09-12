@@ -212,13 +212,27 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>template</td>
+                            <td>template_html</td>
                             <td>string</td>
                             <td class="text-success">optional</td>
                             <td>None</td>
                             <td>
                                 <p>
-                                    Specifies the path to the web component file. 
+                                    Specifies the HTML template to render an item of the corpus. 
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>template_path</td>
+                            <td>string</td>
+                            <td class="text-success">optional</td>
+                            <td>None</td>
+                            <td>
+                                <p>
+                                    Specifies the path to a HTML template file to render an item of the corpus. 
+                                </p>
+                                <p>
+                                    This property is ignored if <code>template_html</code> is specified.
                                 </p>
                             </td>
                         </tr>
@@ -335,6 +349,27 @@
                         <li>Rename the file</li>
                         <li>Hit the refresh button in the dashboard</li>
                     </ul>
+                    <h3>Create a custom view for the corpus items</h3>
+                    <p>
+                        You can write a HTML template to visualize a corpus item.
+                    </p>
+                    <p>
+                        CSS code can be inserted by using the <code>&lt;style&gt;</code> tag.<br>
+                        You can use the following css libraries out of the box: 
+                        <ul>
+                            <li>Bootstrap (v4.0.0-beta)</li>
+                            <li>Font Awesome (4.7.0)</li>
+                        </ul>
+                    </p>
+                    <p>
+                        Javascript code can be used by using the <code>&lt;script&gt;</code> tag.
+                        You can use the following javascript libraries out of the box: 
+                        <ul>
+                            <li>Bootstrap (v4.0.0-beta)</li>
+                            <li>jQuery (3.1.1)</li>
+                        </ul>
+                        You have access to a global javascript variable called <code>obj_item</code> which is a javascript object and represents the current item. The properties of the object correspond to the data fields specified in the settings.            
+                    </p>
             </div>
             <div class="col d-xs-none d-md-block">
                 <ul class="nav flex-column" id="navigationtest">
