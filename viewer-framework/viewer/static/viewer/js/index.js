@@ -76,6 +76,7 @@ $(document).ready(function()
         }
 
         input.val(tag.name);
+        console.log(tag)
         $('#input_color_tag').val(tag.color);
     }
 

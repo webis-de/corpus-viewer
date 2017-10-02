@@ -222,7 +222,7 @@ function handle_select_item(input)
 
     if(glob_mode_add_tag.status == 'inactive')
     {
-        const obj_tmp = {'id_item': id_item, 'id_item_internal': id_item_internal};
+        const obj_tmp = {'id_item': id_item, 'viewer__id_item_internal': id_item_internal};
         const obj_tmp_key = id_item + '-' + id_item_internal
 
         if(input.prop('checked'))
@@ -712,11 +712,12 @@ function handle_click_on_tr(event, tr)
     {
         let tag  = glob_mode_add_tag.tag;
         let id_item = tr.data('id_item')
+        let id_item_internal = tr.data('viewer__id_item_internal')
         let data = {}
         data.task = 'toggle_item_to_tag'
         data.id_tag = tag.id;
         data.id_item = id_item;
-        console.log(data)
+        data.viewer__id_item_internal = id_item_internal;
 
         $.ajax({
             url: '',

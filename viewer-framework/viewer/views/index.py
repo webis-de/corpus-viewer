@@ -70,7 +70,7 @@ def index(request, id_corpus):
                 response = delete_tag_from_item(obj, request)
         elif obj['task'] == 'toggle_item_to_tag':
             if has_access_to_tagging:
-                response = toggle_item_to_tag(obj, request)
+                response = toggle_item_to_tag(obj, id_corpus)
         elif obj['task'] == 'check_if_tag_exists':
             if has_access_to_tagging:
                 response = check_if_tag_exists(obj, request)
@@ -115,17 +115,17 @@ def check_if_tag_exists(obj, request):
 
     return response
 
-def toggle_item_to_tag(obj, request):
+def toggle_item_to_tag(obj, id_corpus):
     response = {}
     response['data'] = {}
     db_obj_tag = m_Tag.objects.get(id=obj['id_tag'])
 
-    if get_setting('data_type', request=request) == 'database':
+    if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
         print('TO BE IMPLEMENTED')
     else:
         print(str(obj['id_item']))
         try:
-            db_obj_entity = m_Entity.objects.get(id_item=str(obj['id_item']), key_corpus=get_current_corpus(request))
+            db_obj_entity = m_Entity.objects.get(id_item=str(obj['id_item']), key_corpus=id_corpus)
             
             if m_Tag.objects.filter(pk=obj['id_tag'], m2m_entity__pk=db_obj_entity.pk).exists():
                 response['data']['removed'] = True
@@ -135,7 +135,12 @@ def toggle_item_to_tag(obj, request):
                 response['data']['removed'] = False
         except m_Entity.DoesNotExist:
             response['data']['removed'] = False
-            db_obj_entity = m_Entity.objects.create(id_item=str(obj['id_item']), key_corpus=get_current_corpus(request))
+            db_obj_entity = m_Entity.objects.create(
+                id_item=str(obj['id_item']), 
+                id_item_internal=str(obj['viewer__id_item_internal']), 
+                key_corpus=id_corpus
+            )
+            
             db_obj_tag.m2m_entity.add(db_obj_entity)
 
     return response
