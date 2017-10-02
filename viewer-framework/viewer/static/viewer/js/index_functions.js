@@ -45,53 +45,6 @@ function handle_remove_tag_from_filter(tag)
     })
 }
 
-function handle_recommendation_filter(input, wrapper_recommendation)
-{
-    let tag_name = input.val();
-    if(tag_name == '')
-    {
-        remove_wrapper_recommendation(wrapper_recommendation);
-    } else {
-        let data = {};
-        data.task = 'get_tag_recommendations';
-        data.tag_name = tag_name;
-
-        $.ajax({
-            method: 'POST',
-            contentType: 'application/json',
-            headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
-            data: JSON.stringify(data),
-            success: function(result) {
-                set_recommendations(wrapper_recommendation, $(result.data.array_recommendations));
-            },
-            error: function(result) {
-                error_corpus_not_exists();
-            }
-        });
-    }
-}
-
-function handle_click_on_recommendation_filter(recommendation, func)
-{
-    let wrapper_recommendation = recommendation.parent();
-    let input_tag_names = wrapper_recommendation.parent().find('input');
-    let tag_name = recommendation.data('tag_name');
-    let tag = {
-        id: recommendation.data('tag_id'),
-        name: recommendation.data('tag_name'),
-        color: recommendation.data('tag_color')
-    }
-
-    input_tag_names.val('');
-    remove_wrapper_recommendation(wrapper_recommendation);
-    input_tag_names.focus();
-
-    if(func)
-    {
-        func(tag);
-    }
-}
-
 function handle_click_on_button_case_sensitivity(button)
 {
     button.blur();
@@ -468,7 +421,6 @@ function handle_shown_modal(event, modal)
             break;
         case 'mode_add_tag':
             $('#input_color_tag').focus();
-
             break;
     }
     // focus the name field

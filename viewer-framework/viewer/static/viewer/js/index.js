@@ -67,12 +67,56 @@ let glob_template_info_filter_values_number = escape_html(`
 
 $(document).ready(function()
 {
+    function trigger_tag_new_change(recommendation, input)
+    {
+        let tag = {
+            id: recommendation.data('tag_id'),
+            name: recommendation.data('tag_name'),
+            color: recommendation.data('tag_color')
+        }
+
+        input.val(tag.name);
+        $('#input_color_tag').val(tag.color);
+    }
+
+    function trigger_tag_add_change(recommendation, input)
+    {
+        let tag = {
+            id: recommendation.data('tag_id'),
+            name: recommendation.data('tag_name'),
+            color: recommendation.data('tag_color')
+        }
+
+        input.val(tag.name);
+        $('#button_start_mode_add_tag').data('tag', tag);
+    }
+
+    function trigger_tag_filter_change(recommendation, input)
+    {
+        let tag = {
+            id: recommendation.data('tag_id'),
+            name: recommendation.data('tag_name'),
+            color: recommendation.data('tag_color')
+        }
+
+        input.val('');
+
+        glob_filter_tags.push(tag.name);
+        glob_dict_filter_tags[tag.name] = tag;
+        set_session_entry('viewer__filter_tags', glob_filter_tags, function() {
+            glob_current_page = 1;
+            load_current_page();
+        })
+    }
+
+    let recommendation_tag_filter = new Recommendation(document, '#input_filter_tags', '#wrapper_tag_recommendations_filter', trigger_tag_filter_change);
+    let recommendation_tag_new = new Recommendation(document, '#input_name_new_tag', '#wrapper_tag_recommendations_new', trigger_tag_new_change);
+    let recommendation_tag_assign = new Recommendation(document, '#input_add_tag', '#wrapper_tag_recommendations_add_tag', trigger_tag_add_change);
+
     $(document).on('change', '#input_page', function() { handle_page_input($(this)) });
     $(document).on('click', '#info_paginator button', function(e) { e.preventDefault(); handle_pager_click($(this)) });
 
     $(document).on('click', '#wrapper_tag_filter_active .fa-times', function(){handle_remove_tag_from_filter($(this))});
-    $(document).on('input', '#input_filter_tags', function(){handle_recommendation_filter($(this), $('#wrapper_tag_recommendations_filter'))});
-    $(document).on('click', '#wrapper_tag_recommendations_filter .recommendation', function(){handle_click_on_recommendation_filter($(this), trigger_tag_filter_change)});
 
     $(document).on('click', '.viewer__button_case_sensitivity', function(){ handle_click_on_button_case_sensitivity($(this)) });
     $(document).on('click', '.viewer__button_add_filter_contains', function(){ handle_click_on_button_add_filter_contains($(this)) });
@@ -146,8 +190,6 @@ $(document).ready(function()
     $(document).on('click', '#submit_add_tag', function(e) { add_tag($('#modal_add_tag')) });
     $(document).on('change', '#input_add_to_all_filtered_items', function(e) { handle_change_add_to_all_filtered_items($(this)) });
 
-    $(document).on('input', '#input_add_tag', function(){handle_recommendation_filter($(this), $('#wrapper_tag_recommendations_add_tag'))});
-    $(document).on('click', '#wrapper_tag_recommendations_add_tag .recommendation', function(){handle_click_on_recommendation_filter($(this), trigger_tag_add_change)});
     $(document).on('click', '#button_start_mode_add_tag', function(){ handle_click_mode_add_tag($(this)) });
     $(document).on('click', '.row_viewer__item', function(e) {handle_click_on_tr(e, $(this))})
 
