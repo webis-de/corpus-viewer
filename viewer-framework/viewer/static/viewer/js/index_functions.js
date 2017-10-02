@@ -599,6 +599,29 @@ function delete_corpus(modal)
     })
 }
 
+function submit_token_tagging(modal)
+{
+    let data = {}
+    data.task = 'submit_token_tagging';
+    data.token = $('#input_secret_token').val();
+
+    let url_params = refresh_url();
+
+    $.ajax({
+        // url: glob_current_corpus+'/get_page?'+url_params,
+        method: 'POST',
+        contentType: 'application/json',
+        headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+        data: JSON.stringify(data),
+        success: function(result) {
+            location.reload();
+        },
+        error: function(result) {
+            error_corpus_not_exists();
+        }
+    })
+}
+
 function add_tag(modal)
 {
     const id_item = modal.data('id_item');

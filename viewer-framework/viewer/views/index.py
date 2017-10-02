@@ -29,8 +29,10 @@ def index(request, id_corpus):
         if not glob_manager_data.is_secret_token_valid(id_corpus, secret_token):
             # if request.is_ajax():
             #     raise Http404("Corpus does not exist")
-            return redirect('viewer:add_token', id_corpus=id_corpus)           
+            return redirect('viewer:add_token', id_corpus=id_corpus)       
 
+##### check if has token for tagging
+    has_access_to_tagging = glob_manager_data.get_has_access_to_tagging(id_corpus, request)  
 
     state_loaded = glob_manager_data.get_state_loaded(id_corpus)
     if state_loaded != glob_manager_data.State_Loaded.LOADED:
@@ -64,13 +66,22 @@ def index(request, id_corpus):
             response['status'] = 'success'
             response['data'] = {'array_recommendations':array_tag_recommendations}
         elif obj['task'] == 'delete_tag_from_item':
-            response = delete_tag_from_item(obj, request)
+            if has_access_to_tagging:
+                response = delete_tag_from_item(obj, request)
         elif obj['task'] == 'toggle_item_to_tag':
-            response = toggle_item_to_tag(obj, request)
+            if has_access_to_tagging:
+                response = toggle_item_to_tag(obj, request)
         elif obj['task'] == 'check_if_tag_exists':
-            response = check_if_tag_exists(obj, request)
+            if has_access_to_tagging:
+                response = check_if_tag_exists(obj, request)
         elif obj['task'] == 'get_handle_indices':
             response['data'] = glob_manager_data.get_active_handle_indices()
+        elif obj['task'] == 'submit_token_tagging':
+            input_secret_token = obj['token']
+            request.session[id_corpus]['viewer__secret_token_tagging'] = input_secret_token
+            request.session.modified = True
+            return redirect('viewer:index', id_corpus=id_corpus)
+
 
         return JsonResponse(response)
 
@@ -78,6 +89,11 @@ def index(request, id_corpus):
     # print('final value: '+str(request.session[id_corpus]['viewer__settings_viewer_large_corpus']))
     context = {}
     dict_tmp = get_url_params(request)
+
+
+    context['has_access_to_tagging'] = has_access_to_tagging
+
+
     context['json_url_params'] = json.dumps(dict_tmp)
     context['tag_filter_active'] = json.dumps(get_tag_filter_active(id_corpus, dict_tmp['viewer__filter_tags']))
     context['json_filters'] = json.dumps(glob_manager_data.get_setting_for_corpus('filters', id_corpus))

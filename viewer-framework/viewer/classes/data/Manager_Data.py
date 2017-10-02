@@ -192,8 +192,28 @@ class Manager_Data:
 
         return True
 
+    def get_has_access_to_tagging(self, id_corpus, request):
+        has_access_to_tagging = False
+        if self.has_corpus_secret_token_tagging(id_corpus):
+            try:
+                secret_token = request.session[id_corpus]['viewer__secret_token_tagging']
+            except KeyError:
+                secret_token = None
+            if self.is_secret_token_tagging_valid(id_corpus, secret_token):
+                has_access_to_tagging = True   
+        else:
+            has_access_to_tagging = True 
+
+        return has_access_to_tagging 
+         
+    def has_corpus_secret_token_tagging(self, id_corpus):
+        return self.get_setting_for_corpus('secret_token_tagging', id_corpus) != None
+
     def has_corpus_secret_token(self, id_corpus):
         return self.get_setting_for_corpus('secret_token', id_corpus) != None
+
+    def is_secret_token_tagging_valid(self, id_corpus, secret_token):
+        return self.get_setting_for_corpus('secret_token_tagging', id_corpus) == secret_token
 
     def is_secret_token_valid(self, id_corpus, secret_token):
         return self.get_setting_for_corpus('secret_token', id_corpus) == secret_token
@@ -210,6 +230,8 @@ class Manager_Data:
         elif key == 'description':
             return ''
         elif key == 'secret_token':
+            return None
+        elif key == 'secret_token_tagging':
             return None
         elif key == 'template_path':
             return None

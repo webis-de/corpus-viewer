@@ -157,6 +157,7 @@ $(document).ready(function()
     $(document).on('click', '#submit_reindex_corpus', function(e) { reindex_corpus($('#modal_reindex_corpus')) });
     $(document).on('show.bs.modal', '#modal_reindex_corpus', function(e) { handle_show_modal_reindex_corpus(e, $(this)) });
     $(document).on('click', '#submit_delete_corpus', function(e) { delete_corpus($('#modal_delete_corpus')) });
+    $(document).on('click', '#submit_enter_token_tagging', function(e) { submit_token_tagging($('#modal_enter_token_tagging')) });
 
     $(document).on('change', '#checkbox_tag_selection_all', function(e) { handle_change_displayed_tag_all($(this)) });
     $(document).on('change', '.checkbox_tag_selection', function(e) { handle_change_displayed_tag($(this)) });
