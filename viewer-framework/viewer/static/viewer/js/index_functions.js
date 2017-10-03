@@ -599,6 +599,8 @@ function add_tag(modal)
             data.ids = [{'id_item': id_item, 'viewer__id_item_internal': id_item_internal}]
         }
     }
+    // console.log(data);
+    // return
 
     let url_params = refresh_url();
     $.ajax({

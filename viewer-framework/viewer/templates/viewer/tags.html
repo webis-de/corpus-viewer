@@ -18,6 +18,7 @@
                     <th class="column_tag_name">Name</th>
                     <th class="column_tag_color">Color</th>
                     <th class="column_tag_count_items">Count items</th>
+                    <th class="column_tag_add_items">Add items</th>
                     <th class="column_tag_filty_by">Filter by this tag</th>
                     <th class="column_tag_delete" class="td_delete_tag">Delete</th>
                 </tr>
@@ -26,7 +27,9 @@
             {% for tag in tags %}
                 <tr data-id_tag="{{ tag.id }}" data-tag_name="{{ tag.name }}">
                     <td class="column_tag_name" data-original_value="{{ tag.name }}">{{ tag.name }}</td>
-                    <td class="column_tag_color" data-original_value="{{ tag.color }}"><input name="color" type="color" value="{{ tag.color }}"></td>
+                    <td class="column_tag_color" data-original_value="{{ tag.color }}">
+                        <input name="color" type="color" value="{{ tag.color }}">
+                    </td>
                     <td class="column_tag_count_items">
                         {% if settings.data_type == 'database' %}
                             {{ tag.m2m_custom_model.all.count }}
@@ -34,8 +37,15 @@
                             {{ tag.m2m_entity.all.count }}
                         {% endif %}
                     </td>
-                    <td class="column_tag_filty_by"><a href="{% url 'viewer:index' id_corpus %}?viewer__filter_tags=[&quot;{{ tag.name }}&quot;]"><i class="fa fa-share" aria-hidden="true"></i></a></td>
-                    <td class="column_delete_tag"><i class="fa fa-times text-danger" style="cursor:pointer" aria-hidden="true"></i></td>
+                    <td class="column_tag_add_items">
+                        <!-- <input type="text" class="form-control form-control-sm"> -->
+                    </td>
+                    <td class="column_tag_filty_by">
+                        <a href="{% url 'viewer:index' id_corpus %}?viewer__filter_tags=[&quot;{{ tag.name }}&quot;]"><i class="fa fa-share" aria-hidden="true"></i></a>
+                    </td>
+                    <td class="column_delete_tag">
+                        <i class="fa fa-times text-danger" style="cursor:pointer" aria-hidden="true"></i>
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>

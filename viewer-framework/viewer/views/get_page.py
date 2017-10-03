@@ -650,7 +650,10 @@ def add_tag(obj, list_ids, request):
         else:
             for id_item in list_ids:
                 obj_item = glob_manager_data.get_item(id_corpus, id_item)
-                entities.append(str(obj_item[glob_manager_data.get_setting_for_corpus('id', id_corpus)]))
+                entities.append({
+                    'id_item': str(obj_item[glob_manager_data.get_setting_for_corpus('id', id_corpus)]),
+                    'viewer__id_item_internal': id_item
+                })
     else:
         if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
             raise NotImplementedError()
@@ -688,13 +691,12 @@ def index_missing_entities(entities, request):
 
     list_tupels = []
     for entity in entities:
-        list_tupels.append((entity['id_item'], entity['viewer__id_item_internal']))
+        list_tupels.append((str(entity['id_item']), entity['viewer__id_item_internal']))
     set_new_entities = set(list_tupels)
     # set_new_entities = {entity['id_item_internal'] for entity in entities}
 
     # set_new_entities.difference_update(tuple(entity.id_item, entity.id_item_internal for entity in queryset))
     set_new_entities.difference_update({(entity.id_item, entity.id_item_internal) for entity in queryset})
-
     if len(set_new_entities) > 0:
         result = m_Entity.objects.bulk_create([m_Entity(id_item=entity[0], id_item_internal=entity[1], key_corpus=id_corpus) for entity in set_new_entities])
 
