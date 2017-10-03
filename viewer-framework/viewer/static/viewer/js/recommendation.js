@@ -23,6 +23,56 @@ class Recommendation
             </div>`;
 
         this.init_events();
+
+        this.init_styles();
+    }
+
+    init_styles()
+    {
+        let css_wrapper = `
+            PLACEHOLDER_ID_WRAPPER {
+                display: none;
+                position: absolute;
+                width: 100%;
+                border-radius: 6px;
+                border: 1px solid black;
+                padding: 0 5px;
+                background-color: #f8f8f8;
+                z-index: 4444;
+            }
+        `;
+        css_wrapper = css_wrapper.replace('PLACEHOLDER_ID_WRAPPER', this.m_id_wrapper);
+
+        let css_recommendation = `
+            PLACEHOLDER_ID_WRAPPER .recommendation {
+                margin-top: 5px;
+                margin-bottom: 5px;
+                cursor: pointer;
+            }
+            
+        `;
+        css_recommendation = css_recommendation.replace(/PLACEHOLDER_ID_WRAPPER/g, this.m_id_wrapper);
+        
+        // PLACEHOLDER_ID_WRAPPER .recommendation:hover {
+        //         background-color: #ccc;
+            // }
+        let css_tag_marker_recommendation = `
+            PLACEHOLDER_ID_WRAPPER .tag_marker_recommendation {
+                float: left;
+                width: 10px;
+                height: 20px;
+                margin-right: 5px;
+            }
+        `;
+        css_tag_marker_recommendation = css_tag_marker_recommendation.replace('PLACEHOLDER_ID_WRAPPER', this.m_id_wrapper);
+
+        $('head').append(
+            '<style>'+
+            css_wrapper+
+            css_recommendation+
+            css_tag_marker_recommendation+
+            '</style>'
+        );
     }
 
     init_events()
@@ -33,6 +83,16 @@ class Recommendation
 
         $(this.m_context).on('click', this.m_id_wrapper + ' .recommendation', this, function(event){
             event.data.handle_click_on_recommendation($(this))
+        });
+
+        $(this.m_context).on('mouseenter', this.m_id_wrapper + ' .recommendation', this, function(event){
+            // event.data.request_recommendation($(this))
+            $(event.data.m_id_wrapper + ' .recommendation').css('background-color', '');
+            
+            event.data.m_index_position = $(this).index();
+            $(event.data.m_id_wrapper + ' .recommendation:nth-child(' + (event.data.m_index_position + 1) + ')').css('background-color', '#ccc')
+            // console.log($(this).index());
+
         });
 
         $(this.m_context).on('keydown', this.m_id_input, this, function(event) {
@@ -56,6 +116,14 @@ class Recommendation
                     break;
             }
         })
+
+        $(this.m_context).on('blur', this.m_id_input, this, function(event){
+            event.data.remove_wrapper_recommendation();
+        });
+
+        $(this.m_context).on('focus', this.m_id_input, this, function(event){
+            event.data.request_recommendation($(this));
+        });
     }
 
     move_up()

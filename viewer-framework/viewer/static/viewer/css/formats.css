@@ -112,30 +112,6 @@ html {
 #table_tags .column_tag_name {
     width: 40%
 }
-
-.wrapper_recommendation {
-    position: absolute;
-    width: 100%;
-    border-radius: 6px;
-    border: 1px solid black;
-    padding: 0 5px;
-    background-color: #f8f8f8;
-    z-index: 4444;
-}
-    .recommendation {
-        margin-top: 5px;
-        margin-bottom: 5px;
-        cursor: pointer;
-    }
-        .recommendation:hover {
-            background-color: #ccc;
-        }
-        .tag_marker_recommendation {
-            float: left;
-            width: 10px;
-            height: 20px;
-            margin-right: 5px;
-        }
     .badge .fa-times {
         cursor: pointer;
     }
