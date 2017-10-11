@@ -641,7 +641,7 @@ function add_tag(modal)
         error: function(result) {
             error_corpus_not_exists();
         }
-    })
+    });
 }
 
 function handle_change_add_to_all_filtered_items(input)

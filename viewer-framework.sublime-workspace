@@ -4,6 +4,50 @@
 		"selected_items":
 		[
 			[
+				"id_",
+				"id_item"
+			],
+			[
+				"set",
+				"set_new_entities"
+			],
+			[
+				"m_id",
+				"m_id_wrapper"
+			],
+			[
+				"PLACEHOLDER",
+				"PLACEHOLDER_ID_WRAPPER"
+			],
+			[
+				"m_in",
+				"m_index_position"
+			],
+			[
+				"key",
+				"keyCode"
+			],
+			[
+				"trigger",
+				"trigger_tag_filter_change"
+			],
+			[
+				"name",
+				"name"
+			],
+			[
+				"recommen",
+				"recommendation_add_tag"
+			],
+			[
+				"has",
+				"has_access_to_tagging"
+			],
+			[
+				"get_settin",
+				"get_settings_for_corpus"
+			],
+			[
 				"text_",
 				"text_splitted"
 			],
@@ -54,10 +98,6 @@
 			[
 				"id",
 				"id_corpus"
-			],
-			[
-				"has",
-				"has_secret_token"
 			],
 			[
 				"list",
@@ -224,10 +264,6 @@
 				"is_case_sensitive"
 			],
 			[
-				"set",
-				"set_data"
-			],
-			[
 				"max",
 				"max_length"
 			],
@@ -306,10 +342,6 @@
 			[
 				"query",
 				"queryset_interactions"
-			],
-			[
-				"name",
-				"name_dataset"
 			],
 			[
 				"interac",
@@ -482,30 +514,6 @@
 			[
 				"get",
 				"get_name"
-			],
-			[
-				"search",
-				"search_parent_class"
-			],
-			[
-				"parent",
-				"parent_class"
-			],
-			[
-				"class",
-				"classes"
-			],
-			[
-				"print",
-				"print_html"
-			],
-			[
-				"coun",
-				"count"
-			],
-			[
-				"clas_",
-				"class_name"
 			]
 		]
 	},
@@ -531,10 +539,13 @@
 			}
 		},
 		{
+			"contents": "def load_data(item_handle):\n    import csv\n    \n    def get_corrections(row):\n        list_corrections = []\n        for element in row[2:]:\n            if element == '':\n                break\n            else: \n                list_corrections.append(element)\n        return list_corrections\n\n    path = \"../corpora/webis-query-speller-corpus.csv\"\n    with open(path, 'r') as csvfile:\n        spamreader = csv.reader(csvfile, delimiter=';', quotechar='\"')\n        for row in spamreader:\n            list_corrections = get_corrections(row)\n\n            entry = {}\n            entry['id'] = row[0]\n            entry['query'] = row[1]\n            entry['corrections'] = ', '.join(list_corrections)\n            entry['count_corrections'] = len(list_corrections)\n\n            item_handle.add(entry)\n\n\nDICT_SETTINGS_VIEWER = {\n    # possible values: 'csv-file', 'ldjson-file', 'custom', 'database'\n    'name': 'Webis-QSpell-17',\n    'description': '',\n    'data_type': 'custom',\n    # function to load the data\n    'load_data_function': load_data,\n    'use_cache': True,\n    'data_fields': {\n        'id': {\n            'type': 'number',\n            'display_name': 'ID'\n        },\n        'corrections': {\n            'type': 'text',\n            'display_name': 'Spelling variants'\n        },\n        'query': {\n            'type': 'string',\n            'display_name': 'Query'\n        },\n        'count_corrections': {\n            'type': 'number',\n            'display_name': '#Variants'\n        }\n    },\n    'id': 'id',\n    'displayed_fields': [\n        'id', 'query', 'count_corrections', 'corrections'\n    ],\n    'page_size': 25,\n    'filters': [\n        {\n            'data_field': 'query',\n            'description': 'Query',\n            'placeholder': '',\n            'default_value': '',\n        },\n        {\n            'data_field': 'id',\n            'description': 'ID',\n            'placeholder': '',\n            'default_value': '',\n        },\n        {\n            'data_field': 'count_corrections',\n            'description': '#Variants',\n            'placeholder': '',\n            'default_value': '',\n        },\n        {\n            'data_field': 'corrections',\n            'description': 'Variants',\n            'placeholder': '',\n            'default_value': '',\n        },\n    ],\n    'secret_token_tagging': '1234',\n    'template_html': \"\"\"<dom-module id=\"viewer-template\">\n\n    <template>\n        <link rel=\"stylesheet\" href=\"[[ bootstrapCss ]]\">\n        <style>\n            /* shadow DOM styles go here */\n            :host {\n                /*display: inline-block;*/\n            }\n\n        </style>\n        <div class=\"row\">\n            <div class=\"col\">\n                <h1>Query: \"{{ objItem.query }}\"</h1>\n\n                <table id=\"table_test\" class=\"table table-striped\">\n                    <thead>\n                        <tr>\n                            <th></th>\n                            <th>Variants</th>\n                        </tr>\n                    </thead>\n                    <tbody>\n                    </tbody>\n                </table>\n            </div>\n        </div>\n    </template>\n\n    <script>\n        function get_position_of_first_difference(a, b) {\n            let length_a = a.length;\n            let length_b = b.length;\n\n            let position = -1;\n\n            for (let i = 0; i < a.length; i++) \n            {\n                character_current_a = a[i];\n                if(i < length_b)\n                {\n                    character_current_b = b[i];\n                    if(character_current_a != character_current_b)\n                    {\n                        return i\n                    }\n                } else {\n                    return position;\n                }\n            }\n            return position;\n        }\n\n        class ViewerTemplate extends Polymer.Element {\n            static get is() {\n                return 'viewer-template';\n            }\n            static get properties() {\n                return {\n                    objItem: {\n                        type: Object,\n                    },\n                    bootstrapCss: {\n                        type: String\n                    },\n                    bootstrapJs: {\n                        type: String\n                    },\n                    jqueryJs: {\n                        type: String\n                    }\n                }\n            }\n            constructor() {\n                super();\n            }\n            ready() {\n                super.ready()\n                this.objItem.corrections = this.objItem.corrections.split(',')\n                let element_table = this.shadowRoot.querySelector('#table_test tbody');\n                const replacement = '<span class=\"bg-warning\">PLACEHOLDER</span>'\n\n                for (let i = 0; i < this.objItem.corrections.length; i++) {\n                    let correction = this.objItem.corrections[i].trim();\n                    let position_of_first_difference = -1;\n                    if(i > 0)\n                    {\n                        let string_a = correction;\n                        let string_b = this.objItem.corrections[i-1].trim();\n                        position_of_first_difference = get_position_of_first_difference(string_a, string_b);\n                    }\n\n                    if(position_of_first_difference != -1)\n                    {\n                        correction[position_of_first_difference]\n                        const replacement_custom = replacement.replace('PLACEHOLDER', correction[position_of_first_difference])\n                        correction = correction.substr(0, position_of_first_difference) + replacement_custom + correction.substr(position_of_first_difference + 1)\n                    }\n\n                    let row = element_table.insertRow(-1);\n                    let cell1 = row.insertCell(0);\n                    cell1.innerHTML = i+1;\n                    let cell2 = row.insertCell(1);\n                    cell2.innerHTML = correction;\n                    // let row_new = `\n                    //     <tr>\n                    //         <td>`+(i+1)+`</td>\n                    //         <td>`+correction+`</td>\n                    //     </tr>\n                    // `\n                    // element_table.innerHTML = element_table.innerHTML + row_new;\n                }\n            }\n        }\n        customElements.define(ViewerTemplate.is, ViewerTemplate);\n    </script>\n\n</dom-module>\n\"\"\"\n    # 'template_path': \"\"\"../corpora/template_query_speller.html\"\"\"\n}",
 			"file": "settings/settings_viewer_query_speller.py",
+			"file_size": 6534,
+			"file_write_time": 131514093722413673,
 			"settings":
 			{
-				"buffer_size": 6498,
+				"buffer_size": 6534,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -620,7 +631,7 @@
 			"file": "viewer-framework/viewer/classes/data/Manager_Data.py",
 			"settings":
 			{
-				"buffer_size": 17999,
+				"buffer_size": 18937,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -638,7 +649,7 @@
 			"file": "viewer-framework/viewer/templates/viewer/table.html",
 			"settings":
 			{
-				"buffer_size": 4420,
+				"buffer_size": 4517,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -647,7 +658,7 @@
 			"file": "viewer-framework/viewer/static/viewer/js/helper_functions.js",
 			"settings":
 			{
-				"buffer_size": 13702,
+				"buffer_size": 11089,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -671,10 +682,92 @@
 			}
 		},
 		{
+			"file": "viewer-framework/viewer/templates/viewer/tags.html",
+			"settings":
+			{
+				"buffer_size": 8751,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "viewer-framework/viewer/static/viewer/js/recommendation.js",
+			"settings":
+			{
+				"buffer_size": 7896,
+				"encoding": "UTF-8",
+				"line_ending": "Unix",
+				"name": "recomm"
+			}
+		},
+		{
 			"file": "viewer-framework/viewer/templates/viewer/index.html",
 			"settings":
 			{
-				"buffer_size": 22862,
+				"buffer_size": 23952,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "viewer-framework/viewer/templates/viewer/add_token.html",
+			"settings":
+			{
+				"buffer_size": 1039,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "viewer-framework/viewer/static/viewer/js/index.js",
+			"settings":
+			{
+				"buffer_size": 10131,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "viewer-framework/viewer/static/viewer/js/index_functions.js",
+			"settings":
+			{
+				"buffer_size": 25607,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "viewer-framework/viewer/views/get_page.py",
+			"settings":
+			{
+				"buffer_size": 35912,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "viewer-framework/viewer/views/tags.py",
+			"settings":
+			{
+				"buffer_size": 5798,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "viewer-framework/viewer/static/viewer/js/tags.js",
+			"settings":
+			{
+				"buffer_size": 6652,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "viewer-framework/viewer/static/viewer/css/formats.css",
+			"settings":
+			{
+				"buffer_size": 2645,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -683,7 +776,7 @@
 			"file": "viewer-framework/dashboard/templates/dashboard/documentation.html",
 			"settings":
 			{
-				"buffer_size": 21788,
+				"buffer_size": 22311,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -692,7 +785,7 @@
 			"file": "viewer-framework/viewer/views/index.py",
 			"settings":
 			{
-				"buffer_size": 8135,
+				"buffer_size": 8876,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -797,6 +890,13 @@
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/dashboard/templates",
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/dashboard/templates/dashboard",
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/classes",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/classes/data",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/classes/index",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/static",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/static/viewer",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/static/viewer/css",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/static/viewer/js",
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/templates",
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/templates/viewer",
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/templatetags",
@@ -805,6 +905,8 @@
 	],
 	"file_history":
 	[
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/templates/viewer/index.html",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/views/get_page.py",
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django_polymer_alternative/corpora/template_query_speller (copy).html",
 		"/home/yiro4618/Downloads/user_sets/komlossy_user_set_16_32.txt",
 		"/home/yiro4618/Downloads/user_sets/komlossy_user_set_8_16.txt",
@@ -824,7 +926,6 @@
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/views/__init__.py",
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/corpora/webis-query-speller-corpus.csv",
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/static/viewer/bower_components/viewer-template.html",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/views/get_page.py",
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/static/viewer/js/index_functions.js",
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/static/viewer/js/index.js",
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/templates/viewer/table.html",
@@ -835,7 +936,6 @@
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/templatetags/tags_not_loaded.py",
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/dashboard/urls.py",
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/views/add_token.py",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/templates/viewer/index.html",
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/templates/viewer/tags.html",
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/dashboard/views.py",
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/static/viewer/css/formats.css",
@@ -936,13 +1036,17 @@
 	],
 	"find":
 	{
-		"height": 34.0
+		"height": 35.0
 	},
 	"find_in_files":
 	{
 		"height": 93.0,
 		"where_history":
 		[
+			"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/static/viewer/js",
+			"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/templates/viewer",
+			"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/static/viewer/js",
+			"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/views",
 			"<current file>",
 			"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer",
 			"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/static/viewer/js",
@@ -971,9 +1075,81 @@
 	},
 	"find_state":
 	{
-		"case_sensitive": true,
+		"case_sensitive": false,
 		"find_history":
 		[
+			"enable",
+			"input_list_items",
+			"request_delete_tag",
+			"id_tag",
+			"submit_add_items",
+			"input_list_items",
+			"modal_add_items",
+			"mouse_over_wrapper",
+			"remove_wrapper_recommendation",
+			"m_is_navigating",
+			"trigger_tag_add_change",
+			"handle_click_on_recommendation",
+			"glob_selected_items",
+			"style=\"display: none\"",
+			" style=\"display: none\"",
+			" class=\"wrapper_recommendation\"",
+			"wrapper_recommendation",
+			"css_recommendation",
+			"css",
+			";",
+			"start_mode_add_tag",
+			"button_start_mode_add_tag",
+			"toggle_item_to_tag",
+			"get_current_corpus(request)",
+			"id_item_internal",
+			"form_add_tag",
+			"this",
+			"event.data",
+			".m_index_position = 0",
+			"recommendation",
+			"mode_up",
+			"38",
+			"glob_trigger_modal",
+			"mode_add_tag",
+			"input_color_tag",
+			"handle_recommendation_filter",
+			"wrapper_tag_recommendations_add_tag",
+			"input_add_tag",
+			"input_name_new_tag",
+			"rapper_tag_recommendations",
+			"modal_add_tag",
+			"wrapper_tag_recommendations",
+			"wrapper_tag_recommendations_filter",
+			"wrapper_tag_recommendations",
+			"modal_add_tag",
+			"wrapper_tag_recommendations",
+			"input_name_new_text",
+			"trigger_tag_add_change",
+			"handle_click_on_recommendation",
+			"template_recommendations",
+			"'",
+			"glob_template_info_filter_values_number",
+			"'+this.name+'",
+			"wrapper_recommendation",
+			"m_passed_id_wrapper",
+			"function",
+			"handle_click_on_recommendation_filter",
+			"trigger_tag_add_change",
+			"handle_recommendation_filter",
+			"id_input",
+			"m_document",
+			"handle_recommendation_filter",
+			"remove_wrapper_recommendation",
+			"handle_recommendation",
+			"trigger_tag_add_change",
+			"trigger_tag_add_change#",
+			"glob_current_corpus",
+			"input_secret_token",
+			"submit_delete_corpus",
+			"glob_manager_data",
+			"alert",
+			"viewer__secret_token",
 			"http://webis42.medien.uni-weimar.de:1705",
 			"row",
 			"30",
@@ -1029,79 +1205,7 @@
 			"viewer__filter_custom",
 			"get_url_params",
 			"get_tag_filter_active",
-			"trigger_tag_filter_change",
-			"handle_click_on_recommendation",
-			"list_filter_tags",
-			"40px",
-			"span",
-			"wrapper_tags_filtered_items",
-			"PLACEHOLDER_VALUE_COUNT_TOTAL",
-			"create_filter_active",
-			"wrapper_tag_filter_active",
-			"tag_filter_active",
-			"list_filter_tags",
-			"glob_filter_tags",
-			"load_page_parameters",
-			"load_current_page",
-			"glob_filter_tags",
-			"tag_filter_active",
-			"get_tag_filter_active",
-			"m_Tag",
-			"{{ csrf_token }}",
-			"get_url_params",
-			"settings",
-			"viewer__filter_tags",
-			"glob_filter_tags",
-			"glob_filter_custom",
-			"glob_filter_tags",
-			"id",
-			"glob_filter_tags",
-			"create_filter_active",
-			"create_filter_active_contains",
-			"glob_template_filter_active_contains",
-			"tag_filter_active",
-			"glob_template_info_filter_values_contains",
-			"primary",
-			"btn-dark",
-			"btn-secondary",
-			"dict_tmp",
-			"traceback.format_exc(chain=False)",
-			"data",
-			"result = ",
-			"reindex_corpus",
-			"reload_settings",
-			"delete_cache_for_corpus",
-			"key",
-			"load_corpus_from_file",
-			"get_default_settings",
-			"check_for_new_corpora",
-			"load_corpus_from_file",
-			"reload_settings",
-			"load_corpus_from_file",
-			"develop",
-			"csrf",
-			"exampleInputEmail1",
-			"documentation",
-			"get_default_settings",
-			"glob_manager_data",
-			"{'size_in_bytes': 0, 'size': 0, 'state_loaded': self.State_Loaded.NOT_LOADED}",
-			"')\n",
-			"key",
-			"reload_settings",
-			"self.dict_corpora.keys()",
-			"reload_settings",
-			"load_corpus_from_file",
-			"exceptions",
-			"dict_exceptions",
-			"load_corpus_from_file",
-			"reload_settings",
-			"load_corpus_from_file",
-			"exec",
-			"add_tag",
-			"glob_selected_items",
-			"load_current_page",
-			"secondary",
-			"div"
+			"trigger_tag_filter_change"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1126,7 +1230,7 @@
 	"groups":
 	[
 		{
-			"selected": 22,
+			"selected": 18,
 			"sheets":
 			[
 				{
@@ -1156,7 +1260,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 16,
+					"stack_index": 13,
 					"type": "text"
 				},
 				{
@@ -1186,7 +1290,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 21,
+					"stack_index": 32,
 					"type": "text"
 				},
 				{
@@ -1195,15 +1299,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6498,
+						"buffer_size": 6534,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2315,
-								2315
+								2332,
+								2332
 							]
 						],
 						"settings":
@@ -1213,10 +1317,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1022.0,
+						"translation.y": 1081.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
@@ -1244,7 +1348,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 23,
 					"type": "text"
 				},
 				{
@@ -1274,7 +1378,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 22,
 					"type": "text"
 				},
 				{
@@ -1304,7 +1408,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 24,
 					"type": "text"
 				},
 				{
@@ -1334,7 +1438,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 25,
 					"type": "text"
 				},
 				{
@@ -1361,10 +1465,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1782.0,
+						"translation.y": 2254.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 21,
 					"type": "text"
 				},
 				{
@@ -1394,7 +1498,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
+					"stack_index": 28,
 					"type": "text"
 				},
 				{
@@ -1421,10 +1525,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1490.0,
+						"translation.y": 1862.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 27,
 					"type": "text"
 				},
 				{
@@ -1452,7 +1556,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 13,
+					"stack_index": 29,
 					"type": "text"
 				},
 				{
@@ -1479,10 +1583,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1404.0,
+						"translation.y": 1776.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 14,
+					"stack_index": 30,
 					"type": "text"
 				},
 				{
@@ -1491,15 +1595,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 17999,
+						"buffer_size": 18937,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								14404,
-								14404
+								7306,
+								7306
 							]
 						],
 						"settings":
@@ -1513,10 +1617,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 6134.0,
+						"translation.y": 513.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
@@ -1543,10 +1647,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 648.0,
+						"translation.y": 820.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 17,
+					"stack_index": 31,
 					"type": "text"
 				},
 				{
@@ -1555,15 +1659,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4420,
+						"buffer_size": 4517,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								133,
-								133
+								3408,
+								3408
 							]
 						],
 						"settings":
@@ -1573,10 +1677,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 646.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 18,
+					"stack_index": 19,
 					"type": "text"
 				},
 				{
@@ -1585,15 +1689,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 13702,
+						"buffer_size": 11089,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								12514,
-								12514
+								3260,
+								3260
 							]
 						],
 						"settings":
@@ -1603,10 +1707,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 6207.0,
+						"translation.y": 1140.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 22,
+					"stack_index": 16,
 					"type": "text"
 				},
 				{
@@ -1622,8 +1726,8 @@
 						"selection":
 						[
 							[
-								1175,
-								1175
+								254,
+								254
 							]
 						],
 						"settings":
@@ -1633,10 +1737,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 270.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 23,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
@@ -1663,27 +1767,27 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1824.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 20,
+					"stack_index": 14,
 					"type": "text"
 				},
 				{
 					"buffer": 18,
-					"file": "viewer-framework/viewer/templates/viewer/index.html",
+					"file": "viewer-framework/viewer/templates/viewer/tags.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 22862,
+						"buffer_size": 8751,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								21991,
-								21991
+								843,
+								843
 							]
 						],
 						"settings":
@@ -1693,27 +1797,56 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 6903.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 19,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
 					"buffer": 19,
-					"file": "viewer-framework/dashboard/templates/dashboard/documentation.html",
+					"file": "viewer-framework/viewer/static/viewer/js/recommendation.js",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 21788,
+						"buffer_size": 7896,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								12553,
-								12553
+								6860,
+								6860
+							]
+						],
+						"settings":
+						{
+							"auto_name": "recomm",
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 2772.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 20,
+					"file": "viewer-framework/viewer/templates/viewer/index.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 23952,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								9614,
+								9614
 							]
 						],
 						"settings":
@@ -1723,27 +1856,117 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3510.0,
+						"translation.y": 2545.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 15,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 20,
-					"file": "viewer-framework/viewer/views/index.py",
+					"buffer": 21,
+					"file": "viewer-framework/viewer/templates/viewer/add_token.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 8135,
+						"buffer_size": 1039,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3854,
-								3854
+								125,
+								125
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 22,
+					"file": "viewer-framework/viewer/static/viewer/js/index.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10131,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8772,
+								8772
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3218.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 23,
+					"file": "viewer-framework/viewer/static/viewer/js/index_functions.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 25607,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								16116,
+								16116
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 10773.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+					"type": "text"
+				},
+				{
+					"buffer": 24,
+					"file": "viewer-framework/viewer/views/get_page.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 35912,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1324,
+								1324
 							]
 						],
 						"settings":
@@ -1753,14 +1976,164 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 756.0,
+						"translation.y": 1197.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
-					"buffer": 21,
+					"buffer": 25,
+					"file": "viewer-framework/viewer/views/tags.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5798,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1652,
+								1652
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": -0.0,
+						"translation.y": 570.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 26,
+					"file": "viewer-framework/viewer/static/viewer/js/tags.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6652,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1531,
+								1531
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 27,
+					"file": "viewer-framework/viewer/static/viewer/css/formats.css",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2645,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1985,
+								1985
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CSS/CSS.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1824.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 15,
+					"type": "text"
+				},
+				{
+					"buffer": 28,
+					"file": "viewer-framework/dashboard/templates/dashboard/documentation.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 22311,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								12594,
+								12594
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3806.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 18,
+					"type": "text"
+				},
+				{
+					"buffer": 29,
+					"file": "viewer-framework/viewer/views/index.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8876,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5998,
+								5998
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 30,
 					"file": "viewer-framework/viewer/static/viewer/bower_components/templates/settings_viewer_query_speller.html",
 					"semi_transient": false,
 					"settings":
@@ -1787,14 +2160,14 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1188.0,
+						"translation.y": 1364.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 26,
 					"type": "text"
 				},
 				{
-					"buffer": 22,
+					"buffer": 31,
 					"file": "viewer-framework/viewer/views/shared_code.py",
 					"semi_transient": false,
 					"settings":
@@ -1806,8 +2179,8 @@
 						"selection":
 						[
 							[
-								1617,
-								1617
+								8985,
+								8985
 							]
 						],
 						"settings":
@@ -1817,14 +2190,14 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 4560.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 17,
 					"type": "text"
 				},
 				{
-					"buffer": 23,
+					"buffer": 32,
 					"semi_transient": false,
 					"settings":
 					{
@@ -1847,11 +2220,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 20,
 					"type": "text"
 				},
 				{
-					"buffer": 24,
+					"buffer": 33,
 					"file": "README.md",
 					"semi_transient": false,
 					"settings":
@@ -1875,11 +2248,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 25,
+					"stack_index": 34,
 					"type": "text"
 				},
 				{
-					"buffer": 25,
+					"buffer": 34,
 					"file": "viewer-framework/viewer/classes/index/Handle_Index_Whoosh.py",
 					"semi_transient": false,
 					"settings":
@@ -1902,10 +2275,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 108.0,
+						"translation.y": 136.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 24,
+					"stack_index": 33,
 					"type": "text"
 				}
 			]
@@ -1950,7 +2323,7 @@
 	"project": "viewer-framework.sublime-project",
 	"replace":
 	{
-		"height": 64.0
+		"height": 50.0
 	},
 	"save_all_on_build": true,
 	"select_file":

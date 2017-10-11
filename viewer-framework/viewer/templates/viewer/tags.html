@@ -18,7 +18,7 @@
                     <th class="column_tag_name">Name</th>
                     <th class="column_tag_color">Color</th>
                     <th class="column_tag_count_items">Count items</th>
-                    <th class="column_tag_add_items">Add items</th>
+                    <th class="column_tag_add_items">Action</th>
                     <th class="column_tag_filty_by">Filter by this tag</th>
                     <th class="column_tag_delete" class="td_delete_tag">Delete</th>
                 </tr>
@@ -38,7 +38,7 @@
                         {% endif %}
                     </td>
                     <td class="column_tag_add_items">
-                        <!-- <input type="text" class="form-control form-control-sm"> -->
+                        <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal_add_items">Add items</button>
                     </td>
                     <td class="column_tag_filty_by">
                         <a href="{% url 'viewer:index' id_corpus %}?viewer__filter_tags=[&quot;{{ tag.name }}&quot;]"><i class="fa fa-share" aria-hidden="true"></i></a>
@@ -52,6 +52,31 @@
         </table>
     </div>
 </div>
+<!-- MODAL ADD ITEMS -->
+<div class="modal fade" data-id_tag="" id="modal_add_items" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add items</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="input_list_items">List of item IDs</label>
+                    <input type="text" id="input_list_items" class="form-control" placeholder="Paste your IDs here">
+                    <small id="passwordHelpBlock" class="form-text text-muted">
+                        Separate your IDs by whitespaces (example: 0 1 2 3 4).
+                    </small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" id="submit_add_items" class="btn btn-primary">Add items</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- MODAL IMPORT TAGS -->
 <div class="modal fade" data-id_tag="" id="modal_import_tags" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">

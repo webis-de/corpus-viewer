@@ -14,7 +14,7 @@ class Recommendation
 
         this.m_length_current_recommendations = 0;
         this.m_index_position = -1;
-        this.m_is_navigating = false;
+        this.m_mouse_over_wrapper = false;
 
         this.m_template_recommendations = `
             <div class="recommendation" data-tag_id="PLACEHOLDER_ID" data-tag_name="PLACEHOLDER_NAME" data-tag_color="PLACEHOLDER_COLOR">
@@ -85,6 +85,14 @@ class Recommendation
             event.data.handle_click_on_recommendation($(this))
         });
 
+        $(this.m_context).on('mouseenter', this.m_id_wrapper, this, function(event){
+            event.data.m_mouse_over_wrapper = true;
+        });
+
+        $(this.m_context).on('mouseleave', this.m_id_wrapper, this, function(event){
+            event.data.m_mouse_over_wrapper = false;
+        });
+
         $(this.m_context).on('mouseenter', this.m_id_wrapper + ' .recommendation', this, function(event){
             // event.data.request_recommendation($(this))
             $(event.data.m_id_wrapper + ' .recommendation').css('background-color', '');
@@ -118,7 +126,10 @@ class Recommendation
         })
 
         $(this.m_context).on('blur', this.m_id_input, this, function(event){
-            event.data.remove_wrapper_recommendation();
+            if(!event.data.m_mouse_over_wrapper)
+            {
+                event.data.remove_wrapper_recommendation();
+            }
         });
 
         $(this.m_context).on('focus', this.m_id_input, this, function(event){
@@ -190,6 +201,7 @@ class Recommendation
 
     remove_wrapper_recommendation()
     {
+        this.m_mouse_over_wrapper = false;
         this.m_wrapper.hide();
         this.reset_recommendations();
     }

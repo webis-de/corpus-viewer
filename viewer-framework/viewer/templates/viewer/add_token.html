@@ -3,7 +3,7 @@
 
 <div class="row">
     <div class="col">
-        <h1>Enter token</h1>
+        <h1>Enter password</h1>
     </div>
 </div>
 <div class="row">
@@ -11,7 +11,7 @@
         <form method="post">
             {% csrf_token %}
             <div class="form-group">
-                <label for="input_secret_token">Secret token</label>
+                <label for="input_secret_token">Password</label>
                 <input type="text" class="form-control" name="secret_token" id="input_secret_token">
             </div>
                 <button type="submit" class="btn btn-primary">Submit</button>

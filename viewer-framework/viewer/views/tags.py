@@ -32,6 +32,8 @@ def tags(request, id_corpus):
             response = export_tags(obj, request)
         elif obj['task'] == 'import_tags':
             response = import_tags(obj, request)
+        elif obj['task'] == 'add_items':
+            response = add_items(obj, request)
 
         return JsonResponse(response)
 
@@ -44,6 +46,14 @@ def tags(request, id_corpus):
         return render(request, 'viewer/tags.html', context)
     else:
         return render(request, 'viewer/tags.html', context)
+
+def add_items(obj, request):
+    response = {}
+
+    
+    print(obj)
+
+    return response
 
 def import_tags(obj, request):
     id_corpus = get_current_corpus(request)

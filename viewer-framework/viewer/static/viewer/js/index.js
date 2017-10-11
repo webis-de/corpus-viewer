@@ -87,6 +87,7 @@ $(document).ready(function()
             name: recommendation.data('tag_name'),
             color: recommendation.data('tag_color')
         }
+        console.log(tag)
 
         input.val(tag.name);
         $('#button_start_mode_add_tag').data('tag', tag);

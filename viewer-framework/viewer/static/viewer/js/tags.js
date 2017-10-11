@@ -11,7 +11,37 @@ $(document).ready(function()
     $(document).on('change', '.column_tag_color input', function() { save_new_color($(this)) });
 
     $(document).on('click', '.column_delete_tag i', function() { request_delete_tag($(this).parent().parent().data('id_tag'), $(this).parent().parent().data('tag_name')) });
+    
+    $(document).on('show.bs.modal', '#modal_add_items', function(event) { add_id_tag_to_modal($(event.relatedTarget)) });
+    $(document).on('click', '#submit_add_items', function() { add_items($('#modal_add_items')); });
 });
+
+function add_id_tag_to_modal(button)
+{
+    let id_tag = button.parent().parent().data('id_tag');
+    $('#modal_add_items').data('id_tag', id_tag);
+}
+
+function add_items(modal)
+{
+    let data = {}
+    data.task = 'add_items';
+    data.id_tag = modal.data('id_tag');
+    data.ids = $('#input_list_items').val();
+
+    $.ajax({
+        method: 'POST',
+        contentType: 'application/json',
+        headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+        data: JSON.stringify(data),
+        success: function(result) {
+            modal.modal('hide');
+        },
+        error: function(result) {
+            error_corpus_not_exists();
+        }
+    });
+}
 
 function export_tags(modal)
 {
