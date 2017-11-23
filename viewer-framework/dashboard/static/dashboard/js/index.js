@@ -115,7 +115,8 @@ function update_corpora_cards(corpora)
                 .replace('PLACEHOLDER_ID_CORPUS', id_corpus)
                 .replace('PLACEHOLDER_NAME', corpus.name)
                 .replace('PLACEHOLDER_DESCRIPTION', corpus.description)
-                .replace('PLACEHOLDER_STATE_LOADED', get_html_state_loaded(corpus.state_loaded))
+                .replace('PLACEHOLDER_STATE_LOADED', '')
+                // .replace('PLACEHOLDER_STATE_LOADED', get_html_state_loaded(corpus.state_loaded))
                 .replace('PLACEHOLDER_LOCKED', get_html_locked(corpus.has_secret_token))
         );
     });

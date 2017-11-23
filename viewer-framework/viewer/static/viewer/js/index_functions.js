@@ -708,6 +708,56 @@ function handle_click_mode_add_tag(button)
     }
 }
 
+function handle_click_on_column_sorted_available(div)
+{
+    let template_sorted_column_active = glob_template_sorted_column_active
+        .replace('PLACEHOLDER_ID_COLUMN', div.data('id_column'))
+        .replace('PLACEHOLDER_COLUMN', div.data('id_column'));
+
+    $('#wrapper_columns_sorted').removeClass('d-none');
+    $('#wrapper_columns_sorted').append(template_sorted_column_active);
+    $('#toggle_popover_add_column_sorted').popover('hide');
+}
+
+function remove_column_sorted_active(div)
+{
+    div.remove();
+    
+    if($('#wrapper_columns_sorted div').length == 0)
+    {
+        $('#wrapper_columns_sorted').addClass('d-none');
+    }
+}
+
+function handle_column_sorted_change_order(div)
+{
+    const order_active = div.data('order');
+    const order_inactive = (order_active == 'desc') ? 'asc': 'desc';
+    
+    div.removeClass('badge-secondary').addClass('badge-primary');
+    div.parent().find('[data-order="'+order_inactive+'"]').removeClass('badge-primary').addClass('badge-secondary');
+}
+
+function handle_column_sorted_apply()
+{
+    let list_tmp = [];
+
+    $('#wrapper_columns_sorted div').each(function(index, element) {
+        
+
+        list_tmp.push({field: $(element).data('id_column'), order: $(element).find('.badge-primary').data('order')}); 
+    });
+
+    glob_sorted_columns = list_tmp;
+
+    refresh_url();
+    set_session_entry('viewer__sorted_columns', glob_sorted_columns, function() {
+        glob_current_page = 1;
+        load_current_page();
+        console.log(JSON.stringify(glob_sorted_columns))
+    });
+}
+
 function handle_click_on_tr(event, tr)
 {
     if(glob_mode_add_tag.status == 'active')

@@ -65,6 +65,16 @@ let glob_template_info_filter_values_number = escape_html(`
         </tr>
     </table>`);
 
+let glob_template_sorted_column_active = `
+    <div data-id_column="PLACEHOLDER_ID_COLUMN" class="sorted_column_active p-1">
+        <span>PLACEHOLDER_COLUMN</span>
+        <span class="float-right">
+            <span data-order="asc" class="badge badge-primary" style="cursor: pointer">asc</span>
+            <span data-order="desc" class="badge badge-secondary" style="cursor: pointer">desc</span>
+            <i class="fa fa-times text-danger" style="cursor: pointer"></i>
+        </span>
+    </div>`;
+
 $(document).ready(function()
 {
     function trigger_tag_new_change(recommendation, input)
@@ -125,15 +135,15 @@ $(document).ready(function()
     $(document).on('click', '.viewer__button_add_filter_number', function(){ handle_click_on_button_add_filter_number($(this)) });
     $(document).on('click', '.viewer__column_filter_active .fa-times', function(){ handle_click_on_remove_filter_value($(this)) });
 
-    $('body').popover({
-        selector: '.viewer__column_filter_active .fa-info',
-        placement: 'top',
-        animation: false,
-        container: 'body',
-        html: true,
-        trigger: 'hover',
-        // template: '<div class="popover link_delete_tag" style="cursor:pointer" role="tooltip"><div class="popover-content" style="padding: 3px 5px"></div></div>'
-    })
+    // $('.viewer__column_filter_active .fa-info').popover({
+    //     selector: '.viewer__column_filter_active .fa-info',
+    //     placement: 'top',
+    //     animation: false,
+    //     container: 'body',
+    //     html: true,
+    //     trigger: 'hover',
+    //     // template: '<div class="popover link_delete_tag" style="cursor:pointer" role="tooltip"><div class="popover-content" style="padding: 3px 5px"></div></div>'
+    // })
 
 
     $(document).on('show.bs.collapse', '.card .collapse', function(e) { set_session_entry('is_collapsed_'+$(this).attr('id'), false) });
@@ -163,26 +173,62 @@ $(document).ready(function()
     $(document).on('click', '.link_delete_tag', function(e) { delete_tag_from_item($(this).data('id_item'), $(this).data('id_tag')); });
     // stop propagation of click event
     $(document).on('click', '.wrapper_tags .tag_marker', function(e) { return false });
+    $(document).on('click', '#toggle_popover_add_column_sorted', function(e) { return false });
     // hide popovers on click anywhere
-    $(document).on('click', 'body', function(e) { $('.tag_marker').popover('hide') });
+    $(document).on('click', 'body', function(e) { $('.tag_marker').popover('hide'); $('#toggle_popover_add_column_sorted').popover('hide') });
     $(document).on('show.bs.popover', '.tag_marker', function(e) { $('.tag_marker').popover('hide') });
 
-    $('body').tooltip({
+    $(document).tooltip({
         selector: '.tag_marker',
         placement: 'top',
         animation: false,
         container: 'body',
-    })
+    });
+
     $('body').popover({
         selector: '.tag_marker',
         placement: 'bottom',
         animation: false,
         container: 'body',
         html: true,
-        template: '<div class="popover link_delete_tag" style="cursor:pointer" role="tooltip"><div class="popover-content" style="padding: 3px 5px"></div></div>'
-    })
+        template: '<div class="popover link_delete_tag" style="cursor:pointer" role="tooltip"><div class="popover-body" style="padding: 3px 5px"></div></div>'
+    });
 
-    $(document).on('click', 'th[data-sortable="sortable"]', function(e) {handle_click_on_sortable_column($(this))})
+    //////////////////////
+
+    $(document).popover({
+        selector: '#toggle_popover_add_column_sorted',
+        placement: 'right',
+        animation: false,
+        container: 'body',
+        html: true,
+        content: function() {
+            let result = '';
+            let list_columns_used = [];
+
+            $('#wrapper_columns_sorted div').each(function(index, div) {
+                list_columns_used.push($(div).data('id_column'));
+            });
+
+            $(glob_columns).each(function(index, column) {
+                if(list_columns_used.indexOf(column) == -1 && column != 'viewer__tags' && column != 'viewer__item_selection')
+                {
+                    result += '<div class="column_sorted_available" data-id_column="'+column+'" style="cursor:pointer">'+column+'</div>';
+                }
+            });
+
+            return result;
+        },
+        template: '<div class="popover" role="tooltip"><div class="popover-body" style="padding: 3px 5px"></div></div>'
+    });
+    $(document).on('click', '.column_sorted_available', function(e) { handle_click_on_column_sorted_available($(this)) });
+    $(document).on('click', '.sorted_column_active .fa-times', function(e) { remove_column_sorted_active($(this).parent().parent()) });
+    $(document).on('click', '.sorted_column_active [data-order]', function(e) { handle_column_sorted_change_order($(this)) });
+    $(document).on('click', '#toggle_popover_apply_column_sorted', function(e) { handle_column_sorted_apply($(this)) });
+
+    $(document).on('click', 'th[data-sortable="sortable"]', function(e) {handle_click_on_sortable_column($(this)) });
+    //////////////////////
+
     $(document).on('contextmenu', '.row_viewer__item', function(e) {handle_rightclick_on_tr(e, $(this))})
 
     $(document).on('click', '.link_add_tag', function(e) { handle_click_link_add_tag(e, $(this)) });
