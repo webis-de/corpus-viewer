@@ -69,8 +69,8 @@ let glob_template_sorted_column_active = `
     <div data-id_column="PLACEHOLDER_ID_COLUMN" class="sorted_column_active p-1">
         <span>PLACEHOLDER_COLUMN</span>
         <span class="float-right">
-            <span data-order="asc" class="badge badge-primary" style="cursor: pointer">asc</span>
-            <span data-order="desc" class="badge badge-secondary" style="cursor: pointer">desc</span>
+            <span data-order="asc" class="badge PLACEHOLDER_ASC" style="cursor: pointer">asc</span>
+            <span data-order="desc" class="badge PLACEHOLDER_DESC" style="cursor: pointer">desc</span>
             <i class="fa fa-times text-danger" style="cursor: pointer"></i>
         </span>
     </div>`;
@@ -219,7 +219,7 @@ $(document).ready(function()
 
             return result;
         },
-        template: '<div class="popover" role="tooltip"><div class="popover-body" style="padding: 3px 5px"></div></div>'
+        template: '<div class="popover popover_column_sorted_available" role="tooltip"><div class="arrow"></div><div class="popover-body" style="padding: 3px 5px"></div></div>'
     });
     $(document).on('click', '.column_sorted_available', function(e) { handle_click_on_column_sorted_available($(this)) });
     $(document).on('click', '.sorted_column_active .fa-times', function(e) { remove_column_sorted_active($(this).parent().parent()) });

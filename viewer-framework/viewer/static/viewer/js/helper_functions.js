@@ -308,6 +308,28 @@ function update_ui(info_filter_values)
         }
     });
     update_checkbox_select_all('input_select_item', 'input_select_all_items')
+
+
+    $('#wrapper_columns_sorted').html('');
+    $(glob_sorted_columns).each(function(index, element) {
+        let asc = 'badge-primary';
+        let desc = 'badge-secondary';
+
+        if(element.order == 'desc')
+        {
+            asc = 'badge-secondary';
+            desc = 'badge-primary';
+        }
+        let template_sorted_column_active = glob_template_sorted_column_active
+            .replace('PLACEHOLDER_ID_COLUMN', element.field)
+            .replace('PLACEHOLDER_COLUMN', element.field)
+            .replace('PLACEHOLDER_ASC', asc)
+            .replace('PLACEHOLDER_DESC', desc);
+
+        $('#wrapper_columns_sorted').removeClass('d-none');
+        $('#wrapper_columns_sorted').append(template_sorted_column_active);
+
+    });
 }
 
 function escape_html(text) {

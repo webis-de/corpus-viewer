@@ -142,3 +142,11 @@ html {
 .viewer__column_filter_active .fa-info {
     margin-right: 0.1rem;
 }
+
+#wrapper_columns_sorted {
+    border: 1px solid rgba(0, 0, 0, 0.125); 
+    border-radius: 0.25rem;
+}
+.popover_column_sorted_available .popover-body>div:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+}

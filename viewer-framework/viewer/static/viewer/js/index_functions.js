@@ -712,7 +712,9 @@ function handle_click_on_column_sorted_available(div)
 {
     let template_sorted_column_active = glob_template_sorted_column_active
         .replace('PLACEHOLDER_ID_COLUMN', div.data('id_column'))
-        .replace('PLACEHOLDER_COLUMN', div.data('id_column'));
+        .replace('PLACEHOLDER_COLUMN', div.data('id_column'))
+        .replace('PLACEHOLDER_ASC', 'badge-primary')
+        .replace('PLACEHOLDER_DESC', 'badge-secondary');
 
     $('#wrapper_columns_sorted').removeClass('d-none');
     $('#wrapper_columns_sorted').append(template_sorted_column_active);
@@ -754,7 +756,6 @@ function handle_column_sorted_apply()
     set_session_entry('viewer__sorted_columns', glob_sorted_columns, function() {
         glob_current_page = 1;
         load_current_page();
-        console.log(JSON.stringify(glob_sorted_columns))
     });
 }
 
