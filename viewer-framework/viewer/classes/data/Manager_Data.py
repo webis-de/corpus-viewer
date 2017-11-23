@@ -394,6 +394,8 @@ class Manager_Data:
                     settings_corpus['load_data_function'](obj_handle_item)
                 except Exception as e:
                     error_happended = True
+                    # self.dict_corpora[id_corpus]['exception'] = e.lineno or 'test'
+                    # self.dict_corpora[id_corpus]['exception'] = traceback.tb_lineno
                     self.dict_corpora[id_corpus]['exception'] = traceback.format_exc(chain=False)
 
                     if self.debug == True:

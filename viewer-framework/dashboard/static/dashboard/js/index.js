@@ -56,9 +56,14 @@ let glob_template_state_loaded = `
         </span>
     </span>`
 
-let glob_template_alert_exception = `
+let glob_template_alert_exception_linenumber = `
     <div class="alert alert-danger" role="alert">
         The file <b>PLACEHOLDER_FILE</b> has incorrect syntax at line PLACEHOLDER_EXCEPTION!<br>
+    </div>`
+
+let glob_template_alert_exception = `
+    <div class="alert alert-danger" role="alert">
+        The file <b>PLACEHOLDER_FILE</b> threw the following exception:<br>PLACEHOLDER_EXCEPTION!<br>
     </div>`
 
 function get_html_state_loaded(state) 
@@ -127,10 +132,17 @@ function update_corpora_with_exceptions(corpora)
     $.each(corpora, function(id_corpus, exception) {
         let exception_processed = exception;
         // let exception_processed = exception.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/ /g, '&nbsp;').replace(/\n/g, '<br>');
-        wrapper_corpora.append(glob_template_alert_exception
-            .replace('PLACEHOLDER_FILE', id_corpus+'.py')
-            .replace('PLACEHOLDER_EXCEPTION', exception_processed)
-        );
+        if(!isNaN(parseFloat(exception_processed))) {
+            wrapper_corpora.append(glob_template_alert_exception_linenumber
+                .replace('PLACEHOLDER_FILE', id_corpus+'.py')
+                .replace('PLACEHOLDER_EXCEPTION', exception_processed)
+            );
+        } else {
+            wrapper_corpora.append(glob_template_alert_exception
+                .replace('PLACEHOLDER_FILE', id_corpus+'.py')
+                .replace('PLACEHOLDER_EXCEPTION', exception_processed)
+            );
+        }
     });
 }
 
