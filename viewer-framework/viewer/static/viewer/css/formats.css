@@ -150,3 +150,7 @@ html {
 .popover_column_sorted_available .popover-body>div:hover {
     background-color: rgba(0, 0, 0, 0.2);
 }
+
+#edit_settings_textarea {
+    height: calc(100vh - 110px);
+}

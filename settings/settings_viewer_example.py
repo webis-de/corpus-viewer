@@ -3,7 +3,6 @@ def load_data(item_handle):
     # import os
     # import json
     # import csv
-    # ...
 
     # create some example items for the corpus
     for x in range(0, 100):

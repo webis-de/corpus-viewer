@@ -1,0 +1,36 @@
+{% include "viewer/header.html" %}
+{% load staticfiles %}
+<link rel="stylesheet" href="{% static 'viewer/css/formats.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard/css/monokai-sublime.css' %}">
+<div class="row">
+	<div class="col">
+		<form action="" method="post">
+		<!-- <pre><code class=" mt-2 python" id="edit_settings_textarea" contenteditable="true">{{ content_settings }}</code></pre> -->
+			<textarea class="form-control my-2 python" id="edit_settings_textarea" name="content">{{ content_settings }}</textarea>
+			<button type="submit" class="btn btn-primary btn-sm">Save &amp; Reload</button>
+			{% csrf_token %}
+		</form>
+	</div>
+</div>
+
+<script src="{% static 'viewer/js/jquery-3.1.1.min.js' %}"></script>
+<script src="{% static 'viewer/js/popper.js' %}"></script>
+<script src="{% static 'viewer/js/bootstrap.js' %}"></script>
+<script src="{% static 'viewer/js/helper_functions.js' %}"></script>
+<script src="{% static 'viewer/js/tags.js' %}"></script>
+
+<!-- <script src="{% static 'viewer/js/highlight.pack.js' %}"></script> -->
+<!-- <script>
+	// let textarea = $('#edit_settings_textarea')[0];
+	// hljs.highlightBlock(textarea);
+
+	// $('#edit_settings_textarea').on('input', function() {
+	// 	console.log($('#edit_settings_textarea').prop("selectionStart"));
+	// 	var start = textarea.selectionEnd;
+	// 	console.log(start)
+	// 	hljs.highlightBlock(textarea);
+	// })
+	// hljs.initHighlightingOnLoad();
+</script> -->
+<!-- <link rel="stylesheet" type="text/css" href="{% static 'viewer/css/formats.css' %}" /> -->
+{% include "viewer/footer.html" %}

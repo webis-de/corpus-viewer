@@ -243,6 +243,14 @@ class Manager_Data:
     def get_settings_for_corpus(self, id_corpus):
         return self.dict_corpora[id_corpus]['settings']
 
+    def get_settings_content_for_corpus(self, id_corpus):
+        with open(os.path.join(self.path_settings, id_corpus + '.py'), 'r') as f:
+            return f.read()
+
+    def set_settings_content_for_corpus(self, id_corpus, content):
+        with open(os.path.join(self.path_settings, id_corpus + '.py'), 'w') as f:
+           f.write(content)
+
     def reload_settings(self, id_corpus):
         file = id_corpus + '.py'
         settings = None

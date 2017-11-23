@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^(?P<id_corpus>[^\/]+)/get_page$', views.get_page, name='get_page'),
     url(r'^(?P<id_corpus>[^\/]+)/tags$', views.tags, name='tags'),
     url(r'^(?P<id_corpus>[^\/]+)/enter_token$', views.add_token, name='add_token'),
+    url(r'^(?P<id_corpus>[^\/]+)/edit$', views.edit, name='edit'),
 ]
