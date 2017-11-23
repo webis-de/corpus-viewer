@@ -26,10 +26,10 @@ By default the tool uses the pure-Python search-engine [Whoosh](https://pypi.pyt
 * integrated loading of corpora stored in a in ldjson- or csv-file
 * multiple convenient ways to assign tags to your corpus items
 * export the whole or parts of the corpus into a ldjson- or csv-file
+* configurable item view with web components
 
 ## Upcoming Features
 * (better) support for mobile devices 
-* configurable item view with web components
 
 ## Known Bugs
 

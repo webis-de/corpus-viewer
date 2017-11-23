@@ -39,15 +39,13 @@ def delete_session(request):
     return JsonResponse({})
     
 def refresh_corpora():
-    # print(glob_manager_data.dict_corpora)
     glob_manager_data.check_for_new_corpora()
-    # print(glob_manager_data.dict_corpora)
     return get_corpora()
 
 def get_corpora():
     response = {}
 
-    dict_data_chached = init_data()
+    # dict_data_chached = init_data()
     dict_ordered = collections.OrderedDict()
     list_keys = ['name', 'description']
     for id_corpus in glob_manager_data.get_ids_corpora(sorted_by='name'):
@@ -57,17 +55,16 @@ def get_corpora():
         settings['has_secret_token'] = glob_manager_data.has_corpus_secret_token(id_corpus)
         dict_ordered[id_corpus] = settings
 
-    # print(dict_ordered)
     response['corpora'] = dict_ordered
 
     response['corpora_with_exceptions'] = glob_manager_data.get_corpora_with_exceptions()
 
     return response
 
-def init_data():
-    dict_data = cache.get('metadata_corpora')
+# def init_data():
+#     dict_data = cache.get('metadata_corpora')
 
-    if(dict_data == None):
-        dict_data = {}
+#     if(dict_data == None):
+#         dict_data = {}
 
-    return dict_data
+#     return dict_data

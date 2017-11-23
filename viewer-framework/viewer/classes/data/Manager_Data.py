@@ -62,7 +62,7 @@ class Manager_Data:
                     with open(template_path, 'r') as f:
                         self.dict_corpora[id_corpus]['settings']['template_html'] = f.read()
                 except FileNotFoundError:
-                    pass
+                    print('file not found')
 
 
             
