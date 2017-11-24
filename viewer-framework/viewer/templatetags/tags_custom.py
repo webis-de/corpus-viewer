@@ -35,6 +35,11 @@ def get_is_collapsed_div_settings(context):
     return context.request.session[current_corpus]['viewer__is_collapsed_div_settings']
  
 @register.simple_tag(takes_context=True)
+def get_is_allowed_editing(context):
+    id_corpus = context.request.session['viewer__viewer__current_corpus']
+    return glob_manager_data.is_editing_allowed(id_corpus)
+ 
+@register.simple_tag(takes_context=True)
 def get_values_filter(context, filter_custom):
     current_corpus = context.request.session['viewer__viewer__current_corpus']
     return context.request.session[current_corpus]['viewer__viewer__filter_custom'][filter_custom['data_field']]

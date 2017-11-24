@@ -251,6 +251,9 @@ class Manager_Data:
         with open(os.path.join(self.path_settings, id_corpus + '.py'), 'w') as f:
            f.write(content)
 
+    def is_editing_allowed(self, id_corpus):
+        return True
+
     def reload_settings(self, id_corpus):
         file = id_corpus + '.py'
         settings = None
