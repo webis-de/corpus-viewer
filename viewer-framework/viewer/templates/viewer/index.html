@@ -9,6 +9,7 @@
 {% get_has_template_view_item as has_template_view_item %}
 
 {% get_is_allowed_editing as is_allowed_editing %}
+{% get_has_secret_token_editing as has_secret_token_editing %}
 <div class="row">
 	<div class="col">
 		<h1>{{ settings.name }}</h1>
@@ -30,6 +31,8 @@
                 <a class="dropdown-item" href="#" id="submit_reload_settings">Reload settings</a>
                 {% if is_allowed_editing %}
                     <a class="dropdown-item" href="{% url 'viewer:edit' id_corpus %}">Edit settings</a>
+                {% elif has_secret_token_editing %}
+                    <a class="dropdown-item" data-toggle="modal" data-target="#modal_enter_token_editing">Enable editing</a>
                 {% endif %}
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modal_reindex_corpus">Reindex corpus</a>
@@ -217,7 +220,7 @@
                     </div>
                     <div class="collapse {% if is_collapsed_div_tags == False %}show{% endif %}" id="div_tags">
                         <div class="card-body py-1 px-2">
-                        {% if has_access_to_tagging %}
+                        {% if has_access_to_editing %}
                             <div>
                                 <b>Add tags to selected items</b>
                                 <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal_add_tag">
@@ -237,12 +240,12 @@
                                 </div>
                                 <div id="wrapper_tag_recommendations_add_tag"></div>
                             </div>
-                        {% else %}
-                                <div class="text-center">
-                                    <button type="button" data-toggle="modal" data-target="#modal_enter_token_tagging" class="btn btn-sm btn-primary">Edit Tags</button>
-                                </div>
-                        {% endif %}
                             <hr>
+                        {% else %}
+                                <!-- <div class="text-center">
+                                    <button type="button" data-toggle="modal" data-target="#modal_enter_token_editing" class="btn btn-sm btn-primary">Edit Tags</button>
+                                </div> -->
+                        {% endif %}
                             <div>
                                 <table>
                                     <thead>
@@ -278,8 +281,8 @@
 	</div>
 </div>
 
-<!-- MODAL ENTER TOKEN TAGGING -->
-<div class="modal fade" id="modal_enter_token_tagging">
+<!-- MODAL ENTER TOKEN EDITING -->
+<div class="modal fade" id="modal_enter_token_editing">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -294,7 +297,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="submit_enter_token_tagging">Submit</button>
+                <button type="button" class="btn btn-primary" id="submit_enter_token_editing">Submit</button>
             </div>
         </div>
     </div>

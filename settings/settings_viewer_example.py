@@ -64,5 +64,6 @@ DICT_SETTINGS_VIEWER = {
         },
     ],
     'secret_token': 'test',
+    'secret_token_editing': 'tesst',
     'template': '../corpora/index.html'
 }

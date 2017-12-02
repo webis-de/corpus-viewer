@@ -551,10 +551,10 @@ function delete_corpus(modal)
     })
 }
 
-function submit_token_tagging(modal)
+function submit_token_editing(modal)
 {
     let data = {}
-    data.task = 'submit_token_tagging';
+    data.task = 'submit_token_editing';
     data.token = $('#input_secret_token').val();
 
     let url_params = refresh_url();

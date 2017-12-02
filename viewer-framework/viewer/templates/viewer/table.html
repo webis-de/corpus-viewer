@@ -51,7 +51,7 @@
 
             <td class="column_viewer__tags" {% if not "viewer__tags"|in_columns_checked:request %}style="display: none"{% endif %}>
                 <div class="wrapper_tags {{ item.viewer_tags|display_as_tag_classes }}"></div>
-                {% if has_access_to_tagging %}
+                {% if has_access_to_editing %}
                     <a class="link_add_tag" data-id_item="{{item|get:settings.id}}" data-viewer__id_item_internal="{{ item|get:'viewer__id_item_internal' }}" href="#"><i class="fa fa-plus" aria-hidden="true"></i></a>
                 {% endif %} 
             </td>

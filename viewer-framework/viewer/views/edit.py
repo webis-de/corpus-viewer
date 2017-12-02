@@ -7,6 +7,9 @@ def edit(request, id_corpus):
     #     for x in range(0, 20 * 100 000 000):
     #             f.write(1)
 
+    if not glob_manager_data.get_has_access_to_editing(id_corpus, request):
+        return redirect('viewer:index', id_corpus=id_corpus) 
+
     if request.method == 'POST':
         cookie_id = request.COOKIES['csrftoken']
 

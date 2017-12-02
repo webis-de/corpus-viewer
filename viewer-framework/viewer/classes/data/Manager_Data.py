@@ -192,28 +192,43 @@ class Manager_Data:
 
         return True
 
-    def get_has_access_to_tagging(self, id_corpus, request):
-        has_access_to_tagging = False
-        if self.has_corpus_secret_token_tagging(id_corpus):
+    def get_has_access_to_editing(self, id_corpus, request):
+        has_access_to_editing = False
+        if self.has_corpus_secret_token_editing(id_corpus):
             try:
-                secret_token = request.session[id_corpus]['viewer__secret_token_tagging']
+                secret_token = request.session[id_corpus]['viewer__secret_token_editing']
             except KeyError:
                 secret_token = None
-            if self.is_secret_token_tagging_valid(id_corpus, secret_token):
-                has_access_to_tagging = True   
-        else:
-            has_access_to_tagging = True 
+            if self.is_secret_token_editing_valid(id_corpus, secret_token):
+                has_access_to_editing = True   
 
-        return has_access_to_tagging 
+        return has_access_to_editing 
+
+    # def get_has_access_to_tagging(self, id_corpus, request):
+    #     has_access_to_tagging = False
+    #     if self.has_corpus_secret_token_editing(id_corpus):
+    #         try:
+    #             secret_token = request.session[id_corpus]['viewer__secret_token_editing']
+    #         except KeyError:
+    #             secret_token = None
+    #         if self.is_secret_token_editing_valid(id_corpus, secret_token):
+    #             has_access_to_tagging = True   
+
+    #     return has_access_to_tagging 
+
+    # def is_editing_allowed(self, id_corpus):
+    #     if not self.has_corpus_secret_token(id_corpus) and not self.has_corpus_secret_token_editing(id_corpus):
+    #         return True
+    #     return False
          
-    def has_corpus_secret_token_tagging(self, id_corpus):
-        return self.get_setting_for_corpus('secret_token_tagging', id_corpus) != None
+    def has_corpus_secret_token_editing(self, id_corpus):
+        return self.get_setting_for_corpus('secret_token_editing', id_corpus) != None
 
     def has_corpus_secret_token(self, id_corpus):
         return self.get_setting_for_corpus('secret_token', id_corpus) != None
 
-    def is_secret_token_tagging_valid(self, id_corpus, secret_token):
-        return self.get_setting_for_corpus('secret_token_tagging', id_corpus) == secret_token
+    def is_secret_token_editing_valid(self, id_corpus, secret_token):
+        return self.get_setting_for_corpus('secret_token_editing', id_corpus) == secret_token
 
     def is_secret_token_valid(self, id_corpus, secret_token):
         return self.get_setting_for_corpus('secret_token', id_corpus) == secret_token
@@ -231,7 +246,7 @@ class Manager_Data:
             return ''
         elif key == 'secret_token':
             return None
-        elif key == 'secret_token_tagging':
+        elif key == 'secret_token_editing':
             return None
         elif key == 'template_path':
             return None
@@ -250,9 +265,6 @@ class Manager_Data:
     def set_settings_content_for_corpus(self, id_corpus, content):
         with open(os.path.join(self.path_settings, id_corpus + '.py'), 'w') as f:
            f.write(content)
-
-    def is_editing_allowed(self, id_corpus):
-        return True
 
     def reload_settings(self, id_corpus):
         file = id_corpus + '.py'

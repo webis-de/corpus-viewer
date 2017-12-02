@@ -31,8 +31,8 @@ def index(request, id_corpus):
             #     raise Http404("Corpus does not exist")
             return redirect('viewer:add_token', id_corpus=id_corpus)       
 
-##### check if has token for tagging
-    has_access_to_tagging = glob_manager_data.get_has_access_to_tagging(id_corpus, request)  
+##### check if has token for editing
+    has_access_to_editing = glob_manager_data.get_has_access_to_editing(id_corpus, request)  
 
     state_loaded = glob_manager_data.get_state_loaded(id_corpus)
     if state_loaded != glob_manager_data.State_Loaded.LOADED:
@@ -66,19 +66,19 @@ def index(request, id_corpus):
             response['status'] = 'success'
             response['data'] = {'array_recommendations':array_tag_recommendations}
         elif obj['task'] == 'delete_tag_from_item':
-            if has_access_to_tagging:
+            if has_access_to_editing:
                 response = delete_tag_from_item(obj, request)
         elif obj['task'] == 'toggle_item_to_tag':
-            if has_access_to_tagging:
+            if has_access_to_editing:
                 response = toggle_item_to_tag(obj, id_corpus)
         elif obj['task'] == 'check_if_tag_exists':
-            if has_access_to_tagging:
+            if has_access_to_editing:
                 response = check_if_tag_exists(obj, request)
         elif obj['task'] == 'get_handle_indices':
             response['data'] = glob_manager_data.get_active_handle_indices()
-        elif obj['task'] == 'submit_token_tagging':
+        elif obj['task'] == 'submit_token_editing':
             input_secret_token = obj['token']
-            request.session[id_corpus]['viewer__secret_token_tagging'] = input_secret_token
+            request.session[id_corpus]['viewer__secret_token_editing'] = input_secret_token
             request.session.modified = True
             return redirect('viewer:index', id_corpus=id_corpus)
 
@@ -91,7 +91,7 @@ def index(request, id_corpus):
     dict_tmp = get_url_params(request)
 
 
-    context['has_access_to_tagging'] = has_access_to_tagging
+    context['has_access_to_editing'] = has_access_to_editing
 
 
     context['json_url_params'] = json.dumps(dict_tmp)

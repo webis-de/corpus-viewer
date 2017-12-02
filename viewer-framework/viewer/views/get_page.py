@@ -118,14 +118,14 @@ def get_page(request, id_corpus):
     list_tags = get_tags_filtered_items(list_ids, request)
 
 
-##### check if has token for tagging
-    has_access_to_tagging = glob_manager_data.get_has_access_to_tagging(id_corpus, request)  
+##### check if has token for editing
+    has_access_to_editing = glob_manager_data.get_has_access_to_editing(id_corpus, request)  
 ##### handle post requests
     if request.method == 'POST':
         response = {}
         obj = json.loads(request.body.decode("utf-8"))
         if obj['task'] == 'add_tag':
-            if has_access_to_tagging:
+            if has_access_to_editing:
                 response['data'] = add_tag(obj, list_ids, request)
         elif obj['task'] == 'export_data':
             response = export_data(obj, data, request)
@@ -181,7 +181,7 @@ def get_page(request, id_corpus):
     context['settings'] = glob_manager_data.get_settings_for_corpus(id_corpus)
     context['data'] = data
     context['id_corpus'] = id_corpus
-    context['has_access_to_tagging'] = has_access_to_tagging
+    context['has_access_to_editing'] = has_access_to_editing
 
     previous_page_number = None
     next_page_number = None
