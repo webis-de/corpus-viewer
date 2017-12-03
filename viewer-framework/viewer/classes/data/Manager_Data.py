@@ -252,6 +252,8 @@ class Manager_Data:
             return None
         elif key == 'template_html':
             return None
+        elif key == 'external_source':
+            return None
 
         raise ValueError('setting-key \''+key+'\' not found')
 

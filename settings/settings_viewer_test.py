@@ -72,5 +72,6 @@ DICT_SETTINGS_VIEWER = {
         },
     ],
     # 'secret_token': 'test',
+    'external_source': None,
     # 'template': '../corpora/template_query_speller.html',
 }
