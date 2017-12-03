@@ -309,7 +309,11 @@ function update_ui(info_filter_values)
     });
     update_checkbox_select_all('input_select_item', 'input_select_all_items')
 
+    update_sorted_columns();
+}
 
+function update_sorted_columns()
+{
     $('#wrapper_columns_sorted').html('');
     $(glob_sorted_columns).each(function(index, element) {
         let asc = 'badge-primary';
@@ -326,8 +330,18 @@ function update_ui(info_filter_values)
             .replace('PLACEHOLDER_ASC', asc)
             .replace('PLACEHOLDER_DESC', desc);
 
+        const obj = $(template_sorted_column_active);
+        if(index == 0) 
+        {
+            obj.find('[data-direction="up"]').addClass('invisible');
+        } 
+        if(index == glob_sorted_columns.length - 1)
+        {
+            obj.find('[data-direction="down"]').addClass('invisible');
+        }
+
         $('#wrapper_columns_sorted').removeClass('d-none');
-        $('#wrapper_columns_sorted').append(template_sorted_column_active);
+        $('#wrapper_columns_sorted').append(obj);
 
     });
 }

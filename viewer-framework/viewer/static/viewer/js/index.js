@@ -71,6 +71,14 @@ let glob_template_sorted_column_active = `
         <span class="float-right">
             <span data-order="asc" class="badge PLACEHOLDER_ASC" style="cursor: pointer">asc</span>
             <span data-order="desc" class="badge PLACEHOLDER_DESC" style="cursor: pointer">desc</span>
+
+            <span data-direction="up" class="badge btn-secondary" style="cursor: pointer">
+                <i class="fa fa-long-arrow-up"></i>
+            </span>
+            <span data-direction="down" class="badge btn-secondary" style="cursor: pointer">
+                <i class="fa fa-long-arrow-down"></i>
+            </span>
+            
             <i class="fa fa-times text-danger" style="cursor: pointer"></i>
         </span>
     </div>`;
@@ -224,6 +232,7 @@ $(document).ready(function()
     $(document).on('click', '.column_sorted_available', function(e) { handle_click_on_column_sorted_available($(this)) });
     $(document).on('click', '.sorted_column_active .fa-times', function(e) { remove_column_sorted_active($(this).parent().parent()) });
     $(document).on('click', '.sorted_column_active [data-order]', function(e) { handle_column_sorted_change_order($(this)) });
+    $(document).on('click', '.sorted_column_active [data-direction]', function(e) { handle_column_sorted_move($(this)) });
     $(document).on('click', '#toggle_popover_apply_column_sorted', function(e) { handle_column_sorted_apply($(this)) });
 
     $(document).on('click', 'th[data-sortable="sortable"]', function(e) {handle_click_on_sortable_column($(this)) });

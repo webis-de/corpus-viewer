@@ -708,21 +708,17 @@ function handle_click_mode_add_tag(button)
     }
 }
 
-function handle_click_on_column_sorted_available(div)
+function handle_click_on_column_sorted_available(element)
 {
-    let template_sorted_column_active = glob_template_sorted_column_active
-        .replace('PLACEHOLDER_ID_COLUMN', div.data('id_column'))
-        .replace('PLACEHOLDER_COLUMN', div.data('id_column'))
-        .replace('PLACEHOLDER_ASC', 'badge-primary')
-        .replace('PLACEHOLDER_DESC', 'badge-secondary');
+    glob_sorted_columns.push({field: $(element).data('id_column'), order: 'asc'});
 
-    $('#wrapper_columns_sorted').removeClass('d-none');
-    $('#wrapper_columns_sorted').append(template_sorted_column_active);
-    $('#toggle_popover_add_column_sorted').popover('hide');
+    update_sorted_columns();
 }
 
 function remove_column_sorted_active(div)
 {
+    glob_sorted_columns.splice(div.index(), 1);
+
     div.remove();
     
     if($('#wrapper_columns_sorted div').length == 0)
@@ -735,23 +731,45 @@ function handle_column_sorted_change_order(div)
 {
     const order_active = div.data('order');
     const order_inactive = (order_active == 'desc') ? 'asc': 'desc';
+
+    const index = div.parent().parent().index();
+    glob_sorted_columns[index].order = order_active
     
     div.removeClass('badge-secondary').addClass('badge-primary');
     div.parent().find('[data-order="'+order_inactive+'"]').removeClass('badge-primary').addClass('badge-secondary');
 }
 
+function handle_column_sorted_move(badge)
+{
+    const direction = badge.data('direction');
+    const row = badge.parent().parent();
+
+    // console.log(glob_sorted_columns)
+
+    const index_current = row.index();
+    const index_new = (direction == 'up') ? index_current - 1 : index_current + 1;
+    console.log(index_new);
+
+    const removedElement = glob_sorted_columns.splice(index_current, 1)[0]
+
+    glob_sorted_columns.splice(index_new, 0, removedElement);
+
+    console.log(glob_sorted_columns)
+    update_sorted_columns();
+
+    // index = this.indexOf(element)
+    // newIndex = index + offset
+
+    // if newIndex > -1 && newIndex < this.length
+    //     # Remove the element from the array
+    //     removedElement = this.splice(index, 1)[0]
+
+    // # At "newIndex", remove 0 elements, insert the removed element
+    // this.splice(newIndex, 0, removedElement)
+}
+
 function handle_column_sorted_apply()
 {
-    let list_tmp = [];
-
-    $('#wrapper_columns_sorted div').each(function(index, element) {
-        
-
-        list_tmp.push({field: $(element).data('id_column'), order: $(element).find('.badge-primary').data('order')}); 
-    });
-
-    glob_sorted_columns = list_tmp;
-
     refresh_url();
     set_session_entry('viewer__sorted_columns', glob_sorted_columns, function() {
         glob_current_page = 1;
