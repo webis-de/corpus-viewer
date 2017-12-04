@@ -30,7 +30,7 @@ class Manager_Data:
         self.path_settings = os.path.join('..', 'settings')
         self.path_backup = 'backup_settings'
         self.path_cache = os.path.join('..', 'cache')
-        self.struct = struct.Struct('<Q L')
+        self.struct = struct.Struct('<Q L') # position, length
         self.length_struct = self.struct.size
         self.dict_corpora = {}
 

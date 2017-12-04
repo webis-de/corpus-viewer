@@ -26,6 +26,7 @@ def view_item(request, id_corpus, id_internal_item):
         url = source_external.replace('PLACEHOLDER_ID', str(id_item))
         if not url.startswith('http'):
             url = 'http://' + url
+        print(url)
 
         with urllib.request.urlopen(url) as response:
             html = response.read()
@@ -40,5 +41,5 @@ def view_item(request, id_corpus, id_internal_item):
             context['template'] = template_html
 
     context['id_corpus'] = id_corpus
-    
+
     return render(request, 'viewer/view_item.html', context)

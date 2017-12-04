@@ -67,7 +67,7 @@ def index(request, id_corpus):
             response['data'] = {'array_recommendations':array_tag_recommendations}
         elif obj['task'] == 'delete_tag_from_item':
             if has_access_to_editing:
-                response = delete_tag_from_item(obj, request)
+                response = delete_tag_from_item(obj, id_corpus)
         elif obj['task'] == 'toggle_item_to_tag':
             if has_access_to_editing:
                 response = toggle_item_to_tag(obj, id_corpus)
@@ -145,16 +145,22 @@ def toggle_item_to_tag(obj, id_corpus):
 
     return response
 
-def delete_tag_from_item(obj, request):
+def delete_tag_from_item(obj, id_corpus):
     response = {}
 
     db_obj_tag = m_Tag.objects.get(id=obj['id_tag'])
-    if get_setting('data_type', request=request) == 'database':
-        db_obj_item = model_custom.objects.get(**{get_setting('id', request=request): obj['id_item']})
+    if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
+        db_obj_item = model_custom.objects.get(**{glob_manager_data.get_setting_for_corpus('id', id_corpus): obj['id_item']})
         db_obj_tag.m2m_custom_model.remove(db_obj_item)
         response['status'] = 'success'
     else:
-        print('TO BE IMPLEMENTED')
+        print(obj)
+        db_obj_tag = m_Tag.objects.get(id=obj['id_tag'])
+        print(db_obj_tag)
+        db_obj_entity = m_Entity.objects.get(id_item=str(obj['id_item']), key_corpus=id_corpus)
+        
+        db_obj_tag.m2m_entity.remove(db_obj_entity)
+        response['status'] = 'success'
 
 
     return response

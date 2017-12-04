@@ -3,6 +3,8 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from viewer.models import m_Tag, m_Entity
 import json
+import os
+import time
 
 def tags(request, id_corpus):
     tags = m_Tag.objects.filter(key_corpus=id_corpus)
@@ -106,7 +108,7 @@ def export_tags(obj, request):
 
     with open(path_file, 'w') as f:
         queryset_tags = m_Tag.objects.filter(key_corpus=id_corpus)
-        if glob_manager_data.get_settings_for_corpus('data_type', id_corpus) == 'database':
+        if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
             queryset_tags = queryset_tags.prefetch_related('m2m_custom_model')
         else:
             queryset_tags = queryset_tags.prefetch_related('m2m_entity')
@@ -115,7 +117,7 @@ def export_tags(obj, request):
             obj_tag['name'] = tag.name
             obj_tag['color'] = tag.color
             list_ids = []
-            if glob_manager_data.get_settings_for_corpus('data_type', id_corpus) == 'database':
+            if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
                 for entity in tag.m2m_custom_model.all():
                     list_ids.append(entity.id)
             else:
