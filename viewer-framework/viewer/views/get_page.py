@@ -668,7 +668,7 @@ def add_tag(obj, list_ids, request):
         for chunk in chunks:
             db_obj_tag.m2m_custom_model.add(*chunk)
     else:
-        index_missing_entities(entities, request)
+        index_missing_entities(entities, id_corpus)
         # print(entities)
         n = 900
         chunks = [entities[x:x+n] for x in range(0, len(entities), n)]
@@ -684,8 +684,7 @@ def add_tag(obj, list_ids, request):
 
     return {'created_tag': created_tag, 'tag': {'id': db_obj_tag.id, 'name': db_obj_tag.name, 'color': db_obj_tag.color} }
 
-def index_missing_entities(entities, request):
-    id_corpus = get_current_corpus(request)
+def index_missing_entities(entities, id_corpus):
     
     queryset = m_Entity.objects.filter(key_corpus=id_corpus)
 

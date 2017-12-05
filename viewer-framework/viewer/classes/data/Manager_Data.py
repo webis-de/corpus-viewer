@@ -260,6 +260,14 @@ class Manager_Data:
     def get_settings_for_corpus(self, id_corpus):
         return self.dict_corpora[id_corpus]['settings']
 
+    def get_dict_ids_to_ids_internal(self, id_corpus):
+        path_corpus = os.path.join(self.path_cache, id_corpus)
+        result = {}
+        with open(os.path.join(path_corpus, id_corpus + '.ids_to_ids_internal'), 'rb') as handle_file_ids_to_ids_internal:
+            result =  pickle.loads(handle_file_ids_to_ids_internal.read())
+
+        return result
+
     def get_settings_content_for_corpus(self, id_corpus):
         with open(os.path.join(self.path_settings, id_corpus + '.py'), 'r') as f:
             return f.read()
@@ -413,7 +421,8 @@ class Manager_Data:
         error_happended = False
         with open(os.path.join(path_corpus, id_corpus + '.data'), 'wb') as handle_file_data:
             with open(os.path.join(path_corpus, id_corpus + '.metadata'), 'wb') as handle_file_metadata:
-                obj_handle_item = Handle_Item_Add(self.struct, handle_file_data, handle_file_metadata, self.dict_corpora[id_corpus], field_id, settings_corpus['data_fields'])
+                dict_ids_to_ids_internal = {}
+                obj_handle_item = Handle_Item_Add(self.struct, handle_file_data, handle_file_metadata, self.dict_corpora[id_corpus], field_id, settings_corpus['data_fields'], dict_ids_to_ids_internal)
                 start = time.perf_counter()
                 try:
                     settings_corpus['load_data_function'](obj_handle_item)
@@ -434,6 +443,9 @@ class Manager_Data:
                     self.update_cache()
 
                 self.dict_corpora[id_corpus]['state_loaded'] = self.State_Loaded.NOT_LOADED
+
+                with open(os.path.join(path_corpus, id_corpus + '.ids_to_ids_internal'), 'wb') as handle_file_ids_to_ids_internal:
+                    handle_file_ids_to_ids_internal.write(pickle.dumps(dict_ids_to_ids_internal))
 
                 indexing_only = round(float(time.perf_counter()-start_total) * 1000, 2)
 

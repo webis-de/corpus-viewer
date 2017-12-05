@@ -9,17 +9,17 @@ class m_Entity(models.Model):
     class Meta:
         unique_together = ('key_corpus', 'id_item')
         
-    key_corpus = models.CharField(max_length=200)
-    id_item = models.CharField(max_length=200, db_index=True)
-    id_item_internal = models.BigIntegerField(db_index=True)
+    key_corpus = models.CharField(max_length=200, null=False)
+    id_item = models.CharField(max_length=200, db_index=True, null=False)
+    id_item_internal = models.BigIntegerField(db_index=True, null=False)
 
 class m_Tag(models.Model):
     class Meta:
         unique_together = ('key_corpus', 'name')
         ordering = ['name']
 
-    key_corpus = models.CharField(max_length=200)
-    name = models.CharField(max_length=100)
+    key_corpus = models.CharField(max_length=200, null=False)
+    name = models.CharField(max_length=100, null=False)
     color = models.CharField(max_length=7, default="#000000")
     # m2m_custom_model = models.ManyToManyField(model_custom, related_name='viewer_tags')
     m2m_entity = models.ManyToManyField(m_Entity, related_name='viewer_tags')

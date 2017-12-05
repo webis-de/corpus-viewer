@@ -154,9 +154,7 @@ def delete_tag_from_item(obj, id_corpus):
         db_obj_tag.m2m_custom_model.remove(db_obj_item)
         response['status'] = 'success'
     else:
-        print(obj)
         db_obj_tag = m_Tag.objects.get(id=obj['id_tag'])
-        print(db_obj_tag)
         db_obj_entity = m_Entity.objects.get(id_item=str(obj['id_item']), key_corpus=id_corpus)
         
         db_obj_tag.m2m_entity.remove(db_obj_entity)

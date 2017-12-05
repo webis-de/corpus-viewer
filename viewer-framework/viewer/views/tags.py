@@ -1,4 +1,5 @@
 from .shared_code import get_current_corpus, glob_manager_data
+from .get_page import index_missing_entities
 from django.http import JsonResponse
 from django.shortcuts import render
 from viewer.models import m_Tag, m_Entity
@@ -33,7 +34,7 @@ def tags(request, id_corpus):
         elif obj['task'] == 'export_tags':
             response = export_tags(obj, request)
         elif obj['task'] == 'import_tags':
-            response = import_tags(obj, request)
+            response = import_tags(obj, id_corpus)
         elif obj['task'] == 'add_items':
             response = add_items(obj, request)
 
@@ -57,19 +58,19 @@ def add_items(obj, request):
 
     return response
 
-def import_tags(obj, request):
-    id_corpus = get_current_corpus(request)
-
+def import_tags(obj, id_corpus):
     response = {}
+    
+    dict_ids_to_ids_internal = glob_manager_data.get_dict_ids_to_ids_internal(id_corpus)
 
     if os.path.isfile(obj['path']):
         with open(obj['path'], 'r') as f:
             for line in f:
                 obj_json = json.loads(line)
 
-                obj_tag = m_Tag.objects.create(name = obj_json['name'], key_corpus=id_corpus, color = obj_json['color'])
+                obj_tag = m_Tag.objects.get_or_create(name = obj_json['name'], key_corpus=id_corpus, color = obj_json['color'])[0]
 
-                if get_setting('data_type', request=request) == 'database':
+                if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
                     ThroughModel = m_Tag.m2m_custom_model.through
                     list_tmp = []
 
@@ -77,13 +78,23 @@ def import_tags(obj, request):
                         obj_db_entity = model_custom.objects.get(id_item=id_item)
                         list_tmp.append(ThroughModel(**{
                             'm_tag_id': obj_tag.pk, 
-                            get_setting('model_name', request=request).lower()+'_id': obj_db_entity.pk
+                            glob_manager_data.get_setting_for_corpus('model_name', id_corpus).lower()+'_id': obj_db_entity.pk
                         }))
 
                     ThroughModel.objects.bulk_create(list_tmp)
                 else:
                     ThroughModel = m_Tag.m2m_entity.through
                     list_tmp = []
+
+                    print(obj_json['ids'])
+
+                    entities = []
+
+                    for id_item in obj_json['ids']:
+                        entities.append({'id_item': id_item, 'viewer__id_item_internal': dict_ids_to_ids_internal[id_item]})
+
+
+                    index_missing_entities(entities, id_corpus)
 
                     for id_item in obj_json['ids']:
                         obj_db_entity = m_Entity.objects.get(id_item=id_item, key_corpus=id_corpus)

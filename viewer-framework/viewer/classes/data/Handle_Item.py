@@ -69,13 +69,14 @@ class Handle_Item_Get_Item(Handle_Item):
     #     # return self.struct.unpack(item_bin)
 
 class Handle_Item_Add(Handle_Item):
-    def __init__(self, struct, handle_file_data, handle_file_metadata, dict_data, field_id, dict_data_fields):
+    def __init__(self, struct, handle_file_data, handle_file_metadata, dict_data, field_id, dict_data_fields, dict_ids_to_ids_internal):
         Handle_Item.__init__(self, struct) 
 
         self.handle_file_data = handle_file_data
         self.handle_file_metadata = handle_file_metadata
         self.dict_data = dict_data
         self.field_id = field_id
+        self.dict_ids_to_ids_internal = dict_ids_to_ids_internal
         # self.settings_corpus = settings_corpus
         self.dict_data_fields = dict_data_fields
         self.handle_index = self.dict_data['handle_index']
@@ -91,6 +92,9 @@ class Handle_Item_Add(Handle_Item):
 
         bin_metadata = self.struct.pack(self.dict_data['size_in_bytes'], length_in_bytes)
         self.handle_file_metadata.write(bin_metadata)
+
+        # add 'ids_to_ids_internal' mapping entry
+        self.dict_ids_to_ids_internal[str(item[self.field_id])] = id_intern 
 
         result = self.handle_index.add_item(id_intern, item)
 
