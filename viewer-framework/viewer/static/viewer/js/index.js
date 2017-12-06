@@ -219,7 +219,7 @@ $(document).ready(function()
             });
 
             $(glob_columns).each(function(index, column) {
-                if(list_columns_used.indexOf(column) == -1 && column != 'viewer__tags' && column != 'viewer__item_selection')
+                if(list_columns_used.indexOf(column) == -1 && column != 'viewer__tags' && column != 'viewer__item_selection' && column != 'viewer__view_item')
                 {
                     result += '<div class="column_sorted_available" data-id_column="'+column+'" style="cursor:pointer">'+column+'</div>';
                 }
