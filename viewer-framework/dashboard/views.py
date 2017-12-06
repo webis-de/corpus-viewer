@@ -48,6 +48,7 @@ def get_corpora():
     # dict_data_chached = init_data()
     dict_ordered = collections.OrderedDict()
     list_keys = ['name', 'description']
+    print('#################################')
     for id_corpus in glob_manager_data.get_ids_corpora(sorted_by='name'):
         settings_total = glob_manager_data.get_settings_for_corpus(id_corpus)
         settings = {key: settings_total[key] for key in list_keys}

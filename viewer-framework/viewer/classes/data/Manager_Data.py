@@ -118,7 +118,7 @@ class Manager_Data:
         if sorted_by == None:
             return list_ids_corpora
         elif sorted_by == 'name':
-            return sorted(list_ids_corpora, key=lambda id_corpus: self.dict_corpora[id_corpus]['settings']['name'])
+            return sorted(list_ids_corpora, key=lambda id_corpus: self.dict_corpora[id_corpus]['settings']['name'].lower())
 
     def load_corpus_from_file(self, file):
         with open(os.path.join(self.path_settings, file), 'r') as f:
@@ -302,10 +302,13 @@ class Manager_Data:
                 dict_tmp[id_corpus] = self.dict_corpora[id_corpus]
             except KeyError:
                 dict_tmp[id_corpus] = self.get_default_settings()
+                self.dict_corpora[id_corpus] = dict_tmp[id_corpus]
 
             try:
                 dict_tmp[id_corpus]['settings'] = self.load_corpus_from_file(file)
+                self.dict_corpora[id_corpus]['settings'] = dict_tmp[id_corpus]['settings']
                 dict_tmp[id_corpus]['exception'] = None
+                self.dict_corpora[id_corpus]['exception'] = dict_tmp[id_corpus]['exception']
                 self.update_template(id_corpus)
             except SyntaxError as err:
                 dict_tmp[id_corpus]['exception'] = err.lineno

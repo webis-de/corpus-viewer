@@ -1,6 +1,6 @@
 class Recommendation
 {
-    constructor(passed_context, passed_id_input, passed_id_wrapper, passed_callback = undefined)
+    constructor(passed_context, passed_id_input, passed_id_wrapper, passed_callback = undefined, passed_url = '')
     {
         this.m_context = passed_context;
 
@@ -11,6 +11,7 @@ class Recommendation
         this.m_wrapper = $(passed_id_wrapper);
 
         this.m_callback = passed_callback;
+        this.m_url = passed_url;
 
         this.m_length_current_recommendations = 0;
         this.m_index_position = -1;
@@ -175,6 +176,7 @@ class Recommendation
             data.tag_name = tag_name;
 
             $.ajax({
+                url: this.m_url,
                 method: 'POST',
                 contentType: 'application/json',
                 headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
