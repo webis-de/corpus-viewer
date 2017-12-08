@@ -269,7 +269,7 @@ def set_sessions(request, id_corpus):
 
     set_session_from_url(request, 'viewer__page', default=1)
 
-    set_session_from_url(request, 'viewer__columns', default=glob_manager_data.get_setting_for_corpus('displayed_fields', id_corpus) + ['viewer__item_selection', 'viewer__tags'], is_json=True)
+    set_session_from_url(request, 'viewer__columns', default=glob_manager_data.get_setting_for_corpus('displayed_fields', id_corpus) + ['viewer__item_selection', 'viewer__tags', 'viewer__view_item'], is_json=True)
     set_session_from_url(request, 'viewer__sorted_columns', default=[], is_json=True)
     set_session_from_url(request, 'viewer__filter_tags', default=[], is_json=True)
     set_session_from_url(request, 'viewer__filter_custom', default={obj_filter['data_field']:[] for obj_filter in glob_manager_data.get_setting_for_corpus('filters', id_corpus)}, is_json=True)
