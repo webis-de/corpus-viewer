@@ -58,8 +58,11 @@ def index(request, id_corpus):
         response = {}
         obj = json.loads(request.body.decode("utf-8"))
         if obj['task'] == 'set_session_entry':
-            request.session[id_corpus]['viewer__'+obj['session_key']] = obj['session_value']
-            request.session.modified = True
+            if obj['session_key'] == 'dark_mode':
+                request.session['viewer__'+obj['session_key']] = obj['session_value']
+            else:
+                request.session[id_corpus]['viewer__'+obj['session_key']] = obj['session_value']
+                request.session.modified = True
             response['status'] = 'success'
         elif obj['task'] == 'get_tag_recommendations':
             array_tag_recommendations = get_tag_recommendations(request, obj)
@@ -156,7 +159,7 @@ def delete_tag_from_item(obj, id_corpus):
     else:
         db_obj_tag = m_Tag.objects.get(id=obj['id_tag'])
         db_obj_entity = m_Entity.objects.get(id_item=str(obj['id_item']), key_corpus=id_corpus)
-        
+
         db_obj_tag.m2m_entity.remove(db_obj_entity)
         response['status'] = 'success'
 

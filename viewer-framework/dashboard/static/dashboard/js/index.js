@@ -181,3 +181,27 @@ function load_corpora()
     });
 
 }
+
+function set_session_entry(session_key, session_value, callback)
+{
+    let data = {};
+    data.task = "set_session_entry";
+    data.session_key = session_key;
+    data.session_value = session_value;
+
+    $.ajax({
+        method: 'POST',
+        contentType: 'application/json',
+        headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+        data: JSON.stringify(data),
+        success: function(result) {
+            if(callback != undefined)
+            {
+                callback()
+            }
+        },
+        error: function(result) {
+            error_corpus_not_exists();
+        }
+    });
+}

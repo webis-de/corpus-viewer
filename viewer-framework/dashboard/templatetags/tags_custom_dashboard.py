@@ -1,4 +1,5 @@
 from django import template
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 
@@ -31,3 +32,35 @@ def get_html_state_loaded(state):
             icon='fa-refresh fa-spin',
             tooltip='Currently Indexing'
         )
+
+@register.simple_tag(takes_context=True)
+def get_dark_mode(context):
+    try:
+        return context.request.session['viewer__dark_mode']
+    except KeyError:
+        context.request.session['viewer__dark_mode'] = False
+        return False
+        
+@register.simple_tag(takes_context=True)
+def get_html_dark_mode(context):
+    html = """
+        <div class="col d-flex justify-content-end">
+            <label class="switch align-self-center mb-0">
+                <input id="button_toggle_dark_mode" type="checkbox" {checked}>
+                <span class="slider round"></span>
+            </label>
+        </div>
+    """
+
+    is_dark_mode = False
+    try:
+        is_dark_mode = context.request.session['viewer__dark_mode']
+    except KeyError:
+        context.request.session['viewer__dark_mode'] = is_dark_mode
+
+    return mark_safe(
+        html.format(
+            checked = 'checked' if is_dark_mode else ''
+        )
+    )
+    

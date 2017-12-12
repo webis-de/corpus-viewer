@@ -21,7 +21,11 @@ def tags(request, id_corpus):
         obj = json.loads(request.body.decode("utf-8"))
 
         if obj['task'] == 'set_session_entry':
-            request.session['index__'+obj['session_key']] = obj['session_value']
+            if obj['session_key'] == 'dark_mode':
+                request.session['viewer__'+obj['session_key']] = obj['session_value']
+            else:
+                request.session[id_corpus]['viewer__'+obj['session_key']] = obj['session_value']
+                request.session.modified = True
             response['status'] = 'success'
         elif obj['task'] == 'update_name':
             response = update_name(obj, request)

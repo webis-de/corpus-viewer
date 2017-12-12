@@ -227,7 +227,7 @@ $(document).ready(function()
 
             return result;
         },
-        template: '<div class="popover popover_column_sorted_available" role="tooltip"><div class="arrow"></div><div class="popover-body" style="padding: 3px 5px"></div></div>'
+        template: '<div class="popover popover_column_sorted_available" role="tooltip"><div class="popover-body" style="padding: 3px 5px"></div></div>'
     });
     $(document).on('click', '.column_sorted_available', function(e) { handle_click_on_column_sorted_available($(this)) });
     $(document).on('click', '.sorted_column_active .fa-times', function(e) { remove_column_sorted_active($(this).parent().parent()) });

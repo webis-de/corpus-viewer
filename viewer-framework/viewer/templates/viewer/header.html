@@ -1,4 +1,7 @@
 {% include "viewer/header_pure.html" %}
-<body>
+{% load tags_custom %}
+
+{% get_dark_mode as dark_mode %}
+<body {% if dark_mode %} class="dark"{% endif %}>
     {% include "viewer/header_navbar.html" %}
     <div class="container-fluid">

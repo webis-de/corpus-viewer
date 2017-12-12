@@ -1,15 +1,22 @@
 {% load staticfiles %}
+{% load tags_custom_dashboard %}
 {% include "viewer/header_pure.html" %}
-<body data-spy="scroll" data-target="#navigationtest">
+
+{% get_dark_mode as dark_mode %}
+<body{% if dark_mode %} class="dark"{% endif %} data-spy="scroll" data-target="#navigationtest">
+{% csrf_token %}
+
 {% include "viewer/header_navbar.html" %}
     <link rel="stylesheet" href="{% static 'dashboard/css/formats_documentation.css' %}">
     <link rel="stylesheet" href="{% static 'dashboard/css/monokai-sublime.css' %}">
     <link rel="stylesheet" href="{% static 'dashboard/css/formats.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/css/formats_dark.css' %}">
     <div class="container-fluid">
         <div class="row">
             <div class="col">
                 <h1>Documentation</h1>
             </div>
+            {% get_html_dark_mode %}
         </div>
         <div class="row">
             <div class="col-md-9">
@@ -409,9 +416,31 @@
     <!-- <script src="{% static 'viewer/js/tether.js' %}"></script> -->
     <script src="{% static 'viewer/js/popper.js' %}"></script>
     <script src="{% static 'viewer/js/bootstrap.js' %}"></script>
-    <script src="{% static 'viewer/js/helper_functions.js' %}"></script>
-    <script src="{% static 'viewer/js/tags.js' %}"></script>
+    <!-- <script src="{% static 'viewer/js/helper_functions.js' %}"></script> -->
+    <!-- <script src="{% static 'viewer/js/tags.js' %}"></script> -->
     <script src="{% static 'viewer/js/highlight.pack.js' %}"></script>
     <script>hljs.initHighlightingOnLoad();</script>
     <!-- <link rel="stylesheet" type="text/css" href="{% static 'viewer/css/formats.css' %}" /> -->
+    <script>
+        function set_session_entry(session_key, session_value, callback)
+        {
+            let data = {};
+            data.task = "set_session_entry";
+            data.session_key = session_key;
+            data.session_value = session_value;
+
+            $.ajax({
+                method: 'POST',
+                contentType: 'application/json',
+                headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+                data: JSON.stringify(data),
+                success: function(result) {
+                    if(callback != undefined)
+                    {
+                        callback()
+                    }
+                }
+            });
+        }
+    </script>
     {% include "viewer/footer.html" %}

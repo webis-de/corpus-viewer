@@ -2,6 +2,7 @@
 {% load tags_custom %}
 {% load staticfiles %}
 <link rel="stylesheet" href="{% static 'viewer/css/formats.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard/css/formats_dark.css' %}">
 
 {% get_is_collapsed_div_filters as is_collapsed_div_filters %}
 {% get_is_collapsed_div_tags as is_collapsed_div_tags %}
@@ -10,6 +11,9 @@
 
 {% get_is_allowed_editing as is_allowed_editing %}
 {% get_has_secret_token_editing as has_secret_token_editing %}
+
+{% get_dark_mode as dark_mode %}
+
 <div class="row">
 	<div class="col">
 		<h1>{{ settings.name }}</h1>
@@ -39,6 +43,7 @@
 				<a class="dropdown-item" href="#" data-toggle="modal" data-target="#modal_delete_corpus">Delete corpus</a>
 			</div>
 		</div>
+        {% get_html_dark_mode %}
     </div>
 </div>
 <div class="row">
@@ -265,9 +270,9 @@
 	<div class="col">
         <div class="row">
             <div class="col">
-            <div class="alert alert-warning text-center d-none" id="alert_mode_add_tag" role="alert">
-                <strong>Add-tag-mode</strong>
-            </div>
+                <div class="alert alert-warning text-center d-none" id="alert_mode_add_tag" role="alert">
+                    <strong>Add-tag-mode</strong>
+                </div>
             </div>
         </div>
         <div class="row">

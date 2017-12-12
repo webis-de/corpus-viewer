@@ -18,6 +18,9 @@ def index(request):
             response['data'] = get_corpora()
         elif obj['task'] == 'refresh_corpora':
             response['data'] = refresh_corpora()
+        elif obj['task'] == 'set_session_entry':
+            request.session['viewer__'+obj['session_key']] = obj['session_value']
+            response['status'] = 'success'
         return JsonResponse(response)
 
     context = {}
@@ -26,6 +29,14 @@ def index(request):
 
 def documentation(request):
     context = {}
+
+    if request.method == 'POST':
+        response = {}
+        obj = json.loads(request.body.decode("utf-8"))
+        if obj['task'] == 'set_session_entry':
+            request.session['viewer__'+obj['session_key']] = obj['session_value']
+            response['status'] = 'success'
+        return JsonResponse(response)
 
     with open(os.path.join('..', 'settings', 'settings_viewer_example.py')) as f:
         context['example_setting_file'] = f.read()

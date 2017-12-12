@@ -1,3 +1,18 @@
         </div>
+		<script type="text/javascript">
+		    $(document).on('click', '#button_toggle_dark_mode', function(event) {
+		        const elem_button = $(this);
+		        // elem_button.blur();
+
+		        if(elem_button.prop('checked'))
+		        {
+		            $('body').addClass('dark');
+		        } else {
+		            $('body').removeClass('dark');
+		        }
+
+		        set_session_entry('dark_mode', elem_button.prop('checked'));
+		    });
+		</script>
     </body>
 </html>

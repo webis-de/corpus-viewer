@@ -1,5 +1,6 @@
 from django import template
 from viewer.views.shared_code import glob_manager_data 
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 
@@ -92,3 +93,33 @@ def display_as_tag_classes(list_tags):
             result += 'tag_' + str(tag.id) + ' '
 
     return result.strip()
+
+
+@register.simple_tag(takes_context=True)
+def get_dark_mode(context):
+    try:
+        return context.request.session['viewer__dark_mode']
+    except KeyError:
+        context.request.session['viewer__dark_mode'] = False
+        return False
+
+@register.simple_tag(takes_context=True)
+def get_html_dark_mode(context):
+    html = """
+        <label class="switch align-self-center mb-0 ml-3">
+            <input id="button_toggle_dark_mode" type="checkbox" {checked}>
+            <span class="slider round"></span>
+        </label>
+    """
+
+    is_dark_mode = False
+    try:
+        is_dark_mode = context.request.session['viewer__dark_mode']
+    except KeyError:
+        context.request.session['viewer__dark_mode'] = is_dark_mode
+
+    return mark_safe(
+        html.format(
+            checked = 'checked' if is_dark_mode else ''
+        )
+    )
