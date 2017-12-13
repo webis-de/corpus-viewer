@@ -106,7 +106,7 @@ def get_dark_mode(context):
 @register.simple_tag(takes_context=True)
 def get_html_dark_mode(context):
     html = """
-        <label class="switch align-self-center mb-0 ml-3">
+        <label class="switch align-self-center mb-0 ml-3" title="Toggle dark mode">
             <input id="button_toggle_dark_mode" type="checkbox" {checked}>
             <span class="slider round"></span>
         </label>

@@ -45,7 +45,7 @@ def get_dark_mode(context):
 def get_html_dark_mode(context):
     html = """
         <div class="col d-flex justify-content-end">
-            <label class="switch align-self-center mb-0">
+            <label class="switch align-self-center mb-0" title="Toggle dark mode">
                 <input id="button_toggle_dark_mode" type="checkbox" {checked}>
                 <span class="slider round"></span>
             </label>

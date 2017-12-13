@@ -60,12 +60,15 @@ body.dark .popover
 	border-color: rgba(255, 255, 255, 0.125) !important;
 }
 
+body.dark .table-info > td
+{
+	background-color: rgba( 190, 229, 229, 0.5) !important;
+}
 
 body.dark #table_entities .content .overlay
 {
 	background-color: rgba(0, 0, 0, 0.5) !important;
 }
-
 
 	/* The switch - the box around the slider */
 .switch {
