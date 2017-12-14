@@ -85,6 +85,20 @@ let glob_template_sorted_column_active = `
 
 $(document).ready(function()
 {
+    $(document).on('click', '#share_link', function() {
+        const elem_input = $('#input_share_link');
+        elem_input.text(window.location.href);
+        elem_input[0].select();
+        const successful = document.execCommand('copy');
+        if(successful)
+        {
+            $('#share_link').popover('show');
+            setTimeout(function() {
+                $('#share_link').popover('hide');
+            } ,700)
+        }
+    })
+
     function trigger_tag_new_change(recommendation, input)
     {
         let tag = {
