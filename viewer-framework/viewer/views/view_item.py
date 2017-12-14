@@ -44,5 +44,6 @@ def view_item(request, id_corpus, id_internal_item):
 
     context['json_item'] = json.dumps(obj_item)
     context['id_corpus'] = id_corpus
+    context['name_corpus'] = glob_manager_data.get_setting_for_corpus('name', id_corpus)
 
     return render(request, 'viewer/view_item.html', context)

@@ -48,6 +48,8 @@ def tags(request, id_corpus):
     
     context['settings'] = glob_manager_data.get_settings_for_corpus(id_corpus)
     context['id_corpus'] = id_corpus
+    context['name_corpus'] = glob_manager_data.get_setting_for_corpus('name', id_corpus)
+    context['mode_navbar'] = 'tags'
     context['tags'] = tags
     if request.is_ajax():
         return render(request, 'viewer/tags.html', context)

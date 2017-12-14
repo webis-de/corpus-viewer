@@ -24,6 +24,7 @@ def index(request):
         return JsonResponse(response)
 
     context = {}
+    context['mode_navbar'] = 'dashboard'
     # context['id_corpus'] = id_corpus
     return render(request, 'dashboard/index.html', context)
 
@@ -43,6 +44,7 @@ def documentation(request):
 
     context['url_host'] = 'http://webis24.medien.uni-weimar.de:8080'
     context['name_host'] = 'webis24'
+    context['mode_navbar'] = 'documentation'
     return render(request, 'dashboard/documentation.html', context)
 
 def delete_session(request):

@@ -102,6 +102,8 @@ def index(request, id_corpus):
     context['json_filters'] = json.dumps(glob_manager_data.get_setting_for_corpus('filters', id_corpus))
     context['settings'] = glob_manager_data.get_settings_for_corpus(id_corpus)
     context['id_corpus'] = id_corpus
+    context['name_corpus'] = glob_manager_data.get_setting_for_corpus('name', id_corpus)
+    context['mode_navbar'] = 'viewer'
 
     return render(request, 'viewer/index.html', context)
 

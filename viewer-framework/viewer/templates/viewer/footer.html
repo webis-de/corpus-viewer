@@ -1,17 +1,18 @@
         </div>
 		<script type="text/javascript">
-		    $(document).on('click', '#button_toggle_dark_mode', function(event) {
-		        const elem_button = $(this);
-		        // elem_button.blur();
-
-		        if(elem_button.prop('checked'))
-		        {
-		            $('body').addClass('dark');
-		        } else {
+		    $(document).on('click', '#input_toggle_dark_mode', function(event) {
+		    	event.preventDefault()
+		    	event.stopPropagation();
+		    	const elem_checkbox = $(this).find('input');
+		    	if(elem_checkbox.prop('checked'))
+		    	{
+		    		elem_checkbox.prop('checked', false);
 		            $('body').removeClass('dark');
-		        }
-
-		        set_session_entry('dark_mode', elem_button.prop('checked'));
+		    	} else {
+		    		elem_checkbox.prop('checked', true);
+		            $('body').addClass('dark');
+		    	}
+		        set_session_entry('dark_mode', elem_checkbox.prop('checked'));
 		    });
 		</script>
     </body>

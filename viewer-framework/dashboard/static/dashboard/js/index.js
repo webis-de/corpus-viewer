@@ -5,7 +5,7 @@ $(document).ready(function()
         refresh_corpora();
     });
 
-    $(document).on('click', 'a', function(event) { 
+    $(document).on('click', '.card_corpus a', function(event) { 
         event.stopPropagation();
     })
 
@@ -30,7 +30,7 @@ $(document).ready(function()
 });
 
 let glob_template_corpus = `
-    <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
+    <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
         <div class="card card_corpus" data-key="PLACEHOLDER_ID_CORPUS">
             <h3 class="card-header">
                 PLACEHOLDER_LOCKED

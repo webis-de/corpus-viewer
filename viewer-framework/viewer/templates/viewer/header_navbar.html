@@ -1,7 +1,15 @@
     <input type="hidden" name="id_corpus" value="{{ id_corpus }}">
     <nav class="navbar navbar-expand-md navbar-light bg-light">
-        <div class="container">
-            <a class="navbar-brand" href="{% url 'dashboard:index' %}">Corpus Viewer</a>
+        <div class="container-fluid">
+            {% if mode_navbar == 'viewer' %}
+                <a class="navbar-brand" href="{% url 'viewer:index' id_corpus %}">{{ name_corpus }}</a>
+            {% elif mode_navbar == 'tags' %}
+                <a class="navbar-brand" href="{% url 'viewer:tags' id_corpus %}">Tags for {{ name_corpus }}</a>
+            {% elif mode_navbar == 'dashboard' %}
+                <a class="navbar-brand" href="{% url 'dashboard:index' %}">Dashboard</a>
+            {% elif mode_navbar == 'documentation' %}
+                <a class="navbar-brand" href="{% url 'dashboard:documentation' %}">Documentation</a>
+            {% endif %}
 
             <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -9,11 +17,39 @@
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <div class="navbar-nav ml-auto">
-                    {% if id_corpus %}
-                        <a class="nav-item nav-link" href="{% url 'viewer:index' id_corpus %}">Viewer</a>
-                    {% endif %}
-                    <a class="nav-item nav-link" href="{% url 'dashboard:documentation' %}">Documentation</a>
                     <a class="nav-item nav-link" href="{% url 'dashboard:index' %}">Dashboard</a>
+                    <a class="nav-item nav-link" href="{% url 'dashboard:documentation' %}">Documentation</a>
+                </div>
+            </div>
+
+
+            <div class="btn-group btn-group-sm ml-3" role="group">
+                <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown">
+                    <i class="fa fa-cog" ></i>
+                </button>
+                <div class="dropdown-menu" style="right: 0; left: inherit;">
+                    <div id="input_toggle_dark_mode" class=" d-flex" style="cursor: pointer; padding: 0.25rem 1.5rem; user-select: none;">
+                        <span class="align-self-center mr-3 text-nowrap">Dark mode</span>
+                        <label class="switch align-self-center mb-0" title="Toggle dark mode">
+                            <input type="checkbox" {% if dark_mode %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                {% if mode_navbar == 'dashboard' %}
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" id="submit_refresh_corpora" href="#">Refresh corpora <i class="fa fa-refresh"></i> </a>
+                {% elif mode_navbar == 'viewer' %}
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#" id="submit_reload_settings">Reload settings</a>
+                    {% if is_allowed_editing %}
+                        <a class="dropdown-item" href="{% url 'viewer:edit' id_corpus %}">Edit settings</a>
+                    {% elif has_secret_token_editing %}
+                        <a class="dropdown-item" data-toggle="modal" data-target="#modal_enter_token_editing">Enable editing</a>
+                    {% endif %}
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modal_reindex_corpus">Reindex corpus</a>
+                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modal_delete_corpus">Delete corpus</a>
+                {% endif %}
                 </div>
             </div>
         </div>

@@ -23,4 +23,6 @@ def edit(request, id_corpus):
     context = {}
     context['content_settings'] = glob_manager_data.get_settings_content_for_corpus(id_corpus)
     context['id_corpus'] = id_corpus
+    context['name_corpus'] = glob_manager_data.get_setting_for_corpus('name', id_corpus)
+    context['mode_navbar'] = 'viewer'
     return render(request, 'viewer/edit.html', context)
