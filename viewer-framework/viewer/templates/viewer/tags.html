@@ -6,16 +6,6 @@
 {% csrf_token %}
 <div class="row">
     <div class="col">
-        <h1>Tags</h1>
-    </div>
-    <div class="col d-flex justify-content-end align-items-center">
-        <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal_export_tags">Export tags</button>
-        <button type="button" class="btn btn-sm btn-primary ml-3" data-toggle="modal" data-target="#modal_import_tags">Import tags</button>
-        {% get_html_dark_mode %}
-    </div>
-</div>
-<div class="row">
-    <div class="col">
         <table class="table table-sm table-striped" id="table_tags">
             <thead>
                 <tr>
