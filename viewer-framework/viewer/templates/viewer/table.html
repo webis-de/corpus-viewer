@@ -39,7 +39,7 @@
                 {% if field|get_type_field:settings == 'text' %}
                     <table class="fixed_table" data-id_item="{{ item|get:settings.id }}">
                         <tr>
-                            <td>{{ item|get:field }}</td>
+                            <td style="border-top: none">{{ item|get:field }}</td>
                         </tr>
                     </table>
                 {% else %}
@@ -64,14 +64,14 @@
             </td>
             {% endif %}
         </tr>
-        <tr style="display: none"></tr>
-        <tr style="display: none" class="tr_container_text" data-id_item="{{ item|get:settings.id }}">
+        <tr style="display: none;"></tr>
+        <tr style="display: none;" class="tr_container_text" data-id_item="{{ item|get:settings.id }}">
             <td class="p-3" colspan="{{ settings.displayed_fields|length|add:2 }}">
                 <div class="p-1"></div>
             </td>
         </tr>
-        <tr style="display: none"></tr>
-        <tr style="display: none"></tr>
+        <tr style="display: none;"></tr>
+        <tr style="display: none;"></tr>
     {% endfor %}
     </tbody>
 </table>

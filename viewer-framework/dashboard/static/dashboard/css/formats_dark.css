@@ -1,6 +1,6 @@
 body.dark,
 body.dark .card,
-body.dark #table_entities tr,
+body.dark #table_entities>div>div>table>tbody>tr,
 body.dark #table_entities div.table table thead tr,
 body.dark .dropdown-menu,
 body.dark #wrapper_tag_recommendations_filter,
@@ -12,11 +12,11 @@ body.dark .popover
 	background-color: #343a40 !important;
 }
 
-body.dark #table_entities tr:nth-of-type(odd),
+body.dark #table_entities>div>div>table>tbody>tr:nth-of-type(odd),
 body.dark .dropdown-menu .dropdown-item:hover
 {
-	/* darker dark */
-	background-color: #2c3237 !important;
+  /* darker dark */
+  background-color: #2c3237 !important;
 }
 
 body.dark .navbar,

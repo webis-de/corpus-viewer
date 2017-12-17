@@ -39,12 +39,21 @@
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" id="submit_refresh_corpora" href="#">Refresh corpora <i class="fa fa-refresh"></i> </a>
                 {% elif mode_navbar == 'viewer' %}
+                    {% load tags_custom %}
+                    <a class="dropdown-item" href="#" id="share_link">
+                        Copy URL 
+                        <i class="fa fa-share" aria-hidden="true" data-container="body" data-toggle="popover" data-placement="bottom" data-content="Copied to clipboard!"></i>
+                    </a>
+                    <textarea id="input_share_link"></textarea>
+
+                    {% get_is_allowed_editing as is_allowed_editing %}
+                    {% get_has_secret_token_editing as has_secret_token_editing %}
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="#" id="submit_reload_settings">Reload settings</a>
                     {% if is_allowed_editing %}
                         <a class="dropdown-item" href="{% url 'viewer:edit' id_corpus %}">Edit settings</a>
                     {% elif has_secret_token_editing %}
-                        <a class="dropdown-item" data-toggle="modal" data-target="#modal_enter_token_editing">Enable editing</a>
+                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modal_enter_token_editing">Enable editing</a>
                     {% endif %}
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modal_reindex_corpus">Reindex corpus</a>

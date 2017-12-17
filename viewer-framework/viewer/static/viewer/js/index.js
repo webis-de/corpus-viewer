@@ -85,7 +85,7 @@ let glob_template_sorted_column_active = `
 
 $(document).ready(function()
 {
-    $(document).on('click', '#share_link', function() {
+    $(document).on('click', '#share_link', function(event) {
         const elem_input = $('#input_share_link');
         elem_input.text(window.location.href);
         elem_input[0].select();

@@ -18,6 +18,9 @@ html {
     left: -99999px
 }
 
+#table_entities th {
+    border-top: none;
+}
 #table_entities .content {
     position: relative;
 }

@@ -15,42 +15,9 @@
 {% get_dark_mode as dark_mode %}
 
 <div class="row">
-	<div class="col">
-		<h1>{{ settings.name }}</h1>
-        <div id="json_url_params" data-json_url_params="{{ json_url_params }}" style="display: none"></div>
-        <div id="json_filters" data-json_filters="{{ json_filters }}" style="display: none"></div>
-        <div id="tag_filter_active" data-tag_filter_active="{{ tag_filter_active }}" style="display: none"></div>
-    </div>
-    <div class="col d-flex justify-content-end align-items-center">
-        <div id="wrapper_loading" class="mr-2">
-            <i class="fa fa-refresh fa-spin"></i>
-        </div>
-
-        <i class="fa fa-share" aria-hidden="true" id="share_link" data-container="body" data-toggle="popover" data-placement="bottom" data-content="Copied to clipboard!"></i>
-        <textarea id="input_share_link"></textarea>
-
-		<div class="btn-group btn-group-sm ml-3" role="group">
-			<button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown">
-				<i class="fa fa-cog" ></i>
-			</button>
-			<div class="dropdown-menu" style="right: 0; left: inherit;">
-                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modal_export_data">Export</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#" id="submit_reload_settings">Reload settings</a>
-                {% if is_allowed_editing %}
-                    <a class="dropdown-item" href="{% url 'viewer:edit' id_corpus %}">Edit settings</a>
-                {% elif has_secret_token_editing %}
-                    <a class="dropdown-item" data-toggle="modal" data-target="#modal_enter_token_editing">Enable editing</a>
-                {% endif %}
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modal_reindex_corpus">Reindex corpus</a>
-				<a class="dropdown-item" href="#" data-toggle="modal" data-target="#modal_delete_corpus">Delete corpus</a>
-			</div>
-		</div>
-        {% get_html_dark_mode %}
-    </div>
-</div>
-<div class="row">
+        <div id="json_url_params" data-json_url_params="{{ json_url_params }}" class="d-none"></div>
+        <div id="json_filters" data-json_filters="{{ json_filters }}" class="d-none"></div>
+        <div id="tag_filter_active" data-tag_filter_active="{{ tag_filter_active }}" class="d-none"></div>
 	<div class="col-md-3 col-lg-2">
 		<div class="row">
 			<div class="col">
@@ -282,7 +249,11 @@
         <div class="row">
             <div class="col" id="table_entities">
                 <div class="content">
-                    <div class="overlay"></div>
+                    <div class="overlay">
+                        <!-- <div id="wrapper_loading">
+                            <i class="fa fa-refresh fa-spin"></i>
+                        </div> -->
+                    </div>
                     <div class="table"></div>
                 </div>
             </div>
