@@ -1,13 +1,13 @@
-from django.conf.urls import url
+from django.urls import path
 
 from . import views
 
 app_name = 'viewer'
 urlpatterns = [
-    url(r'^(?P<id_corpus>[^\/]+)$', views.index, name='index'),
-    url(r'^(?P<id_corpus>[^\/]+)/(?P<id_internal_item>[0-9]+)/$', views.view_item, name='view_item'),
-    url(r'^(?P<id_corpus>[^\/]+)/get_page$', views.get_page, name='get_page'),
-    url(r'^(?P<id_corpus>[^\/]+)/tags$', views.tags, name='tags'),
-    url(r'^(?P<id_corpus>[^\/]+)/enter_token$', views.add_token, name='add_token'),
-    url(r'^(?P<id_corpus>[^\/]+)/edit$', views.edit, name='edit'),
+    path('<str:id_corpus>', views.index, name='index'),
+    path('<str:id_corpus>/<int:id_internal_item>', views.view_item, name='view_item'),
+    path('<str:id_corpus>/get_page', views.get_page, name='get_page'),
+    path('<str:id_corpus>/tags', views.tags, name='tags'),
+    path('<str:id_corpus>/enter_token', views.add_token, name='add_token'),
+    path('<str:id_corpus>/edit', views.edit, name='edit'),
 ]
