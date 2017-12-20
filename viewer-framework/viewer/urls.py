@@ -12,5 +12,6 @@ urlpatterns = [
     path('<str:id_corpus>/edit', views.edit, name='edit'),
 
     # API calls
+    path('api/add_corpus', views.api_add_corpus, name='api_add_corpus'),
     path('api/refresh_corpora', views.api_refresh_corpora, name='api_refresh_corpora'),
 ]

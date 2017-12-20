@@ -8,3 +8,12 @@ def api_refresh_corpora(request):
 
     dict_result['success'] = True
     return JsonResponse(dict_result)
+
+
+def api_add_corpus(request):
+    dict_result = {}
+
+    print(request.POST)
+
+    dict_result['success'] = True
+    return JsonResponse(dict_result)
