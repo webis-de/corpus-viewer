@@ -261,7 +261,7 @@ class Manager_Data:
     def add_settings_corpus(self, id_corpus, settings):
         with open(os.path.join(self.path_settings, id_corpus+'.py'), 'w') as f:
             # pprint.pprint(settings)
-            content = 'DICT_SETTINGS_VIEWER = '+pprint.pprint(settings)
+            content = 'DICT_SETTINGS_VIEWER = '+pprint.pformat(settings)
             f.write(content)
 
     def get_settings_for_corpus(self, id_corpus):
