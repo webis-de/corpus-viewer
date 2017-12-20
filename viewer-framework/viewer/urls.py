@@ -10,4 +10,7 @@ urlpatterns = [
     path('<str:id_corpus>/tags', views.tags, name='tags'),
     path('<str:id_corpus>/enter_token', views.add_token, name='add_token'),
     path('<str:id_corpus>/edit', views.edit, name='edit'),
+
+    # API calls
+    path('api/refresh_corpora', views.api_refresh_corpora, name='api_refresh_corpora'),
 ]
