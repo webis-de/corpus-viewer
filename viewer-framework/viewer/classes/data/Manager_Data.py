@@ -264,6 +264,16 @@ class Manager_Data:
             content = 'DICT_SETTINGS_VIEWER = '+pprint.pformat(settings)
             f.write(content)
 
+
+        self.dict_corpora[id_corpus] =  {}
+        self.dict_corpora[id_corpus]['settings'] = settings
+        self.dict_corpora[id_corpus]['exception'] = None
+        self.update_template(id_corpus)
+
+        self.dict_corpora[id_corpus].update(self.get_default_settings())
+        
+        self.update_cache()
+
     def get_settings_for_corpus(self, id_corpus):
         return self.dict_corpora[id_corpus]['settings']
 
@@ -515,6 +525,9 @@ class Manager_Data:
         return list_handle_indices
 
     def get_state_loaded(self, id_corpus):       
+        if self.get_setting_for_corpus('data_type', id_corpus) == 'database':
+            return self.State_Loaded.LOADED
+
         return self.dict_corpora[id_corpus]['state_loaded']
 
     @unique

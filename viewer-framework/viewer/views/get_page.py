@@ -13,6 +13,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from viewer.models import m_Tag, m_Entity
 import hashlib
 import csv
+import importlib
 
 regex_filter_numbers_negative = re.compile('(?<![>|\.|>=|<=|<|<|0|1|2|3|4|5|6|7|8|9|0])(-[0-9]+\.?[0-9]*)')
 regex_filter_numbers_positive = re.compile('(?<![>|\.|>=|<=|<|<|0|1|2|3|4|5|6|7|8|9|0|-])([0-9]+\.?[0-9]*)')
@@ -114,8 +115,8 @@ def get_page(request, id_corpus):
 ##### load data and apply filters
     list_ids, info_filter_values = get_filtered_data(request)
     # return JsonResponse({})
-    # list_tags = []
-    list_tags = get_tags_filtered_items(list_ids, request)
+    list_tags = []
+    # list_tags = get_tags_filtered_items(list_ids, request)
 
 
 ##### check if has token for editing
@@ -172,7 +173,11 @@ def get_page(request, id_corpus):
 ##### add tags to the dataset
 
     start_loading = time.perf_counter()
-    data = glob_manager_data.get_items(id_corpus, page_current)
+
+    if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) != 'database':
+        data = glob_manager_data.get_items(id_corpus, page_current)
+    else:
+        data = page_current
     print('loading time: '+str(round(float(time.perf_counter() - start_loading) * 1000, 2))+'ms')
 
     add_tags(data, request)
@@ -252,8 +257,13 @@ def get_filtered_data(request):
 
     dict_filters = get_filters_if_not_empty(request, id_corpus)
     if dict_filters == None:
-        # print('######### ALL IDS')    
-        return glob_manager_data.get_all_ids_for_corpus(id_corpus, glob_manager_data.get_settings_for_corpus(id_corpus)), info_filter_values
+        # print('######### ALL IDS')   
+        if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
+            module_custom = importlib.import_module(glob_manager_data.get_setting_for_corpus('app_label', id_corpus)+'.models')
+            model_custom = getattr(module_custom, glob_manager_data.get_setting_for_corpus('model_name', id_corpus))
+            return model_custom.objects.all(), info_filter_values
+        else: 
+            return glob_manager_data.get_all_ids_for_corpus(id_corpus, glob_manager_data.get_settings_for_corpus(id_corpus)), info_filter_values
     else:
         bytes_dict_filters = json.dumps(dict_filters, sort_keys=True).encode()
         hash_custom = hashlib.sha1(bytes_dict_filters).hexdigest()

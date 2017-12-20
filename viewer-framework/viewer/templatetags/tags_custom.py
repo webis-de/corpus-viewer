@@ -71,7 +71,13 @@ def get(item, field):
     try:
         return item[field]
     except TypeError:
-        return getattr(item, field)
+        try:
+            value = item
+            for attribute in field.split('__'):
+                value = getattr(value, attribute)
+            return value
+        except AttributeError:
+            return item.id
 
 @register.filter
 def get_type_field(field, settings):

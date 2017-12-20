@@ -16,10 +16,12 @@
             </button>
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            {% if is_dashboard_available %}
                 <div class="navbar-nav ml-auto">
                     <a class="nav-item nav-link" href="{% url 'dashboard:index' %}">Dashboard</a>
                     <a class="nav-item nav-link" href="{% url 'dashboard:documentation' %}">Documentation</a>
                 </div>
+            {% endif %}
             </div>
 
 

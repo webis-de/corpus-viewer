@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from viewer.models import m_Tag, m_Entity
 import json
 from threading import Thread
+from django.conf import settings
 
 def index(request, id_corpus):
 ##### set sessions
@@ -104,6 +105,8 @@ def index(request, id_corpus):
     context['id_corpus'] = id_corpus
     context['name_corpus'] = glob_manager_data.get_setting_for_corpus('name', id_corpus)
     context['mode_navbar'] = 'viewer'
+
+    context['is_dashboard_available'] = settings.DASHBOARD_AVAILABLE
 
     return render(request, 'viewer/index.html', context)
 
