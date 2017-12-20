@@ -257,6 +257,11 @@ class Manager_Data:
 
         raise ValueError('setting-key \''+key+'\' not found')
 
+    def add_settings_corpus(self, id_corpus, settings):
+        with open(os.path.join(self.path_settings, id_corpus+'.py'), 'w') as f:
+            content = 'DICT_SETTINGS_VIEWER = '+str(settings)
+            f.write(content)
+
     def get_settings_for_corpus(self, id_corpus):
         return self.dict_corpora[id_corpus]['settings']
 
