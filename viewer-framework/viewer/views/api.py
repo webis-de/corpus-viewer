@@ -1,5 +1,6 @@
 from .shared_code import get_current_corpus, glob_manager_data
 from django.http import JsonResponse
+import json
 
 def api_refresh_corpora(request):
     dict_result = {}
