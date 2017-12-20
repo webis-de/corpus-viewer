@@ -259,6 +259,7 @@ class Manager_Data:
 
     def add_settings_corpus(self, id_corpus, settings):
         with open(os.path.join(self.path_settings, id_corpus+'.py'), 'w') as f:
+            string_settings = str(settings).replace('true', 'True')
             content = 'DICT_SETTINGS_VIEWER = '+str(settings)
             f.write(content)
 
