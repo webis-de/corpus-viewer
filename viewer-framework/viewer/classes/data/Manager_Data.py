@@ -7,6 +7,7 @@ import csv
 import json
 import traceback
 import sys
+import pprint
 
 import errno, stat
 
@@ -259,8 +260,8 @@ class Manager_Data:
 
     def add_settings_corpus(self, id_corpus, settings):
         with open(os.path.join(self.path_settings, id_corpus+'.py'), 'w') as f:
-            string_settings = str(settings).replace('true', 'True')
-            content = 'DICT_SETTINGS_VIEWER = '+str(settings)
+            # pprint.pprint(settings)
+            content = 'DICT_SETTINGS_VIEWER = '+pprint.pprint(settings)
             f.write(content)
 
     def get_settings_for_corpus(self, id_corpus):
