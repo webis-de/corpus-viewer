@@ -15,7 +15,7 @@ def api_add_corpus(request):
 
     print(request.POST)
 
-    glob_manager_data.add_settings_corpus(request.POST['id_corpus'], request.POST['settings'])
+    glob_manager_data.add_settings_corpus(request.POST['id_corpus'], json.loads(request.POST['settings']))
 
     dict_result['success'] = True
     return JsonResponse(dict_result)
