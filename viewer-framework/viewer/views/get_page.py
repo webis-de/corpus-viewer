@@ -214,13 +214,22 @@ def sort_by_columns(request, list_ids):
     id_corpus = get_current_corpus(request)
 
     list_sorted_columns = request.session[id_corpus]['viewer__viewer__sorted_columns']
-    for sorted_column in reversed(list_sorted_columns):
-        is_reversed = False
-        if sorted_column['order'] == 'desc':
-            is_reversed = True
 
-        list_ids = sorted(list_ids, key=lambda id_item: function_sort(id_item, id_corpus, sorted_column['field']), reverse=is_reversed)
-        print(sorted_column)
+    if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
+        for sorted_column in reversed(list_sorted_columns):
+            print(sorted_column)
+            print(list_ids)
+            sign = '-' if sorted_column['order'] == 'desc' else ''
+            print(sign+sorted_column['field'])
+            list_ids = list_ids.order_by(sign+sorted_column['field'])
+    else:
+        for sorted_column in reversed(list_sorted_columns):
+            is_reversed = False
+            if sorted_column['order'] == 'desc':
+                is_reversed = True
+
+            list_ids = sorted(list_ids, key=lambda id_item: function_sort(id_item, id_corpus, sorted_column['field']), reverse=is_reversed)
+            print(sorted_column)
     return list_ids
 
 def export_data(obj, data, request):
