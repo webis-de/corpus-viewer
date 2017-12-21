@@ -1,3 +1,7 @@
+# CUSTOM SETTINGS
+
+DASHBOARD_AVAILABLE = True
+
 """
 Django settings for viewer-framework project.
 

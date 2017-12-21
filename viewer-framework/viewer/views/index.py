@@ -106,7 +106,10 @@ def index(request, id_corpus):
     context['name_corpus'] = glob_manager_data.get_setting_for_corpus('name', id_corpus)
     context['mode_navbar'] = 'viewer'
 
-    context['is_dashboard_available'] = settings.DASHBOARD_AVAILABLE
+    try:
+        context['is_dashboard_available'] = settings.DASHBOARD_AVAILABLE
+    except AttributeError:
+        context['is_dashboard_available'] = False
 
     return render(request, 'viewer/index.html', context)
 
