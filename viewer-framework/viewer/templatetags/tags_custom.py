@@ -4,6 +4,12 @@ from django.utils.safestring import mark_safe
 
 register = template.Library()
 
+
+@register.simple_tag(takes_context=True)
+def get_urls_header(context):
+    id_corpus = context.request.session['viewer__viewer__current_corpus']
+    return glob_manager_data.get_setting_for_corpus('urls_header', id_corpus)
+
 @register.simple_tag(takes_context=True)
 def get_state_sorted(context, field):
     current_corpus = context.request.session['viewer__viewer__current_corpus']

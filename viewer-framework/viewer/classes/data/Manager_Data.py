@@ -255,6 +255,8 @@ class Manager_Data:
             return None
         elif key == 'external_source':
             return None
+        elif key == 'urls_header':
+            return []
 
         raise ValueError('setting-key \''+key+'\' not found')
 
