@@ -1,0 +1,130 @@
+body.dark,
+body.dark .card,
+body.dark #table_entities>div>div>table>tbody>tr,
+body.dark #table_entities div.table table thead tr,
+body.dark .dropdown-menu,
+body.dark #wrapper_tag_recommendations_filter,
+body.dark .modal-content,
+body.dark input,
+body.dark .popover
+{
+	/* brighter dark - default background */
+	background-color: #343a40 !important;
+}
+
+body.dark #table_entities>div>div>table>tbody>tr:nth-of-type(odd),
+body.dark .dropdown-menu .dropdown-item:hover
+{
+  /* darker dark */
+  background-color: #2c3237 !important;
+}
+
+body.dark .navbar,
+body.dark textarea,
+body.dark .card-header
+{
+	/* darkest dark */
+	background-color: #16181b !important;
+}
+
+body.dark div,
+body.dark .navbar a, 
+body.dark .dropdown-menu a, 
+body.dark h1, 
+body.dark h2,
+body.dark table tr,
+body.dark label,
+body.dark textarea,
+body.dark .modal,
+body.dark .modal .close,
+body.dark input,
+body.dark .popover .popover-body,
+body.dark #wrapper_loading
+{
+	color: #fff !important;
+}
+
+body.dark .alert-info {
+	color: #0c5460 !important
+}
+
+body.dark .card,
+body.dark table td,
+body.dark table th,
+body.dark .dropdown-menu,
+body.dark .dropdown-menu .dropdown-divider,
+body.dark .modal-header,
+body.dark .modal-footer,
+body.dark input,
+body.dark .popover
+{
+	border-color: rgba(255, 255, 255, 0.125) !important;
+}
+
+body.dark .table-info > td
+{
+	background-color: rgba( 190, 229, 229, 0.5) !important;
+}
+
+body.dark #table_entities .content .overlay
+{
+	background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+	/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 3rem; 
+  height: 2rem;
+}
+
+/* Hide default HTML checkbox */
+.switch input {display:none;}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #16181b;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 1.5rem;
+  width: 1.5rem;
+  left: 0.25rem;
+  bottom: 0.25rem;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #ccc;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #ccc;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(1rem);
+  -ms-transform: translateX(1rem);
+  transform: translateX(1rem);
+}
+/* Rounded sliders */
+.slider.round {
+  border-radius: 1rem;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
