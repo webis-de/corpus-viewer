@@ -115,8 +115,8 @@ def get_page(request, id_corpus):
 ##### load data and apply filters
     list_ids, info_filter_values = get_filtered_data(request)
     # return JsonResponse({})
-    list_tags = []
-    # list_tags = get_tags_filtered_items(list_ids, request)
+    # list_tags = []
+    list_tags = get_tags_filtered_items(list_ids, request)
 
 
 ##### check if has token for editing
@@ -274,16 +274,17 @@ def get_filtered_data(request):
         else: 
             return glob_manager_data.get_all_ids_for_corpus(id_corpus, glob_manager_data.get_settings_for_corpus(id_corpus)), info_filter_values
     else:
-        bytes_dict_filters = json.dumps(dict_filters, sort_keys=True).encode()
-        hash_custom = hashlib.sha1(bytes_dict_filters).hexdigest()
-        # fails if the user has no hash stored
-        try:
-            # checks if the hash corresponds to the last hash
-            if hash_custom == request.session[id_corpus]['viewer__last_hash']:
-                # print('######### LAST RESULT')    
-                return request.session[id_corpus]['viewer__last_result']
-        except:
-            pass
+        if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) != 'database':
+            bytes_dict_filters = json.dumps(dict_filters, sort_keys=True).encode()
+            hash_custom = hashlib.sha1(bytes_dict_filters).hexdigest()
+            # fails if the user has no hash stored
+            try:
+                # checks if the hash corresponds to the last hash
+                if hash_custom == request.session[id_corpus]['viewer__last_hash']:
+                    # print('######### LAST RESULT')    
+                    return request.session[id_corpus]['viewer__last_result']
+            except:
+                pass
     
     # print('######### NEW RESULT')    
     # print(hash_customs)
@@ -298,9 +299,19 @@ def get_filtered_data(request):
         
         if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
             # iterate over tag and return only items tagged with them
-            raise NotImplementedError()
-            for tag in values_filter_tags:
-                data = data.filter(viewer_tags__name=tag)
+
+            module_custom = importlib.import_module(glob_manager_data.get_setting_for_corpus('app_label', id_corpus)+'.models')
+            model_custom = getattr(module_custom, glob_manager_data.get_setting_for_corpus('model_name', id_corpus))
+            
+            list_data = model_custom.objects.all()
+            for name_tag in values_filter_tags:
+                list_data = list_data.filter(id__in=[entity.id_item_internal for entity in m_Tag.objects.get(name=name_tag).m2m_entity.all()])
+
+            # print()
+            # raise NotImplementedError()
+            # for tag in values_filter_tags:
+            #     data = data.filter(viewer_tags__name=tag)
+            # list_data 
         else:
             # filter the data by tags
             list_data = filter_data_tags(values_filter_tags, id_corpus)
@@ -327,8 +338,10 @@ def get_filtered_data(request):
     if list_data != None:
         # data = [item for item in data if item[get_setting('id', request=request)] in list_data]
         # print(list_data)
-        request.session[id_corpus]['viewer__last_hash'] = hash_custom
-        request.session[id_corpus]['viewer__last_result'] = list_data, info_filter_values
+        if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) != 'database':
+            request.session[id_corpus]['viewer__last_hash'] = hash_custom
+            request.session[id_corpus]['viewer__last_result'] = list_data, info_filter_values
+
         return list_data, info_filter_values
 
 
@@ -729,9 +742,13 @@ def get_tags_filtered_items(list_ids, request):
     if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
         list_tags = []
         n = 900
-        chunks = [list_ids[x:x+n] for x in range(0, len(list_ids), n)]
+        print(list_ids)
+        list_ids_item = [item.id for item in list_ids]
+        list_entities = m_Entity.objects.filter(key_corpus=id_corpus, id_item_internal__in=list_ids_item)
+        chunks = [list_entities[x:x+n] for x in range(0, len(list_entities), n)]
         for chunk in chunks:
-            list_tags += m_Tag.objects.filter(m2m_custom_model__in=chunk, key_corpus=id_corpus).distinct()
+            list_tags += m_Tag.objects.filter(m2m_entity__in=chunk, key_corpus=id_corpus).distinct()
+            # list_tags += m_Tag.objects.filter(m2m_custom_model__in=chunk, key_corpus=id_corpus).distinct()
 
         dict_ordered_tags = collections.OrderedDict()
         for tag in list_tags:
@@ -800,3 +817,13 @@ def add_tags(data, request):
 
                                 # data = [item for item in data if real_value in str(item[obj_filter['data_field']])]
                 # data = filter_data(request, data, obj_filter)
+    else:
+        list_ids = [item.id for item in data]
+        db_obj_entities = m_Entity.objects.filter(id_item_internal__in=list_ids, key_corpus=id_corpus).prefetch_related('viewer_tags')
+        dict_entities = {entity.id_item_internal: entity for entity in db_obj_entities}
+
+        for item in data:
+            try:
+                item.viewer_tags = dict_entities[item.id].viewer_tags.all()
+            except KeyError:
+                item.viewer_tags = []
