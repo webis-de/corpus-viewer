@@ -61,7 +61,7 @@ class Recommendation
             PLACEHOLDER_ID_WRAPPER .tag_marker_recommendation {
                 float: left;
                 width: 10px;
-                height: 20px;
+                height: 24px;
                 margin-right: 5px;
             }
         `;
