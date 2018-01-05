@@ -25,11 +25,7 @@
                         <input name="color" type="color" value="{{ tag.color }}">
                     </td>
                     <td class="column_tag_count_items">
-                        {% if settings.data_type == 'database' %}
-                            {{ tag.m2m_custom_model.all.count }}
-                        {% else %}
-                            {{ tag.m2m_entity.all.count }}
-                        {% endif %}
+                        {{ tag.m2m_entity.all.count }}
                     </td>
                     <td class="column_tag_add_items">
                         <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal_add_items">Add items</button>
