@@ -49,6 +49,10 @@ class Recommendation
                 margin-top: 5px;
                 margin-bottom: 5px;
                 cursor: pointer;
+
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
             
         `;
