@@ -305,7 +305,7 @@ def get_filtered_data(request):
             
             list_data = model_custom.objects.all()
             for name_tag in values_filter_tags:
-                list_data = list_data.filter(id__in=[entity.id_item_internal for entity in m_Tag.objects.get(name=name_tag).m2m_entity.all()])
+                list_data = list_data.filter(id__in=[entity.id_item_internal for entity in m_Tag.objects.get(key_corpus=id_corpus, name=name_tag).m2m_entity.all()])
 
             # print()
             # raise NotImplementedError()
