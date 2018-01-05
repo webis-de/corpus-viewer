@@ -178,6 +178,7 @@ def get_page(request, id_corpus):
         data = glob_manager_data.get_items(id_corpus, page_current)
     else:
         data = page_current
+
     print('loading time: '+str(round(float(time.perf_counter() - start_loading) * 1000, 2))+'ms')
 
     add_tags(data, request)

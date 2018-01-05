@@ -13,6 +13,7 @@
 {% get_has_secret_token_editing as has_secret_token_editing %}
 
 {% get_dark_mode as dark_mode %}
+<script src="{% static 'viewer/js/jquery-3.1.1.min.js' %}"></script>
 
 <div class="row">
         <div id="json_url_params" data-json_url_params="{{ json_url_params }}" class="d-none"></div>
@@ -237,6 +238,22 @@
                 </div>
             </div>
         </div>
+        {% for card in settings.cards %}
+        <div class="row mb-3">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header py-1 px-2">
+                        <a data-toggle="collapse" href="#card_custom_{{forloop.counter}}" class="text-muted">{{ card.name }}</a>
+                    </div>
+                    <div class="collapse show" id="card_custom_{{forloop.counter}}">
+                        <div class="card-body py-1 px-2">
+                            {{ card.content|safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}        
 	</div>
 	<div class="col">
         <div class="row">
@@ -416,7 +433,6 @@
 <div style="display:none" id="data_page" data-urlparams="{{ session_json }}"></div>
 {% csrf_token %}
 
-<script src="{% static 'viewer/js/jquery-3.1.1.min.js' %}"></script>
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script> -->
 <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script> -->
 
