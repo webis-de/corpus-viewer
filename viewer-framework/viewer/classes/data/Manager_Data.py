@@ -196,12 +196,15 @@ class Manager_Data:
     def get_has_access_to_editing(self, id_corpus, request):
         has_access_to_editing = False
         if self.has_corpus_secret_token_editing(id_corpus):
-            try:
-                secret_token = request.session[id_corpus]['viewer__secret_token_editing']
-            except KeyError:
-                secret_token = None
-            if self.is_secret_token_editing_valid(id_corpus, secret_token):
-                has_access_to_editing = True   
+            if self.is_secret_token_editing_valid(id_corpus, ''):
+                has_access_to_editing = True
+            else:
+                try:
+                    secret_token = request.session[id_corpus]['viewer__secret_token_editing']
+                except KeyError:
+                    secret_token = None
+                if self.is_secret_token_editing_valid(id_corpus, secret_token):
+                    has_access_to_editing = True   
 
         return has_access_to_editing 
 
