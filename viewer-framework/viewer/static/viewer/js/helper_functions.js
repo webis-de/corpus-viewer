@@ -185,7 +185,7 @@ function update_tags_list(tags, update_session=true)
                         '<td class="td_tag_selection" data-id_tag="'+tag.id+'">'+
                             '<div class="tag_marker" style="background-color: '+tag.color+'"></div>'+
                         '</td>'+
-                        '<td data-id_tag="'+tag.id+'">'+
+                        '<td data-id_tag="'+tag.id+'" class="tooltip_name_tag" title="'+tag.name+'">'+
                             '<span class="label label-default">'+tag.name+'</span>'+
                         '</td>'+
                     '</tr>';

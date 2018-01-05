@@ -207,6 +207,13 @@ $(document).ready(function()
         container: 'body',
     });
 
+    $('body').tooltip({
+        selector: '.tooltip_name_tag',
+        placement: 'top',
+        animation: false,
+        container: 'body',
+    });
+
     $('body').popover({
         selector: '.tag_marker',
         placement: 'bottom',
