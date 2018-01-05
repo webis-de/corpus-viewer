@@ -3,6 +3,10 @@
 {% load tags_not_loaded %}
 {% csrf_token %}
 {% load humanize %}
+
+<link rel="stylesheet" href="{% static 'dashboard/css/formats.css' %}">
+<link rel="stylesheet" href="{% static 'viewer/css/formats_dark.css' %}">
+
 <div class="row">
     <div class="col">
         <h1>Corpus '{{ settings.name }}' not ready</h1>
