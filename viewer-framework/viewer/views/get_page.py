@@ -212,6 +212,7 @@ def get_page(request, id_corpus):
 
 def create_variable_glob_selected_items(id_corpus, list_ids):
     dict_selected_items = {}
+    field_id = glob_manager_data.get_setting_for_corpus('id', id_corpus)
 
     if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
         for item in list_ids:
@@ -223,7 +224,6 @@ def create_variable_glob_selected_items(id_corpus, list_ids):
                 'id_item_internal': id_item_internal
             }
     else:
-        field_id = glob_manager_data.get_setting_for_corpus('id', id_corpus)
         field_id_internal = 'viewer__id_item_internal'
 
         n = 10
