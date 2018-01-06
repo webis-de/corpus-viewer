@@ -168,6 +168,8 @@ $(document).ready(function()
     // })
 
 
+
+
     $(document).on('show.bs.collapse', '.card .collapse', function(e) { set_session_entry('is_collapsed_'+$(this).attr('id'), false) });
     $(document).on('hide.bs.collapse', '.card .collapse', function(e) { set_session_entry('is_collapsed_'+$(this).attr('id'), true) });
 
@@ -178,7 +180,8 @@ $(document).ready(function()
 
     $(document).on('change', '#input_select_all_items', function(e) { handle_selection_all_items($(this)) });
     $(document).on('change', '.input_select_item', function(e) { handle_select_item($(this)) });
-    $(document).on('click', '#link_deselect_all_items', function(e) { handle_deselect_all_items(e) });
+    $(document).on('click', '#button_select_all_items', function(e) { handle_click_on_button_select_all_items($(this)) });
+    $(document).on('click', '#button_deselect_all_items', function(e) { handle_click_on_button_deselect_all_items($(this)) });
 
     $(document).on('click', '.viewer__column_type_text .fixed_table', function(e) { handle_toggle_container_text($(this)) });
     $(document).on('mouseover', '.viewer__column_type_text .fixed_table', function(e) { handle_mouseover_popover_text($(this)) });

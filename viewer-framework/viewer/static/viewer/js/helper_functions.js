@@ -48,7 +48,7 @@ function create_filter_active_number(value, data_field, info_filter_values)
 function update_info_selected_items()
 {
     const count_selected_items = Object.keys(glob_selected_items).length;
-    $('#info_selected_items span').text(count_selected_items)
+    // $('#info_selected_items span').text(count_selected_items)
     $('[data-inject="count_selected_rows"]').text(count_selected_items);
 }
 

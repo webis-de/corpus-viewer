@@ -41,6 +41,11 @@ def get_is_collapsed_div_tags(context):
     return context.request.session[current_corpus]['viewer__is_collapsed_div_tags']
 
 @register.simple_tag(takes_context=True)
+def get_is_collapsed_div_selections(context):
+    current_corpus = context.request.session['viewer__viewer__current_corpus']
+    return context.request.session[current_corpus]['viewer__is_collapsed_div_selections']
+
+@register.simple_tag(takes_context=True)
 def get_is_collapsed_div_settings(context):
     current_corpus = context.request.session['viewer__viewer__current_corpus']
     return context.request.session[current_corpus]['viewer__is_collapsed_div_settings']

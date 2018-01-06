@@ -247,9 +247,39 @@ function handle_select_item(input)
     }
 }
 
-function handle_deselect_all_items(event)
+function handle_click_on_button_select_all_items(button)
 {
-    event.preventDefault()
+    button.blur();
+    console.log('select')
+
+    const data = {}
+    data.task = 'create_variable_glob_selected_items';
+
+    const url_params = refresh_url();
+
+    $.ajax({
+        url: glob_current_corpus+'/get_page?'+url_params,
+        method: 'POST',
+        contentType: 'application/json',
+        headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+        data: JSON.stringify(data),
+        success: function(result) {
+            glob_selected_items = result.glob_selected_items
+            $('.input_select_item').prop('checked', true)
+            $('.row_viewer__item').addClass('table-info');
+            update_checkbox_select_all('input_select_item', 'input_select_all_items')
+            update_info_selected_items()
+        },
+        error: function(result) {
+            error_corpus_not_exists();
+        }
+    })
+}
+
+function handle_click_on_button_deselect_all_items(button)
+{
+    button.blur();
+    console.log('deselect')
     glob_selected_items = {}
     $('.input_select_item').prop('checked', false);
     $('.row_viewer__item').removeClass('table-info');

@@ -264,6 +264,7 @@ def set_sessions(request, id_corpus):
         return False
 
     set_session(request, 'is_collapsed_div_filters', default=True)
+    set_session(request, 'is_collapsed_div_selections', default=True)
     set_session(request, 'is_collapsed_div_tags', default=True)
     set_session(request, 'viewer__selected_tags', default=[])
 

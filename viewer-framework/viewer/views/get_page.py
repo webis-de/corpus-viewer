@@ -150,6 +150,8 @@ def get_page(request, id_corpus):
             response['state_loaded'] = glob_manager_data.get_state_loaded(obj['id_corpus'])
         elif obj['task'] == 'delete_corpus':
             glob_manager_data.delete_corpus(id_corpus, obj['keep_settings_file'])
+        elif obj['task'] == 'create_variable_glob_selected_items':
+            response['glob_selected_items'] = create_variable_glob_selected_items(id_corpus, list_ids)
 
         return JsonResponse(response)
 ##### page the dataset
@@ -207,6 +209,28 @@ def get_page(request, id_corpus):
             'next_page_number': next_page_number,
             'info_filter_values': info_filter_values
         })
+
+def create_variable_glob_selected_items(id_corpus, list_ids):
+    dict_selected_items = {}
+    field_id = glob_manager_data.get_setting_for_corpus('id', id_corpus)
+    field_id_internal = 'viewer__id_item_internal'
+
+    n = 10
+    chunks = [list_ids[x:x+n] for x in range(0, len(list_ids), n)]
+    for chunk in chunks:
+        list_items = glob_manager_data.get_items(id_corpus, chunk)
+        for item in list_items:
+            id_item = str(item[field_id])
+            id_item_internal = item[field_id_internal]
+            dict_selected_items[id_item+'-'+str(id_item_internal)] = {
+                'id_item': id_item,
+                'id_item_internal': id_item_internal
+            }
+
+    # for id_ in list_ids:
+    #     print(glob_manager_data.get_item(id_corpus, id_))
+        # print(id_)
+    return dict_selected_items
 
 def function_sort(id_item, id_corpus, field):
     return glob_manager_data.get_item(id_corpus, id_item)[field]

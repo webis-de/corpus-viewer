@@ -5,6 +5,7 @@
 <link rel="stylesheet" href="{% static 'viewer/css/formats_dark.css' %}">
 
 {% get_is_collapsed_div_filters as is_collapsed_div_filters %}
+{% get_is_collapsed_div_selections as is_collapsed_div_selections %}
 {% get_is_collapsed_div_tags as is_collapsed_div_tags %}
 
 {% get_has_template_view_item as has_template_view_item %}
@@ -187,6 +188,24 @@
                 </div>
             </div>
         </div>
+        <!-- SELECTIONS -->
+        <div class="row mb-3">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header py-1 px-2">
+                        <a data-toggle="collapse" href="#div_selections" class="text-muted">Selections</a>
+                    </div>
+                    <div class="collapse {% if is_collapsed_div_selections == False %}show{% endif %}" id="div_selections">
+                        <div class="card-body py-1 px-2">
+                            <span id="info_selected_items" class="form-text text-muted"><span data-inject="count_selected_rows">0</span> Item(s) selected</span>
+                            <hr>
+                            <button class="btn btn-sm btn-primary mb-1" id="button_select_all_items">Select all items</button>
+                            <button class="btn btn-sm btn-primary" id="button_deselect_all_items">Remove all selections</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- TAGS -->
         <div class="row mb-3">
             <div class="col">
@@ -203,8 +222,6 @@
                                 <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal_add_tag">
                                     <i class="fa fa-plus" aria-hidden="true"></i> Add tag
                                 </button>
-                                <a id="link_deselect_all_items" class="align-middle" href="">Deselect all</a>
-                                <span id="info_selected_items" class="form-text text-muted"><span>0</span> Item(s) selected</span>
                             </div>
                             <hr>
                             <div>
