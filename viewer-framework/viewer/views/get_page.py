@@ -214,7 +214,14 @@ def create_variable_glob_selected_items(id_corpus, list_ids):
     dict_selected_items = {}
 
     if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
-        pass
+        for item in list_ids:
+            id_item = str(getattr(item, field_id))
+            id_item_internal = item.id
+
+            dict_selected_items[id_item+'-'+str(id_item_internal)] = {
+                'id_item': id_item,
+                'id_item_internal': id_item_internal
+            }
     else:
         field_id = glob_manager_data.get_setting_for_corpus('id', id_corpus)
         field_id_internal = 'viewer__id_item_internal'
