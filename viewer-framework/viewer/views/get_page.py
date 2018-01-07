@@ -221,7 +221,7 @@ def create_variable_glob_selected_items(id_corpus, list_ids):
 
             dict_selected_items[id_item+'-'+str(id_item_internal)] = {
                 'id_item': id_item,
-                'id_item_internal': id_item_internal
+                'viewer__id_item_internal': id_item_internal
             }
     else:
         field_id_internal = 'viewer__id_item_internal'
@@ -235,7 +235,7 @@ def create_variable_glob_selected_items(id_corpus, list_ids):
                 id_item_internal = item[field_id_internal]
                 dict_selected_items[id_item+'-'+str(id_item_internal)] = {
                     'id_item': id_item,
-                    'id_item_internal': id_item_internal
+                    'viewer__id_item_internal': id_item_internal
                 }
 
     # for id_ in list_ids:
