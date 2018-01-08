@@ -306,7 +306,9 @@ def get_filtered_data(request):
         if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
             module_custom = importlib.import_module(glob_manager_data.get_setting_for_corpus('app_label', id_corpus)+'.models')
             model_custom = getattr(module_custom, glob_manager_data.get_setting_for_corpus('model_name', id_corpus))
-            return model_custom.objects.all(), info_filter_values
+
+            queryset_entities = model_custom.objects.filter(**glob_manager_data.get_setting_for_corpus('database_filters', id_corpus))
+            return queryset_entities, info_filter_values
         else: 
             return glob_manager_data.get_all_ids_for_corpus(id_corpus, glob_manager_data.get_settings_for_corpus(id_corpus)), info_filter_values
     else:
@@ -339,7 +341,7 @@ def get_filtered_data(request):
             module_custom = importlib.import_module(glob_manager_data.get_setting_for_corpus('app_label', id_corpus)+'.models')
             model_custom = getattr(module_custom, glob_manager_data.get_setting_for_corpus('model_name', id_corpus))
             
-            list_data = model_custom.objects.all()
+            list_data = model_custom.objects.filter(**glob_manager_data.get_setting_for_corpus('database_filters', id_corpus))
             for name_tag in values_filter_tags:
                 list_data = list_data.filter(id__in=[entity.id_item_internal for entity in m_Tag.objects.get(key_corpus=id_corpus, name=name_tag).m2m_entity.all()])
 

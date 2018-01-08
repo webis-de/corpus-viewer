@@ -260,6 +260,8 @@ class Manager_Data:
             return None
         elif key == 'urls_header':
             return []
+        elif key == 'database_filters':
+            return {}
 
         raise ValueError('setting-key \''+key+'\' not found')
 
