@@ -20,3 +20,14 @@ def api_add_corpus(request):
 
     dict_result['success'] = True
     return JsonResponse(dict_result)
+
+
+def api_delete_corpus(request):
+    dict_result = {}
+
+    print(request.POST)
+    glob_manager_data.delete_corpus(request.POST['id_corpus'], False)
+    # glob_manager_data.add_settings_corpus(request.POST['id_corpus'], json.loads(request.POST['settings']))
+
+    dict_result['success'] = True
+    return JsonResponse(dict_result)

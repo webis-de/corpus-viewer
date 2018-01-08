@@ -374,6 +374,8 @@ class Manager_Data:
             shutil.rmtree(path_corpus)
         except PermissionError:
             print('PERMISSION ERROR ON CACHE DELETION')
+        except FileNotFoundError:
+            print('Directory not found, probably a database corpus') 
 
     def delete_index_for_corpus(self, id_corpus):
         # delete index 
