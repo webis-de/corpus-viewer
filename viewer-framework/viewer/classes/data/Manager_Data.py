@@ -262,6 +262,10 @@ class Manager_Data:
             return []
         elif key == 'database_filters':
             return {}
+        elif key == 'database_prefetch_related':
+            return []
+        elif key == 'database_select_related':
+            return []
 
         raise ValueError('setting-key \''+key+'\' not found')
 

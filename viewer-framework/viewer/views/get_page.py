@@ -229,7 +229,13 @@ def get_filtered_data(request):
             module_custom = importlib.import_module(glob_manager_data.get_setting_for_corpus('app_label', id_corpus)+'.models')
             model_custom = getattr(module_custom, glob_manager_data.get_setting_for_corpus('model_name', id_corpus))
 
-            queryset_entities = model_custom.objects.prefetch_related('fk_entity__viewer_tags').select_related('fk_entity', 'fk_hit', 'fk_worker').filter(**glob_manager_data.get_setting_for_corpus('database_filters', id_corpus))
+            queryset_entities = model_custom.objects.prefetch_related(
+                *glob_manager_data.get_setting_for_corpus('database_prefetch_related', id_corpus)
+            ).select_related(
+                *glob_manager_data.get_setting_for_corpus('database_select_related', id_corpus)
+            ).filter(
+                **glob_manager_data.get_setting_for_corpus('database_filters', id_corpus)
+            )
             # queryset_entities = model_custom.objects.prefetch_related('fk_entity__viewer_tags').filter(**glob_manager_data.get_setting_for_corpus('database_filters', id_corpus))
             # queryset_entities = model_custom.objects.select_related('fk_entity').filter(**glob_manager_data.get_setting_for_corpus('database_filters', id_corpus))
             return queryset_entities, info_filter_values
@@ -265,7 +271,13 @@ def get_filtered_data(request):
             module_custom = importlib.import_module(glob_manager_data.get_setting_for_corpus('app_label', id_corpus)+'.models')
             model_custom = getattr(module_custom, glob_manager_data.get_setting_for_corpus('model_name', id_corpus))
             
-            list_data = model_custom.objects.select_related('fk_hit', 'fk_worker').filter(**glob_manager_data.get_setting_for_corpus('database_filters', id_corpus))
+            list_data = model_custom.objects.prefetch_related(
+                *glob_manager_data.get_setting_for_corpus('database_prefetch_related', id_corpus)
+            ).select_related(
+                *glob_manager_data.get_setting_for_corpus('database_select_related', id_corpus)
+            ).filter(
+                **glob_manager_data.get_setting_for_corpus('database_filters', id_corpus)
+            )
             for name_tag in values_filter_tags:
                 list_data = list_data.filter(fk_entity__in=m_Tag.objects.get(key_corpus=id_corpus, name=name_tag).m2m_entity.all())
 
