@@ -22,80 +22,6 @@ regex_filter_numbers_lte = re.compile('<=(-?[0-9]+\.?[0-9]*)')
 regex_filter_numbers_gt = re.compile('>(-?[0-9]+\.?[0-9]*)')
 regex_filter_numbers_gte = re.compile('>=(-?[0-9]+\.?[0-9]*)')
 
-def temporary(id_corpus, request):
-    path = "../corpora/webis-query-speller-corpus-error-annotations.csv"
-    dict_errors = {
-        'spaces': [],
-        'special_characters': [],
-        'insertion': [],
-        'deletion': [],
-        'substitution': [],
-        'transposition': [],
-    }
-    dict_ids_internal = {}
-
-    for id_item_internal in glob_manager_data.get_all_ids_for_corpus(id_corpus, None):
-        obj_item = glob_manager_data.get_item(id_corpus, id_item_internal)
-        id_item = obj_item['id']
-        dict_ids_internal[id_item] = id_item_internal
-
-    with open(path, 'r') as csvfile:
-        spamreader = csv.reader(csvfile, delimiter=';', quotechar='"')
-        for index, row in enumerate(spamreader):
-            if index == 0:
-                continue
-
-            id_query = row[0]
-            # obj_item = glob_manager_data.get_item(id_corpus, index)
-            # if int(obj_item['id']) != index:
-            #     print('error for '+str(index)) 
-            # spaces = None
-            if row[3] != '0':
-                dict_errors['spaces'].append({'id_item': id_query, 'id_item_internal': dict_ids_internal[id_query]})
-                # spaces = int(row[3])
-                # special_characters = None
-            if row[4] != '0':
-                dict_errors['special_characters'].append({'id_item': id_query, 'id_item_internal': dict_ids_internal[id_query]})
-                # special_characters = int(row[4])
-                # insertion = None
-            if row[5] != '0':
-                dict_errors['insertion'].append({'id_item': id_query, 'id_item_internal': dict_ids_internal[id_query]})
-                # insertion = int(row[5])
-                # deletion = None
-            if row[6] != '0':
-                dict_errors['deletion'].append({'id_item': id_query, 'id_item_internal': dict_ids_internal[id_query]})
-                # deletion = int(row[6])
-                # substitution = None
-            if row[7] != '0':
-                dict_errors['substitution'].append({'id_item': id_query, 'id_item_internal': dict_ids_internal[id_query]})
-                # substitution = int(row[7])
-                # transposition = None
-            if row[8] != '0':
-                dict_errors['transposition'].append({'id_item': id_query, 'id_item_internal': dict_ids_internal[id_query]})
-                # transposition = int(row[8])   
-
-            # dict_annotations[id_query] = {
-            # 'spaces': spaces,
-            # 'special_characters': special_characters,
-            # 'insertion': insertion,
-            # 'deletion': deletion,
-            # 'substitution': substitution,
-            # 'transposition': transposition,
-            # }
-
-            # print(id_query, spaces, special_characters, insertion, deletion, substitution, transposition)
-            # if index == 50:
-            #     break
-    # print(len(dict_annotations ))
-
-    for tag_name, entities in dict_errors.items():
-        obj = {
-            'tag': tag_name,
-            'color': '#000000',
-            'ids': entities
-        }
-        add_tag(obj, None, request)
-
 def get_page(request, id_corpus):
 ##### handle session entries
     start_total = time.perf_counter()
@@ -156,10 +82,6 @@ def get_page(request, id_corpus):
         return JsonResponse(response)
 ##### page the dataset
     list_ids = sort_by_columns(request, list_ids)
-
-    # print('START TEMPORARY')
-    # temporary(id_corpus, request)
-    # print('END TEMPORARY')
 
     # paginator = Paginator(range(0, get_setting('page_size', request=request))
     paginator = Paginator(list_ids, glob_manager_data.get_setting_for_corpus('page_size', id_corpus))
@@ -307,7 +229,9 @@ def get_filtered_data(request):
             module_custom = importlib.import_module(glob_manager_data.get_setting_for_corpus('app_label', id_corpus)+'.models')
             model_custom = getattr(module_custom, glob_manager_data.get_setting_for_corpus('model_name', id_corpus))
 
-            queryset_entities = model_custom.objects.filter(**glob_manager_data.get_setting_for_corpus('database_filters', id_corpus))
+            queryset_entities = model_custom.objects.prefetch_related('fk_entity__viewer_tags').select_related('fk_entity', 'fk_hit', 'fk_worker').filter(**glob_manager_data.get_setting_for_corpus('database_filters', id_corpus))
+            # queryset_entities = model_custom.objects.prefetch_related('fk_entity__viewer_tags').filter(**glob_manager_data.get_setting_for_corpus('database_filters', id_corpus))
+            # queryset_entities = model_custom.objects.select_related('fk_entity').filter(**glob_manager_data.get_setting_for_corpus('database_filters', id_corpus))
             return queryset_entities, info_filter_values
         else: 
             return glob_manager_data.get_all_ids_for_corpus(id_corpus, glob_manager_data.get_settings_for_corpus(id_corpus)), info_filter_values
@@ -341,9 +265,9 @@ def get_filtered_data(request):
             module_custom = importlib.import_module(glob_manager_data.get_setting_for_corpus('app_label', id_corpus)+'.models')
             model_custom = getattr(module_custom, glob_manager_data.get_setting_for_corpus('model_name', id_corpus))
             
-            list_data = model_custom.objects.filter(**glob_manager_data.get_setting_for_corpus('database_filters', id_corpus))
+            list_data = model_custom.objects.select_related('fk_hit', 'fk_worker').filter(**glob_manager_data.get_setting_for_corpus('database_filters', id_corpus))
             for name_tag in values_filter_tags:
-                list_data = list_data.filter(id__in=[entity.id_item_internal for entity in m_Tag.objects.get(key_corpus=id_corpus, name=name_tag).m2m_entity.all()])
+                list_data = list_data.filter(fk_entity__in=m_Tag.objects.get(key_corpus=id_corpus, name=name_tag).m2m_entity.all())
 
             # print()
             # raise NotImplementedError()
@@ -778,15 +702,15 @@ def get_tags_filtered_items(list_ids, request):
     #         list_tags.append({'id': tag.id, 'name': tag.name, 'color': tag.color, 'is_selected': str(tag.id) in request.session[id_corpus]['viewer__viewer__selected_tags']})
     #     return list_tags
     if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
+        len(list_ids)
+
         list_tags = []
         n = 900
         print(list_ids)
-        list_ids_item = [item.id for item in list_ids]
-        list_entities = m_Entity.objects.filter(key_corpus=id_corpus, id_item_internal__in=list_ids_item)
+        list_entities = list_ids
         chunks = [list_entities[x:x+n] for x in range(0, len(list_entities), n)]
         for chunk in chunks:
-            list_tags += m_Tag.objects.filter(m2m_entity__in=chunk, key_corpus=id_corpus).distinct()
-            # list_tags += m_Tag.objects.filter(m2m_custom_model__in=chunk, key_corpus=id_corpus).distinct()
+            list_tags += m_Tag.objects.filter(m2m_entity__fk_item__in=chunk, key_corpus=id_corpus).distinct()
 
         dict_ordered_tags = collections.OrderedDict()
         for tag in list_tags:
@@ -856,12 +780,6 @@ def add_tags(data, request):
                                 # data = [item for item in data if real_value in str(item[obj_filter['data_field']])]
                 # data = filter_data(request, data, obj_filter)
     else:
-        list_ids = [item.id for item in data]
-        db_obj_entities = m_Entity.objects.filter(id_item_internal__in=list_ids, key_corpus=id_corpus).prefetch_related('viewer_tags')
-        dict_entities = {entity.id_item_internal: entity for entity in db_obj_entities}
-
         for item in data:
-            try:
-                item.viewer_tags = dict_entities[item.id].viewer_tags.all()
-            except KeyError:
-                item.viewer_tags = []
+            item.viewer_tags = item.fk_entity.viewer_tags.all()
+ 
