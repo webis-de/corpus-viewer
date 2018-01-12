@@ -279,7 +279,8 @@ def get_filtered_data(request):
                 **glob_manager_data.get_setting_for_corpus('database_filters', id_corpus)
             )
             for name_tag in values_filter_tags:
-                list_data = list_data.filter(fk_entity__in=m_Tag.objects.get(key_corpus=id_corpus, name=name_tag).m2m_entity.all())
+                list_data = list_data.filter(tags__name=name_tag)
+                # list_data = list_data.filter(tags__in=m_Tag.objects.get(key_corpus=id_corpus, name=name_tag).m2m_entity.all())
 
             # print()
             # raise NotImplementedError()
@@ -722,7 +723,7 @@ def get_tags_filtered_items(list_ids, request):
         list_entities = list_ids
         chunks = [list_entities[x:x+n] for x in range(0, len(list_entities), n)]
         for chunk in chunks:
-            list_tags += m_Tag.objects.filter(m2m_entity__fk_item__in=chunk, key_corpus=id_corpus).distinct()
+            list_tags += m_Tag.objects.filter(items__in=chunk, key_corpus=id_corpus).distinct()
 
         dict_ordered_tags = collections.OrderedDict()
         for tag in list_tags:
@@ -793,5 +794,5 @@ def add_tags(data, request):
                 # data = filter_data(request, data, obj_filter)
     else:
         for item in data:
-            item.viewer_tags = item.fk_entity.viewer_tags.all()
+            item.viewer_tags = item.tags.all()
  
