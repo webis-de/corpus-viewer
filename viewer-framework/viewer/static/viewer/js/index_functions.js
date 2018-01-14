@@ -213,10 +213,6 @@ function handle_selection_all_items(input)
         $('.input_select_item').prop('checked', false);
     }
     $('.input_select_item').trigger('change')
-    if(glob_mode_add_tag.status == 'inactive')
-    {
-        $.event.trigger(glob_event_selected_items_update);
-    }
 }
 
 function handle_select_item(input)
@@ -231,12 +227,14 @@ function handle_select_item(input)
         if(input.prop('checked'))
         {
             glob_selected_items[obj_tmp_key] = obj_tmp;
+            $.event.trigger(glob_event_selected_items_update);
 
             $('.row_viewer__item[data-id_item="'+id_item+'"]').addClass('table-info');
         } else {
             $('.row_viewer__item[data-id_item="'+id_item+'"]').removeClass('table-info');
 
             delete glob_selected_items[obj_tmp_key]            
+            $.event.trigger(glob_event_selected_items_update);
         }
         update_checkbox_select_all('input_select_item', 'input_select_all_items')
         update_info_selected_items()
@@ -286,7 +284,7 @@ function handle_click_on_button_deselect_all_items(button)
     console.log('deselect')
     glob_selected_items = {}
     $.event.trigger(glob_event_selected_items_update);
-
+    
     $('.input_select_item').prop('checked', false);
     $('.row_viewer__item').removeClass('table-info');
     update_checkbox_select_all('input_select_item', 'input_select_all_items')
