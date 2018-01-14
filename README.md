@@ -8,13 +8,12 @@ The whole tool is built on top of the [Django-Framework](https://www.djangoproje
 By default the tool uses the pure-Python search-engine [Whoosh](https://pypi.python.org/pypi/Whoosh/) to make each corpus searchable.
 
 ## Requirements
-* Python 3.x _(tested with version 3.5)_
-* virtualenv
+* Python 3.5+
 
 ## Installation
-1. run `./setup_virtualenv.sh` to setup the virtual environment and to install Django and Whoosh
-2. run `source venv_viewer/bin/activate` to active the virtual environment
-3. run `./setup_django.sh` to setup the required Django database tables
+**Note:** If you want to use a virtual environment like `virtualenv` switch to the virtual environmant before executing the following step(s)!
+
+1. run `./setup.sh` to setup the virtual environment and to install Django and Whoosh
 
 ## Quickstart
 1. run `cd viewer-framework`
@@ -24,14 +23,11 @@ By default the tool uses the pure-Python search-engine [Whoosh](https://pypi.pyt
 * loading of arbitrary corpora
 * no need to preprocess the corpus due to custom loading function (scripted in python)
 * integrated loading of corpora stored in a in ldjson- or csv-file
+* load corpora stored in PostgreSQL, MySQL, SQLite or Oracle databases
 * multiple convenient ways to assign tags to your corpus items
 * export the whole or parts of the corpus into a ldjson- or csv-file
-* configurable item view with web components
-
-## Upcoming Features
-* (better) support for mobile devices 
-
-## Known Bugs
+* configurable item view via html or external source
+* create interface plugins to serve your needs
 
 ## Contributors
 * Kristof Komlossy
@@ -39,5 +35,5 @@ By default the tool uses the pure-Python search-engine [Whoosh](https://pypi.pyt
 * Matthias Hagen
 
 ## Contact
-You found a bug or you have questions/requests?  
+Did you find a bug or do you have questions/requests?
 Write me a mail: kristof.komlossy@uni-weimar.de
