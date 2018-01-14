@@ -1,4 +1,6 @@
 let glob_selected_items = {}
+const glob_event_selected_items_update = jQuery.Event('update.cv.selected-items');
+
 let glob_selected_tags = {}
 
 let glob_filter_tags = []
