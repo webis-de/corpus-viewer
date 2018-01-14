@@ -1,0 +1,2 @@
+django==2.0
+whoosh==2.7.4
