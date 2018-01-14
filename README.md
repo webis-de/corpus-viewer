@@ -13,7 +13,7 @@ By default the tool uses the pure-Python search-engine [Whoosh](https://pypi.pyt
 ## Installation
 **Note:** If you want to use a virtual environment like `virtualenv` switch to the virtual environmant before executing the following step(s)!
 
-1. run `./setup.sh` to setup the virtual environment and to install Django and Whoosh
+1. run `./setup.sh`
 
 ## Quickstart
 1. run `cd viewer-framework`
