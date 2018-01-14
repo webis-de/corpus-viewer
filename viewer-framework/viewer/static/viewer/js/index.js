@@ -170,6 +170,7 @@ $(document).ready(function()
     // })
 
 
+    $(document).on('update.cv.selected-items', function(e) { console.log('update.cv.selected-items') });
 
 
     $(document).on('show.bs.collapse', '.card .collapse', function(e) { set_session_entry('is_collapsed_'+$(this).attr('id'), false) });
