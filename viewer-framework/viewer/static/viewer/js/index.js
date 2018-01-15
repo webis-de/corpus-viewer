@@ -182,7 +182,7 @@ $(document).ready(function()
     $(document).on('change', '.input_toggle_columns', function(e) { handle_toggle_column($(this)) });
 
     $(document).on('change', '#input_select_all_items', function(e) { handle_selection_all_items($(this)) });
-    $(document).on('change', '.input_select_item', function(e) { handle_select_item($(this)) });
+    $(document).on('change', '.input_select_item', function(e) { handle_select_item($(this), e) });
     $(document).on('click', '#button_select_all_items', function(e) { handle_click_on_button_select_all_items($(this)) });
     $(document).on('click', '#button_deselect_all_items', function(e) { handle_click_on_button_deselect_all_items($(this)) });
 
