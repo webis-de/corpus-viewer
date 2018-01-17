@@ -213,9 +213,10 @@ function handle_selection_all_items(input)
         $('.input_select_item').prop('checked', false);
     }
     $('.input_select_item').trigger('change')
+    $.event.trigger(glob_event_selected_items_update, glob_selected_items);
 }
 
-function handle_select_item(input)
+function handle_select_item(input, e)
 {
     if(glob_mode_add_tag.status == 'inactive')
     {
@@ -227,13 +228,16 @@ function handle_select_item(input)
         if(input.prop('checked'))
         {
             glob_selected_items[obj_tmp_key] = obj_tmp;
-            $.event.trigger(glob_event_selected_items_update, glob_selected_items);
 
             $('.row_viewer__item[data-id_item="'+id_item+'"]').addClass('table-info');
         } else {
             $('.row_viewer__item[data-id_item="'+id_item+'"]').removeClass('table-info');
 
             delete glob_selected_items[obj_tmp_key]            
+        }
+        
+        if(e.isTrigger == undefined)
+        {
             $.event.trigger(glob_event_selected_items_update, glob_selected_items);
         }
         update_checkbox_select_all('input_select_item', 'input_select_all_items')
@@ -394,6 +398,7 @@ function handle_rightclick_on_tr(event, tr)
         elem.prop('checked', true)
     }
     elem.trigger('change')
+    $.event.trigger(glob_event_selected_items_update, glob_selected_items);
 }
 
 function handle_click_link_add_tag(event, link)
