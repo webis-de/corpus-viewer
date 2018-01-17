@@ -715,15 +715,21 @@ def get_tags_filtered_items(list_ids, request):
     #         list_tags.append({'id': tag.id, 'name': tag.name, 'color': tag.color, 'is_selected': str(tag.id) in request.session[id_corpus]['viewer__viewer__selected_tags']})
     #     return list_tags
     if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
-        len(list_ids)
-
         list_tags = []
-        n = 900
-        print(list_ids)
-        list_entities = list_ids
-        chunks = [list_entities[x:x+n] for x in range(0, len(list_entities), n)]
-        for chunk in chunks:
-            list_tags += m_Tag.objects.filter(items__in=chunk, key_corpus=id_corpus).distinct()
+        
+        try:
+            if connection.vendor == 'postgresql':
+                list_tags = m_Tag.objects.filter(items__in=list_ids, key_corpus=id_corpus).distinct()
+            else:
+                len(list_ids)
+                n = 900
+                # print(list_ids)
+                list_entities = list_ids
+                chunks = [list_entities[x:x+n] for x in range(0, len(list_entities), n)]
+                for chunk in chunks:
+                    list_tags += m_Tag.objects.filter(items__in=chunk, key_corpus=id_corpus).distinct()
+        except FieldError:
+            pass
 
         dict_ordered_tags = collections.OrderedDict()
         for tag in list_tags:
@@ -793,6 +799,9 @@ def add_tags(data, request):
                                 # data = [item for item in data if real_value in str(item[obj_filter['data_field']])]
                 # data = filter_data(request, data, obj_filter)
     else:
-        for item in data:
-            item.viewer_tags = item.tags.all()
- 
+        try:
+            for item in data:
+                item.viewer_tags = item.tags.all()
+        except AttributeError:
+            for item in data:
+                item.viewer_tags = []
