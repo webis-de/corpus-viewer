@@ -14,6 +14,9 @@ from viewer.models import m_Tag, m_Entity
 import hashlib
 import csv
 import importlib
+from django.core.exceptions import FieldError
+from django.db import connection
+
 
 regex_filter_numbers_negative = re.compile('(?<![>|\.|>=|<=|<|<|0|1|2|3|4|5|6|7|8|9|0])(-[0-9]+\.?[0-9]*)')
 regex_filter_numbers_positive = re.compile('(?<![>|\.|>=|<=|<|<|0|1|2|3|4|5|6|7|8|9|0|-])([0-9]+\.?[0-9]*)')
@@ -716,7 +719,7 @@ def get_tags_filtered_items(list_ids, request):
     #     return list_tags
     if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
         list_tags = []
-        
+
         try:
             if connection.vendor == 'postgresql':
                 list_tags = m_Tag.objects.filter(items__in=list_ids, key_corpus=id_corpus).distinct()
