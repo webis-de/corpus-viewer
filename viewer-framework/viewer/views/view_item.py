@@ -32,7 +32,7 @@ def view_item(request, id_corpus, id_internal_item):
         print(url)
 
         with urllib.request.urlopen(url) as response:
-            html = response.read()
+            html = response.read().decode("utf8")
             context['template'] = html
     else:
 
