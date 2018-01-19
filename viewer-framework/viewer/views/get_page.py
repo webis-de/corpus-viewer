@@ -43,16 +43,11 @@ def get_page(request, id_corpus):
             return redirect('viewer:add_token')    
 ##### load data and apply filters
     start = time.time()
-    list_ids, info_filter_values = get_filtered_data(request)
+    if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
+        list_ids, info_filter_values = get_filtered_data_database(request)
+    else:
+        list_ids, info_filter_values = get_filtered_data(request)
     print('get_filtered_data {}'.format(format(time.time() - start, '.3f')))
-    # return JsonResponse({})
-    # list_tags = []
-    start = time.time()
-
-    list_tags = get_tags_filtered_items(list_ids, request)
-    print('get_tags_filtered_items {}'.format(format(time.time() - start, '.3f')))
-
-
 ##### check if has token for editing
     has_access_to_editing = glob_manager_data.get_has_access_to_editing(id_corpus, request)  
 ##### handle post requests
@@ -89,6 +84,11 @@ def get_page(request, id_corpus):
 
         return JsonResponse(response)
 ##### page the dataset
+    start = time.time()
+    # list_tags = []
+    list_tags = get_tags_filtered_items(list_ids, request)
+    print('get_tags_filtered_items {}'.format(format(time.time() - start, '.3f')))
+
     start = time.time()
     list_ids = sort_by_columns(request, list_ids)
     print('sort_by_columns {}'.format(format(time.time() - start, '.3f')))
@@ -230,6 +230,47 @@ def export_data(obj, data, request):
 
     return response
 
+def get_filtered_data_database(request):
+    info_filter_values = {}
+    id_corpus = get_current_corpus(request)
+
+    module_custom = importlib.import_module(glob_manager_data.get_setting_for_corpus('app_label', id_corpus)+'.models')
+    model_custom = getattr(module_custom, glob_manager_data.get_setting_for_corpus('model_name', id_corpus))
+
+    queryset_entities = model_custom.objects.prefetch_related(
+        *glob_manager_data.get_setting_for_corpus('database_prefetch_related', id_corpus)
+    ).select_related(
+        *glob_manager_data.get_setting_for_corpus('database_select_related', id_corpus)
+    ).filter(
+        **glob_manager_data.get_setting_for_corpus('database_filters', id_corpus)
+    )
+    #
+    # FILTER BY TAGS 
+    #
+    values_filter_tags = request.session[id_corpus]['viewer__viewer__filter_tags']
+    if len(values_filter_tags) > 0:
+        for name_tag in values_filter_tags:
+            queryset_entities = queryset_entities.filter(tags__name=name_tag)
+
+    for obj_filter in glob_manager_data.get_setting_for_corpus('filters', id_corpus):
+        type_data_field = glob_manager_data.get_setting_for_corpus('data_fields', id_corpus)[obj_filter['data_field']]['type']
+        info_values = {}
+        values = request.session[id_corpus]['viewer__viewer__filter_custom'][obj_filter['data_field']]
+
+        if type_data_field == 'number':
+            for value in values:
+                info_values[value] = {'value_count_per_document': 0, 'value_count_total': 0}
+                queryset_entities = queryset_entities.filter(**{obj_filter['data_field']+'__exact': value})
+        else:
+            for value in values:
+                real_value = value[2:]
+                info_values[value] = {'value_count_per_document': 0, 'value_count_total': 0}
+                queryset_entities = queryset_entities.filter(**{obj_filter['data_field']+'__icontains': real_value})
+
+        info_filter_values[obj_filter['data_field']] = info_values
+
+    return queryset_entities, info_filter_values
+
 def get_filtered_data(request):
     info_filter_values = {}
     id_corpus = get_current_corpus(request)
@@ -237,34 +278,19 @@ def get_filtered_data(request):
     dict_filters = get_filters_if_not_empty(request, id_corpus)
     if dict_filters == None:
         # print('######### ALL IDS')   
-        if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
-            module_custom = importlib.import_module(glob_manager_data.get_setting_for_corpus('app_label', id_corpus)+'.models')
-            model_custom = getattr(module_custom, glob_manager_data.get_setting_for_corpus('model_name', id_corpus))
-
-            queryset_entities = model_custom.objects.prefetch_related(
-                *glob_manager_data.get_setting_for_corpus('database_prefetch_related', id_corpus)
-            ).select_related(
-                *glob_manager_data.get_setting_for_corpus('database_select_related', id_corpus)
-            ).filter(
-                **glob_manager_data.get_setting_for_corpus('database_filters', id_corpus)
-            )
-            # queryset_entities = model_custom.objects.prefetch_related('fk_entity__viewer_tags').filter(**glob_manager_data.get_setting_for_corpus('database_filters', id_corpus))
-            # queryset_entities = model_custom.objects.select_related('fk_entity').filter(**glob_manager_data.get_setting_for_corpus('database_filters', id_corpus))
-            return queryset_entities, info_filter_values
-        else: 
-            return glob_manager_data.get_all_ids_for_corpus(id_corpus, glob_manager_data.get_settings_for_corpus(id_corpus)), info_filter_values
+        return glob_manager_data.get_all_ids_for_corpus(id_corpus, glob_manager_data.get_settings_for_corpus(id_corpus)), info_filter_values
     else:
-        if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) != 'database':
-            bytes_dict_filters = json.dumps(dict_filters, sort_keys=True).encode()
-            hash_custom = hashlib.sha1(bytes_dict_filters).hexdigest()
-            # fails if the user has no hash stored
-            try:
-                # checks if the hash corresponds to the last hash
-                if hash_custom == request.session[id_corpus]['viewer__last_hash']:
-                    # print('######### LAST RESULT')    
-                    return request.session[id_corpus]['viewer__last_result']
-            except:
-                pass
+        bytes_dict_filters = json.dumps(dict_filters, sort_keys=True).encode()
+        hash_custom = hashlib.sha1(bytes_dict_filters).hexdigest()
+        # fails if the user has no hash stored
+        try:
+            # checks if the hash corresponds to the last hash
+            if hash_custom == request.session[id_corpus]['viewer__last_hash']:
+                # print('######### LAST RESULT')    
+                # pass
+                return request.session[id_corpus]['viewer__last_result']
+        except:
+            pass
     
     # print('######### NEW RESULT')    
     # print(hash_customs)
@@ -277,21 +303,6 @@ def get_filtered_data(request):
     if len(values_filter_tags) > 0:
         print('TAGSSSS')
         
-        if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
-            # iterate over tag and return only items tagged with them
-
-            module_custom = importlib.import_module(glob_manager_data.get_setting_for_corpus('app_label', id_corpus)+'.models')
-            model_custom = getattr(module_custom, glob_manager_data.get_setting_for_corpus('model_name', id_corpus))
-            
-            list_data = model_custom.objects.prefetch_related(
-                *glob_manager_data.get_setting_for_corpus('database_prefetch_related', id_corpus)
-            ).select_related(
-                *glob_manager_data.get_setting_for_corpus('database_select_related', id_corpus)
-            ).filter(
-                **glob_manager_data.get_setting_for_corpus('database_filters', id_corpus)
-            )
-            for name_tag in values_filter_tags:
-                list_data = list_data.filter(tags__name=name_tag)
                 # list_data = list_data.filter(tags__in=m_Tag.objects.get(key_corpus=id_corpus, name=name_tag).m2m_entity.all())
 
             # print()
@@ -299,51 +310,27 @@ def get_filtered_data(request):
             # for tag in values_filter_tags:
             #     data = data.filter(viewer_tags__name=tag)
             # list_data 
-        else:
             # filter the data by tags
-            list_data = filter_data_tags(values_filter_tags, id_corpus)
+        list_data = filter_data_tags(values_filter_tags, id_corpus)
 
     #
     # FILTERS
     #
 
     for obj_filter in glob_manager_data.get_setting_for_corpus('filters', id_corpus):
-        if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
-            module_custom = importlib.import_module(glob_manager_data.get_setting_for_corpus('app_label', id_corpus)+'.models')
-            model_custom = getattr(module_custom, glob_manager_data.get_setting_for_corpus('model_name', id_corpus))
-            queryset_entities = model_custom.objects.prefetch_related(
-                *glob_manager_data.get_setting_for_corpus('database_prefetch_related', id_corpus)
-            ).select_related(
-                *glob_manager_data.get_setting_for_corpus('database_select_related', id_corpus)
-            ).filter(
-                **glob_manager_data.get_setting_for_corpus('database_filters', id_corpus)
-            )
-
-            info_values = {}
-            values = request.session[id_corpus]['viewer__viewer__filter_custom'][obj_filter['data_field']]
-            for value in values:
-                real_value = value[2:]
-                info_values[value] = {'value_count_per_document': 0, 'value_count_total': 0}
-                queryset_entities = queryset_entities.filter(**{obj_filter['data_field']+'__icontains': real_value})
-
-            info_filter_values[obj_filter['data_field']] = info_values
-            list_data = queryset_entities
-            print(obj_filter)
-            print(values)
             # data = data.filter(**{obj_filter['data_field']+'__icontains': value})
-        else:
         # filter the data by the current filter
-            list_data_new, info_values, skipped = filter_data(request, obj_filter)
-            # print(list_data_new)
-            if not skipped:
-                if list_data == None:
-                    list_data = sorted(list_data_new)
-                else:
-                    set_tmp = frozenset(list_data_new)
-                    list_data = [x for x in list_data if x in set_tmp]
-                    # list_data = list_data.intersection(list_data_new)
-                
-                info_filter_values[obj_filter['data_field']] = info_values
+        list_data_new, info_values, skipped = filter_data(request, obj_filter)
+        # print(list_data_new)
+        if not skipped:
+            if list_data == None:
+                list_data = sorted(list_data_new)
+            else:
+                set_tmp = frozenset(list_data_new)
+                list_data = [x for x in list_data if x in set_tmp]
+                # list_data = list_data.intersection(list_data_new)
+            
+            info_filter_values[obj_filter['data_field']] = info_values
     # print(len(data))
     # print(len(list_data))
     if list_data != None:
@@ -382,12 +369,12 @@ def filter_data(request, obj_filter):
 
     # get the values of the current filter
     values = request.session[id_corpus]['viewer__viewer__filter_custom'][obj_filter['data_field']]
-
     # if the value is not empty 
-    if len(values) != 0:
-        skipped = False
+    if len(values) == 0:
         info_values = {value:{'value_count_per_document': 0, 'value_count_total': 0} for value in values}
     else:
+        info_values = {value:{'value_count_per_document': 0, 'value_count_total': 0} for value in values}
+        skipped = False
         type_data_field = glob_manager_data.get_setting_for_corpus('data_fields', id_corpus)[obj_filter['data_field']]['type']
         # if the filter is 'contains'
         if type_data_field == 'string' or type_data_field == 'text':
@@ -769,16 +756,14 @@ def get_tags_filtered_items(list_ids, request):
                 dict_ordered_tags[tag.name] = {'id': tag.id, 'name': tag.name, 'color': tag.color, 'is_selected': str(tag.id) in request.session[id_corpus]['viewer__viewer__selected_tags']}
         return list(dict_ordered_tags.values())
     else:
-        n = 900
-        chunks = [list_ids[x:x+n] for x in range(0, len(list_ids), n)]
-
-        list_tags = []
-        for chunk in chunks:
-            # list_tmp = []
-            # for id_item in chunk:
-            #     obj_item = glob_manager_data.get_item(id_corpus, id_item)
-            #     list_tmp.append(obj_item[glob_manager_data.get_setting_for_corpus('id', id_corpus)])
-            list_tags += m_Tag.objects.filter(m2m_entity__id_item_internal__in=chunk, key_corpus=id_corpus).distinct()
+        if glob_manager_data.get_number_of_indexed_items(id_corpus) == len(list_ids):
+            list_tags = m_Tag.objects.filter(key_corpus=id_corpus, m2m_entity__isnull=False).distinct()
+        else:
+            n = 900
+            chunks = [list_ids[x:x+n] for x in range(0, len(list_ids), n)]
+            list_tags = []
+            for chunk in chunks:
+                list_tags += m_Tag.objects.filter(m2m_entity__id_item_internal__in=chunk, key_corpus=id_corpus).distinct()
 
         dict_ordered_tags = collections.OrderedDict()
         for tag in list_tags:

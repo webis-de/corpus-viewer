@@ -3,7 +3,8 @@ import csv
 import json
 
 def load_data(item_handle):
-    text = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.'
+    text = '2132'
+    # text = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.'
 
     # with open('../large_corpus.txt') as f:
     #     counter = 0
@@ -19,7 +20,7 @@ def load_data(item_handle):
     #             return
 
     # for x in range(0, 1):
-    for x in range(0, 10000):
+    for x in range(0, 1000000):
     # for x in range(0, 100000):
     # for x in range(0, 1000000):
     # for x in range(0, 5000000):
@@ -68,6 +69,7 @@ DICT_SETTINGS_VIEWER = {
     'displayed_fields': [
         'id', 'text'
     ],
+    'secret_token_editing': '',
     'page_size': 25,
     # Possible filter types: 'text', 'checkbox'
     #

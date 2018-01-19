@@ -523,7 +523,7 @@
 			"file": "viewer-framework/viewer/models.py",
 			"settings":
 			{
-				"buffer_size": 1100,
+				"buffer_size": 1160,
 				"line_ending": "Unix"
 			}
 		},
@@ -546,32 +546,6 @@
 			"settings":
 			{
 				"buffer_size": 6534,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django_polymer_alternative/corpora/template_query_speller.html",
-			"settings":
-			{
-				"buffer_size": 13,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django_polymer_alternative/corpora/webis-cbc-16/template.html",
-			"settings":
-			{
-				"buffer_size": 2822,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "corpora/template_query_speller.html",
-			"settings":
-			{
-				"buffer_size": 4104,
-				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -579,9 +553,9 @@
 			"file": "settings/settings_viewer_example.py",
 			"settings":
 			{
-				"buffer_size": 2061,
+				"buffer_size": 2089,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
+				"line_ending": "Windows"
 			}
 		},
 		{
@@ -594,36 +568,11 @@
 			}
 		},
 		{
-			"file": "viewer-framework/viewer/static/viewer/bower_components/templates/Webis-Clickbait-16.html",
-			"settings":
-			{
-				"buffer_size": 7467,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "corpora/webis-cbc-16/template.html",
-			"settings":
-			{
-				"buffer_size": 7467,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "viewer-framework/viewer/templates/viewer/view_item.html",
 			"settings":
 			{
-				"buffer_size": 989,
+				"buffer_size": 641,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django_live_system/viewer-framework/settings_viewer/settings_viewer_cbc.py",
-			"settings":
-			{
-				"buffer_size": 4440,
 				"line_ending": "Unix"
 			}
 		},
@@ -631,7 +580,7 @@
 			"file": "viewer-framework/viewer/classes/data/Manager_Data.py",
 			"settings":
 			{
-				"buffer_size": 18937,
+				"buffer_size": 22390,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -640,7 +589,7 @@
 			"file": "settings/settings_viewer_test.py",
 			"settings":
 			{
-				"buffer_size": 2144,
+				"buffer_size": 2150,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -649,7 +598,7 @@
 			"file": "viewer-framework/viewer/templates/viewer/table.html",
 			"settings":
 			{
-				"buffer_size": 4517,
+				"buffer_size": 4546,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -658,7 +607,7 @@
 			"file": "viewer-framework/viewer/static/viewer/js/helper_functions.js",
 			"settings":
 			{
-				"buffer_size": 11089,
+				"buffer_size": 12397,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -667,7 +616,7 @@
 			"file": "viewer-framework/dashboard/views.py",
 			"settings":
 			{
-				"buffer_size": 2356,
+				"buffer_size": 2882,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -676,7 +625,7 @@
 			"file": "viewer-framework/dashboard/static/dashboard/js/index.js",
 			"settings":
 			{
-				"buffer_size": 5170,
+				"buffer_size": 6405,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -685,7 +634,7 @@
 			"file": "viewer-framework/viewer/templates/viewer/tags.html",
 			"settings":
 			{
-				"buffer_size": 8751,
+				"buffer_size": 8460,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -694,7 +643,7 @@
 			"file": "viewer-framework/viewer/static/viewer/js/recommendation.js",
 			"settings":
 			{
-				"buffer_size": 7896,
+				"buffer_size": 8092,
 				"encoding": "UTF-8",
 				"line_ending": "Unix",
 				"name": "recomm"
@@ -704,7 +653,7 @@
 			"file": "viewer-framework/viewer/templates/viewer/index.html",
 			"settings":
 			{
-				"buffer_size": 23952,
+				"buffer_size": 25555,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -713,7 +662,7 @@
 			"file": "viewer-framework/viewer/templates/viewer/add_token.html",
 			"settings":
 			{
-				"buffer_size": 1039,
+				"buffer_size": 1189,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -722,7 +671,7 @@
 			"file": "viewer-framework/viewer/static/viewer/js/index.js",
 			"settings":
 			{
-				"buffer_size": 10131,
+				"buffer_size": 13684,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -731,7 +680,7 @@
 			"file": "viewer-framework/viewer/static/viewer/js/index_functions.js",
 			"settings":
 			{
-				"buffer_size": 25607,
+				"buffer_size": 28519,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -740,7 +689,7 @@
 			"file": "viewer-framework/viewer/views/get_page.py",
 			"settings":
 			{
-				"buffer_size": 35912,
+				"buffer_size": 37253,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -749,7 +698,7 @@
 			"file": "viewer-framework/viewer/views/tags.py",
 			"settings":
 			{
-				"buffer_size": 5798,
+				"buffer_size": 6651,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -767,7 +716,7 @@
 			"file": "viewer-framework/viewer/static/viewer/css/formats.css",
 			"settings":
 			{
-				"buffer_size": 2645,
+				"buffer_size": 3060,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -776,7 +725,7 @@
 			"file": "viewer-framework/dashboard/templates/dashboard/documentation.html",
 			"settings":
 			{
-				"buffer_size": 22311,
+				"buffer_size": 23318,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -785,16 +734,8 @@
 			"file": "viewer-framework/viewer/views/index.py",
 			"settings":
 			{
-				"buffer_size": 8876,
+				"buffer_size": 9618,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "viewer-framework/viewer/static/viewer/bower_components/templates/settings_viewer_query_speller.html",
-			"settings":
-			{
-				"buffer_size": 4104,
 				"line_ending": "Unix"
 			}
 		},
@@ -802,7 +743,7 @@
 			"file": "viewer-framework/viewer/views/shared_code.py",
 			"settings":
 			{
-				"buffer_size": 12791,
+				"buffer_size": 12882,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -818,8 +759,28 @@
 			"file": "README.md",
 			"settings":
 			{
-				"buffer_size": 1837,
+				"buffer_size": 1771,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "setup.sh",
+			"settings":
+			{
+				"buffer_size": 210,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "requirements.txt",
+			"settings":
+			{
+				"buffer_size": 25,
+				"encoding": "UTF-8",
+				"line_ending": "Unix",
+				"name": "requirements.txt"
 			}
 		},
 		{
@@ -877,34 +838,19 @@
 	},
 	"expanded_folders":
 	[
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/corpora",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/corpora/webis-cbc-16",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/settings",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/dashboard",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/dashboard/static",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/dashboard/static/dashboard",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/dashboard/static/dashboard/css",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/dashboard/static/dashboard/js",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/dashboard/templates",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/dashboard/templates/dashboard",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/classes",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/classes/data",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/classes/index",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/static",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/static/viewer",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/static/viewer/css",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/static/viewer/js",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/templates",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/templates/viewer",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/templatetags",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/views",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer-framework"
+		"/home/kritten/Documents/corpus-viewer",
+		"/home/kritten/Documents/corpus-viewer/viewer-framework"
 	],
 	"file_history":
 	[
+		"/home/kritten/Documents/corpus-viewer/viewer-framework/install_django.sh",
+		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/static/viewer/bower_components/templates/settings_viewer_query_speller.html",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django_live_system/viewer-framework/settings_viewer/settings_viewer_cbc.py",
+		"/home/kritten/Documents/corpus-viewer/corpora/webis-cbc-16/template.html",
+		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/static/viewer/bower_components/templates/Webis-Clickbait-16.html",
+		"/home/kritten/Documents/corpus-viewer/corpora/template_query_speller.html",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django_polymer_alternative/corpora/webis-cbc-16/template.html",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django_polymer_alternative/corpora/template_query_speller.html",
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/templates/viewer/index.html",
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/views/get_page.py",
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django_polymer_alternative/corpora/template_query_speller (copy).html",
@@ -1024,19 +970,11 @@
 		"/run/user/1001/gvfs/sftp:host=webis42,user=yiro4618/home/yiro4618/Desktop/list_tweets.txt",
 		"/run/user/1001/gvfs/sftp:host=webis42,user=yiro4618/home/yiro4618/Desktop/archive-remote.sh",
 		"/run/user/1001/gvfs/sftp:host=webis42,user=yiro4618/media/storage1/yiro4618/master/clickbait/crawled_tweets/crawled_tweets_2017_04_06/2016-11-08 13:33:35.617357/abc.ldjson",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/corpora/file.csv",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/corpora/file.ldjson",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/settings_viewer/settings_viewer (copy).py",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/exported_tags/tags_exported_1490022663.ldjson",
-		"/home/yiro4618/Desktop/viewer_bagrat/viewer/models.py",
-		"/home/yiro4618/Desktop/viewer_bagrat/baseapp/models.py",
-		"/home/yiro4618/Desktop/viewer_bagrat/settings_viewer/settings_viewer.py",
-		"/home/yiro4618/Desktop/viewer_bagrat/error-log.txt",
-		"/home/yiro4618/Desktop/viewer_bagrat/clickbait-corpus.ldjson"
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/corpora/file.csv"
 	],
 	"find":
 	{
-		"height": 35.0
+		"height": 26.0
 	},
 	"find_in_files":
 	{
@@ -1230,7 +1168,7 @@
 	"groups":
 	[
 		{
-			"selected": 18,
+			"selected": 27,
 			"sheets":
 			[
 				{
@@ -1239,15 +1177,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1100,
+						"buffer_size": 1160,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								16,
-								16
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1260,7 +1198,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 13,
+					"stack_index": 16,
 					"type": "text"
 				},
 				{
@@ -1290,7 +1228,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 32,
+					"stack_index": 28,
 					"type": "text"
 				},
 				{
@@ -1320,112 +1258,24 @@
 						"translation.y": 1081.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
 					"buffer": 3,
-					"file": "/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django_polymer_alternative/corpora/template_query_speller.html",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 13,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								13,
-								13
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 23,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django_polymer_alternative/corpora/webis-cbc-16/template.html",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2822,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2822,
-								2822
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 22,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "corpora/template_query_speller.html",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4104,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4104,
-								4104
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 24,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
 					"file": "settings/settings_viewer_example.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2061,
+						"buffer_size": 2089,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2042,
-								2042
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1442,7 +1292,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 4,
 					"file": "settings/Webis-Clickbait-16.py",
 					"semi_transient": false,
 					"settings":
@@ -1468,76 +1318,16 @@
 						"translation.y": 2254.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 21,
+					"stack_index": 24,
 					"type": "text"
 				},
 				{
-					"buffer": 8,
-					"file": "viewer-framework/viewer/static/viewer/bower_components/templates/Webis-Clickbait-16.html",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 7467,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								7467,
-								7467
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 28,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "corpora/webis-cbc-16/template.html",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 7467,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3418,
-								3418
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1862.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 27,
-					"type": "text"
-				},
-				{
-					"buffer": 10,
+					"buffer": 5,
 					"file": "viewer-framework/viewer/templates/viewer/view_item.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 989,
+						"buffer_size": 641,
 						"regions":
 						{
 						},
@@ -1556,54 +1346,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 29,
+					"stack_index": 26,
 					"type": "text"
 				},
 				{
-					"buffer": 11,
-					"file": "/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django_live_system/viewer-framework/settings_viewer/settings_viewer_cbc.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4440,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3905,
-								3905
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1776.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 30,
-					"type": "text"
-				},
-				{
-					"buffer": 12,
+					"buffer": 6,
 					"file": "viewer-framework/viewer/classes/data/Manager_Data.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 18937,
+						"buffer_size": 22390,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								7306,
-								7306
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1620,24 +1380,24 @@
 						"translation.y": 513.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 14,
 					"type": "text"
 				},
 				{
-					"buffer": 13,
+					"buffer": 7,
 					"file": "settings/settings_viewer_test.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2144,
+						"buffer_size": 2150,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2135,
-								2135
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1650,24 +1410,24 @@
 						"translation.y": 820.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 31,
+					"stack_index": 27,
 					"type": "text"
 				},
 				{
-					"buffer": 14,
+					"buffer": 8,
 					"file": "viewer-framework/viewer/templates/viewer/table.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4517,
+						"buffer_size": 4546,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3408,
-								3408
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1680,24 +1440,24 @@
 						"translation.y": 646.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 19,
+					"stack_index": 22,
 					"type": "text"
 				},
 				{
-					"buffer": 15,
+					"buffer": 9,
 					"file": "viewer-framework/viewer/static/viewer/js/helper_functions.js",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 11089,
+						"buffer_size": 12397,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3260,
-								3260
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1710,24 +1470,24 @@
 						"translation.y": 1140.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 16,
+					"stack_index": 19,
 					"type": "text"
 				},
 				{
-					"buffer": 16,
+					"buffer": 10,
 					"file": "viewer-framework/dashboard/views.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2356,
+						"buffer_size": 2882,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								254,
-								254
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1740,24 +1500,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
-					"buffer": 17,
+					"buffer": 11,
 					"file": "viewer-framework/dashboard/static/dashboard/js/index.js",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5170,
+						"buffer_size": 6405,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								472,
-								472
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1770,24 +1530,24 @@
 						"translation.y": 1824.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 14,
+					"stack_index": 17,
 					"type": "text"
 				},
 				{
-					"buffer": 18,
+					"buffer": 12,
 					"file": "viewer-framework/viewer/templates/viewer/tags.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 8751,
+						"buffer_size": 8460,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								843,
-								843
+								510,
+								510
 							]
 						],
 						"settings":
@@ -1800,53 +1560,55 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 19,
+					"buffer": 13,
 					"file": "viewer-framework/viewer/static/viewer/js/recommendation.js",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 7896,
+						"buffer_size": 8092,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								6860,
-								6860
+								0,
+								0
 							]
 						],
 						"settings":
 						{
 							"auto_name": "recomm",
-							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax"
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 2772.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
-					"buffer": 20,
+					"buffer": 14,
 					"file": "viewer-framework/viewer/templates/viewer/index.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 23952,
+						"buffer_size": 25555,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								9614,
-								9614
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1859,24 +1621,24 @@
 						"translation.y": 2545.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 21,
+					"buffer": 15,
 					"file": "viewer-framework/viewer/templates/viewer/add_token.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1039,
+						"buffer_size": 1189,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								125,
-								125
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1889,24 +1651,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 22,
+					"buffer": 16,
 					"file": "viewer-framework/viewer/static/viewer/js/index.js",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 10131,
+						"buffer_size": 13684,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								8772,
-								8772
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1919,24 +1681,24 @@
 						"translation.y": 3218.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
-					"buffer": 23,
+					"buffer": 17,
 					"file": "viewer-framework/viewer/static/viewer/js/index_functions.js",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 25607,
+						"buffer_size": 28519,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								16116,
-								16116
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1949,24 +1711,24 @@
 						"translation.y": 10773.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
+					"stack_index": 15,
 					"type": "text"
 				},
 				{
-					"buffer": 24,
+					"buffer": 18,
 					"file": "viewer-framework/viewer/views/get_page.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 35912,
+						"buffer_size": 37253,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1324,
-								1324
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1979,24 +1741,24 @@
 						"translation.y": 1197.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
-					"buffer": 25,
+					"buffer": 19,
 					"file": "viewer-framework/viewer/views/tags.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5798,
+						"buffer_size": 6651,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1652,
-								1652
+								0,
+								0
 							]
 						],
 						"settings":
@@ -2009,11 +1771,11 @@
 						"translation.y": 570.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
-					"buffer": 26,
+					"buffer": 20,
 					"file": "viewer-framework/viewer/static/viewer/js/tags.js",
 					"semi_transient": false,
 					"settings":
@@ -2039,24 +1801,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
-					"buffer": 27,
+					"buffer": 21,
 					"file": "viewer-framework/viewer/static/viewer/css/formats.css",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2645,
+						"buffer_size": 3060,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1985,
-								1985
+								0,
+								0
 							]
 						],
 						"settings":
@@ -2069,24 +1831,24 @@
 						"translation.y": 1824.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 15,
+					"stack_index": 18,
 					"type": "text"
 				},
 				{
-					"buffer": 28,
+					"buffer": 22,
 					"file": "viewer-framework/dashboard/templates/dashboard/documentation.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 22311,
+						"buffer_size": 23318,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								12594,
-								12594
+								0,
+								0
 							]
 						],
 						"settings":
@@ -2099,24 +1861,24 @@
 						"translation.y": 3806.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 18,
+					"stack_index": 21,
 					"type": "text"
 				},
 				{
-					"buffer": 29,
+					"buffer": 23,
 					"file": "viewer-framework/viewer/views/index.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 8876,
+						"buffer_size": 9618,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5998,
-								5998
+								0,
+								0
 							]
 						],
 						"settings":
@@ -2129,58 +1891,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 13,
 					"type": "text"
 				},
 				{
-					"buffer": 30,
-					"file": "viewer-framework/viewer/static/viewer/bower_components/templates/settings_viewer_query_speller.html",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4104,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3458,
-								3458
-							],
-							[
-								3587,
-								3587
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1364.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 26,
-					"type": "text"
-				},
-				{
-					"buffer": 31,
+					"buffer": 24,
 					"file": "viewer-framework/viewer/views/shared_code.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 12791,
+						"buffer_size": 12882,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								8985,
-								8985
+								0,
+								0
 							]
 						],
 						"settings":
@@ -2193,11 +1921,11 @@
 						"translation.y": 4560.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 17,
+					"stack_index": 20,
 					"type": "text"
 				},
 				{
-					"buffer": 32,
+					"buffer": 25,
 					"semi_transient": false,
 					"settings":
 					{
@@ -2220,24 +1948,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 20,
+					"stack_index": 23,
 					"type": "text"
 				},
 				{
-					"buffer": 33,
+					"buffer": 26,
 					"file": "README.md",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1837,
+						"buffer_size": 1771,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1015,
-								1015
+								866,
+								866
 							]
 						],
 						"settings":
@@ -2248,11 +1976,68 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 34,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
-					"buffer": 34,
+					"buffer": 27,
+					"file": "setup.sh",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 210,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								210,
+								210
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ShellScript/Shell-Unix-Generic.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 28,
+					"file": "requirements.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 25,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								25,
+								25
+							]
+						],
+						"settings":
+						{
+							"auto_name": "requirements.txt",
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 29,
 					"file": "viewer-framework/viewer/classes/index/Handle_Index_Whoosh.py",
 					"semi_transient": false,
 					"settings":
@@ -2278,7 +2063,7 @@
 						"translation.y": 136.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 33,
+					"stack_index": 29,
 					"type": "text"
 				}
 			]
@@ -2286,11 +2071,11 @@
 	],
 	"incremental_find":
 	{
-		"height": 27.0
+		"height": 26.0
 	},
 	"input":
 	{
-		"height": 34.0
+		"height": 38.0
 	},
 	"layout":
 	{
@@ -2323,7 +2108,7 @@
 	"project": "viewer-framework.sublime-project",
 	"replace":
 	{
-		"height": 50.0
+		"height": 48.0
 	},
 	"save_all_on_build": true,
 	"select_file":
