@@ -16,7 +16,7 @@ def load_data(item_handle):
 # this is the main dictionary containing the necessary information to load and display your corpus
 DICT_SETTINGS_VIEWER = {
     'name': 'Example',
-    'description': 'This is an example corpus.',
+    'description': 'This is an example corpus which is password protected. The password is \'test\'',
     'data_type': 'custom',
     'load_data_function': load_data,
 
@@ -64,6 +64,6 @@ DICT_SETTINGS_VIEWER = {
         },
     ],
     'secret_token': 'test',
-    'secret_token_editing': 'tesst',
+    'secret_token_editing': '',
     'template': '../corpora/index.html'
 }

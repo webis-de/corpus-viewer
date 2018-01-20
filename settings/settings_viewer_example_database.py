@@ -1,7 +1,7 @@
 # this is the main dictionary containing the necessary information to load and display your corpus
 DICT_SETTINGS_VIEWER = {
-    'name': 'Database',
-    'description': '',
+    'name': 'Database Example',
+    'description': 'This corpus gets its data from a database',
     'data_type': 'database',
     'app_label': 'example_app',
     'model_name': 'Example_Model',
@@ -68,6 +68,7 @@ DICT_SETTINGS_VIEWER = {
         }
     ],
     # 'secret_token': 'test',
-    # 'secret_token_editing': 'tesst',
+    # 'secret_token': 'test',
+    'secret_token_editing': '',
     # 'template': '../corpora/index.html'
 }
