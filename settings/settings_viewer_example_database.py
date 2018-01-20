@@ -39,6 +39,34 @@ DICT_SETTINGS_VIEWER = {
         },
     ],
     'secret_token_editing': '',
+    'cards': [
+        {
+            'name': 'Index dummy data',
+            'content': '''
+                <div class="mb-2">
+                    Press the button below to index the dummy data
+                </div>
+                <div class="">
+                    <button type="button" id="button_index_dummy_data" class="btn btn-sm btn-primary">Approve</button>
+                </div>
+                <script>
+                    $(document).ready(function()
+                    {
+                        $(document).on('click', '#button_index_dummy_data', function(e) {
+                            $.ajax({
+                                url: '/example_app',
+                                contentType: 'application/json',
+                                success: function(result) { 
+                                    load_current_page();
+                                }
+                            })
+                        });
+
+                    });
+                </script>
+            '''
+        }
+    ],
     # 'secret_token': 'test',
     # 'secret_token_editing': 'tesst',
     # 'template': '../corpora/index.html'

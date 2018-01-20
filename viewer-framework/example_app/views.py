@@ -5,15 +5,16 @@ import random
 import string
 
 def index(request):
-	list_objects = []
-	for index in range(0, 10000):
-		list_objects.append(
-			Example_Model(
-				name="".join( [random.choice(string.ascii_lowercase) for i in range(8)] ),
-				count_of_something="".join( [random.choice(string.digits) for i in range(3)] ),
+	if Example_Model.objects.count() == 0:
+		list_objects = []
+		for index in range(0, 10000):
+			list_objects.append(
+				Example_Model(
+					name="".join( [random.choice(string.ascii_lowercase) for i in range(8)] ),
+					count_of_something="".join( [random.choice(string.digits) for i in range(3)] ),
+				)
 			)
-		)
 
-	# Example_Model.objects.bulk_create(list_objects)
+		Example_Model.objects.bulk_create(list_objects)
 
 	return JsonResponse({})
