@@ -121,6 +121,7 @@ DATABASES = {
     #     'USER': 'netspeak',
     # }
 }
+DATABASE_ROUTERS = ['viewer-framework.router.MainRouter']
 
 
 # Password validation
