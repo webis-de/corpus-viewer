@@ -15,7 +15,7 @@
         <div class="row mt-3">
             <div class="col-md-9">
                 <div class="alert alert-info" role="alert">
-                    This documentation describes the usage of the corpus-viewer. To get information about the installation please refer to the <a href="https://git.webis.de/webisstud/wstud-viewer-framework-django" class="alert-link">GitLab-page</a>.
+                    This documentation describes the usage of the corpus-viewer. To get information about the installation process please refer to the <a href="https://git.webis.de/webisstud/wstud-viewer-framework-django" class="alert-link">GitLab-page</a>.
                 </div>
                 <h2 id="link_add_new_corpus">Add a new corpus</h2>
                 To add a new corpus to the viewer on <a href="{{ url_host }}">{{ name_host }}</a> or to your own server you'll have to do the following steps:
@@ -25,10 +25,25 @@
                     <li>Load your settings file into the server</li>
                 </ol>
                 <h3 id="link_make_corpus_accessible">Make corpus accessible</h3>
-                <p>
-                    You'll have to specify the data path to the corpus data in the <a href="#link_create_settings_file">settings file</a>. 
-                    This means that you have to make the corpus accessible to the host, either by directly copying or by mounting the corpus to {{ name_host }} or your own server. 
-                </p>
+                <h4 id="link_add_new_corpus_filesystem">Add a corpus stored as file(s)</h4>
+                    <p>
+                        You'll have to specify the data path to the corpus data in the <a href="#link_create_settings_file">settings file</a>. 
+                        This means that you have to make the corpus accessible to the host, either by directly copying or by mounting the corpus to {{ name_host }} or your own server. 
+                    </p>
+                <h4 id="link_add_new_corpus_database">Add a corpus stored in a database</h4>
+                    <ol>
+                        <li>Choose a name for your corpus in the following referred to as <code>&#x3C;name&#x3E;</code></li>
+                        <li>Go to the root directory of the django project (contains the <code>manage.py</code>)</li>
+                        <li>Create a new django app inside of the viewer with the following command: <code>python3 manage.py startapp corpus_viewer_&#x3C;name&#x3E;</code></li>
+                        <li>Add the new app to the <code>INSTALLED_APPS</code> dictionary defined in <code>viewer-framework/settings.py</code> according to the <a href="https://docs.djangoproject.com/en/2.0/ref/settings/#std:setting-INSTALLED_APPS">django documentation</a></li>
+                        <li>
+                            Create a new database entry inside in the <code>DATABASES</code> dictionary defined in <code>viewer-framework/settings.py</code> according to the <a href="https://docs.djangoproject.com/en/2.0/ref/settings/#databases">django documentation</a>.<br>
+                            <b>Important</b>: The key of the new entry has to be <code>corpus_viewer_&#x3C;name&#x3E;</code>
+                        </li>
+                        <li>Create django models from the database tables by calling <code>python3 manage.py inspectdb --database &#x3C;database_name&#x3E; &#x3E; corpus_viewer_&#x3C;name&#x3E;/models.py</main></code></li>
+                        <li>Call <code>python3 manage.py makemigrations corpus_viewer_&#x3C;name&#x3E;</code></li>
+                        <li>Call <code>python3 manage.py migrate --database corpus_viewer_&#x3C;name&#x3E;</code></li>
+                    </ol>
 
                 <h3 id="link_create_settings_file">Create settings file</h3>
                 <p>
