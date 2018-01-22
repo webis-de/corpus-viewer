@@ -818,7 +818,7 @@ def add_tags(data, request):
     else:
         try:
             for item in data:
-                item.viewer_tags = item.tags.all()
+                item.viewer_tags = item.corpus_viewer_tags.all()
         except AttributeError:
             for item in data:
                 item.viewer_tags = []
