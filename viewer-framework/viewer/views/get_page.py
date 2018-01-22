@@ -187,10 +187,10 @@ def sort_by_columns(request, list_ids):
 
     if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
         for sorted_column in reversed(list_sorted_columns):
-            print(sorted_column)
-            print(list_ids)
+            # print(sorted_column)
+            # print(list_ids)
             sign = '-' if sorted_column['order'] == 'desc' else ''
-            print(sign+sorted_column['field'])
+            # print(sign+sorted_column['field'])
             list_ids = list_ids.order_by(sign+sorted_column['field'])
     else:
         for sorted_column in reversed(list_sorted_columns):
@@ -243,7 +243,8 @@ def get_filtered_data_database(request):
         *glob_manager_data.get_setting_for_corpus('database_select_related', id_corpus)
     ).filter(
         **glob_manager_data.get_setting_for_corpus('database_filters', id_corpus)
-    )
+    ).prefetch_related('corpus_viewer_tags')
+    
     #
     # FILTER BY TAGS 
     #
@@ -738,15 +739,18 @@ def get_tags_filtered_items(list_ids, request):
 
         try:
             if connection.vendor == 'postgresql':
-                list_tags = m_Tag.objects.filter(items__in=list_ids, key_corpus=id_corpus).distinct()
+                list_tags = m_Tag.objects.filter(corpus_viewer_items__in=list_ids, key_corpus=id_corpus).distinct()
             else:
-                len(list_ids)
-                n = 900
+                list_tags = m_Tag.objects.filter(key_corpus=id_corpus)
+
                 # print(list_ids)
-                list_entities = list_ids
-                chunks = [list_entities[x:x+n] for x in range(0, len(list_entities), n)]
-                for chunk in chunks:
-                    list_tags += m_Tag.objects.filter(items__in=chunk, key_corpus=id_corpus).distinct()
+                # len(list_ids) 
+                # n = 900
+                # # print(list_ids)
+                # list_entities = list_ids
+                # chunks = [list_entities[x:x+n] for x in range(0, len(list_entities), n)]
+                # for chunk in chunks:
+                #     list_tags += m_Tag.objects.filter(corpus_viewer_items__in=chunk, key_corpus=id_corpus).distinct()
         except FieldError:
             pass
 
