@@ -244,14 +244,14 @@ def get_filtered_data_database(request):
     ).filter(
         **glob_manager_data.get_setting_for_corpus('database_filters', id_corpus)
     ).prefetch_related('corpus_viewer_tags')
-    
+
     #
     # FILTER BY TAGS 
     #
     values_filter_tags = request.session[id_corpus]['viewer__viewer__filter_tags']
     if len(values_filter_tags) > 0:
         for name_tag in values_filter_tags:
-            queryset_entities = queryset_entities.filter(tags__name=name_tag)
+            queryset_entities = queryset_entities.filter(corpus_viewer_tags__name=name_tag)
 
     for obj_filter in glob_manager_data.get_setting_for_corpus('filters', id_corpus):
         type_data_field = glob_manager_data.get_setting_for_corpus('data_fields', id_corpus)[obj_filter['data_field']]['type']

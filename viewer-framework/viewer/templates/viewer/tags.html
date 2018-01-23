@@ -26,7 +26,7 @@
                     </td>
                     <td class="column_tag_count_items">
                         {% if data_type == 'database' %}
-                            {{ tag.items.all.count }}
+                            {{ tag.corpus_viewer_items.all.count }}
                         {% else %}
                             {{ tag.m2m_entity.all.count }}
                         {% endif %}
