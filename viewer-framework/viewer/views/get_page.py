@@ -262,6 +262,10 @@ def get_filtered_data_database(request):
             for value in values:
                 info_values[value] = {'value_count_per_document': 0, 'value_count_total': 0}
                 queryset_entities = queryset_entities.filter(**{obj_filter['data_field']+'__exact': value})
+        if type_data_field == 'boolean':
+            for value in values:
+                info_values[value] = {'value_count_per_document': 0, 'value_count_total': 0}
+                queryset_entities = queryset_entities.filter(**{obj_filter['data_field']: value})
         else:
             for value in values:
                 real_value = value[2:]
@@ -288,7 +292,7 @@ def get_filtered_data(request):
             # checks if the hash corresponds to the last hash
             if hash_custom == request.session[id_corpus]['viewer__last_hash']:
                 # print('######### LAST RESULT')    
-                # pass
+                pass
                 return request.session[id_corpus]['viewer__last_result']
         except:
             pass
@@ -502,6 +506,17 @@ def filter_data(request, obj_filter):
     #         # data = set_data_new
 
             # check if a specific number is requested
+        elif type_data_field == 'boolean':
+            for value in values:
+                print(value)
+                list_data_new = glob_manager_data.get_handle_index(id_corpus).get_boolean(obj_filter['data_field'], value)
+                
+                if list_data == None:
+                    list_data = sorted(list_data_new)
+                else:
+                    set_tmp = frozenset(list_data_new)
+                    list_data = [x for x in list_data if x in set_tmp]
+
 
     if list_data == None:
         list_data = []

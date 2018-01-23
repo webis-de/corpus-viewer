@@ -5,7 +5,7 @@ from whoosh.collectors import Collector
 from whoosh.scoring import WeightingModel, BaseScorer
 from whoosh.analysis import StemmingAnalyzer, RegexTokenizer, LowercaseFilter, NgramFilter
 # from whoosh.qparser import QueryParser
-from whoosh.fields import Schema, TEXT, KEYWORD, NUMERIC, ID
+from whoosh.fields import Schema, TEXT, KEYWORD, NUMERIC, BOOLEAN, ID
 import os
 import time
 import shutil
@@ -43,6 +43,8 @@ class Handle_Index_Whoosh(Handle_Index):
                 dict_fields[key + self.suffix_case_insensitive] = TEXT(analyzer=self.analyzer_text_case_insensitive)
             elif type_data_field == 'number':
                 dict_fields[key] = NUMERIC(float, 64)
+            elif type_data_field == 'boolean':
+                dict_fields[key] = BOOLEAN()
 
         dict_fields[self.field_internal_id] = NUMERIC(stored=True)
 
@@ -74,6 +76,8 @@ class Handle_Index_Whoosh(Handle_Index):
             type_data_field = value['type']
             if type_data_field == 'number':
                 dict_document[key] = item[key]                
+            elif type_data_field == 'boolean':
+                dict_document[key] = item[key]                
             else:
                 dict_document[key + self.suffix_case_sensitive] = item[key]                
                 dict_document[key + self.suffix_case_insensitive] = item[key]                
@@ -100,6 +104,24 @@ class Handle_Index_Whoosh(Handle_Index):
     def add_number(self, data_field, value, id_intern):
         return []
 
+
+    def get_boolean(self, data_field, value):
+        print('Booelan: searching for \'{}\' in \'{}\''.format(value, data_field))
+        with self.ix.searcher(weighting=CustomWeightingModel) as searcher:
+            # for name in self.schema.names():
+            #     print('')
+            #     print(name)
+            #     print(list(searcher.lexicon(name)))
+            #     print('')
+
+            query = query = Term(data_field, value)
+            # print(query)
+            # print(tokens)
+            results = searcher.search(query, limit=None, sortedby=None)
+            # print(len(results))
+            # for result in results:
+            #     print(result)
+            return [result[self.field_internal_id] for result in results]
 
     def get_string(self, data_field, value, is_case_insensitive):
         print('STRING: searching for \'{}\' in \'{}\''.format(value, data_field))

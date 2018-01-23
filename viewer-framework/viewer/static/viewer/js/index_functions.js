@@ -131,6 +131,31 @@ function handle_click_on_button_add_filter_number(button)
     }
 }
 
+function handle_click_on_button_boolean(button)
+{
+    const data_field = button.data('data_field');
+    const value = button.data('value');
+    const value_other = value == true ? false : true;
+
+    string_value_other = value_other == true ? 'true' : 'false';
+    $('button[data-data_field="'+data_field+'"][data-value="'+string_value_other+'"]').removeClass('active')
+
+    button.blur();
+    if(button.hasClass('active'))
+    {
+        button.removeClass('active');
+        glob_filter_custom[data_field] = []
+    } else {
+        button.addClass('active');
+        glob_filter_custom[data_field] = [value]
+    }
+
+    set_session_entry('viewer__filter_custom', glob_filter_custom, function() {
+        glob_current_page = 1;
+        load_current_page();
+    })
+}
+
 function handle_click_on_remove_filter_value(cross)
 {
     let data_field = cross.data('data_field')

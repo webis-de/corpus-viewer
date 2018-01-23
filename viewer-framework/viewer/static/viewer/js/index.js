@@ -157,6 +157,7 @@ $(document).ready(function()
     $(document).on('click', '.viewer__button_case_sensitivity', function(){ handle_click_on_button_case_sensitivity($(this)) });
     $(document).on('click', '.viewer__button_add_filter_contains', function(){ handle_click_on_button_add_filter_contains($(this)) });
     $(document).on('click', '.viewer__button_add_filter_number', function(){ handle_click_on_button_add_filter_number($(this)) });
+    $(document).on('click', '.viewer__button_boolean', function(){ handle_click_on_button_boolean($(this)) });
     $(document).on('click', '.viewer__column_filter_active .fa-times', function(){ handle_click_on_remove_filter_value($(this)) });
 
     // $('.viewer__column_filter_active .fa-info').popover({

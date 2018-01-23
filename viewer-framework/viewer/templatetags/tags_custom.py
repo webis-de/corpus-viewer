@@ -76,12 +76,6 @@ def in_columns_checked(key, request):
     return key in request.session[current_corpus]['viewer__viewer__columns']
 
 @register.filter
-def get_is_filter_for_alphanumeric(key, settings):
-    # current_corpus = request.session['viewer__viewer__current_corpus']
-    # return key in request.session[current_corpus]['viewer__viewer__columns']
-    return settings['data_fields'][key]['type'] == 'string' or settings['data_fields'][key]['type'] == 'text'
-
-@register.filter
 def get(item, field):
     try:
         return item[field]

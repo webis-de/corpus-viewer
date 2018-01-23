@@ -57,6 +57,10 @@ class Handle_Index(ABC):
         pass
 
     @abstractmethod
+    def get_boolean(self, data_field, value):
+        pass
+
+    @abstractmethod
     def get_text(self, data_field, value, case_sensitive):
         pass
 

@@ -17,6 +17,10 @@ DICT_SETTINGS_VIEWER = {
             'type': 'number',
             'display_name': 'ID'
         },
+        'some_boolean_value': {
+            'type': 'boolean',
+            'display_name': 'Boolean'
+        },
         'name': {
             'type': 'string',
             'display_name': 'Name'
@@ -28,7 +32,7 @@ DICT_SETTINGS_VIEWER = {
     },
     'id': 'id',
     'displayed_fields': [
-        'id', 'name', 'count_of_something'
+        'id', 'name', 'count_of_something', 'some_boolean_value'
     ],
     'page_size': 25,
     'filters': [
@@ -36,6 +40,12 @@ DICT_SETTINGS_VIEWER = {
             'data_field': 'count_of_something',
             'description': 'Count',
             'placeholder': '',
+        },
+        {
+            'data_field': 'some_boolean_value',
+            'description': 'Bool',
+            'placeholder': 'Text input',
+            'default_value': '',
         },
     ],
     'secret_token_editing': '',
@@ -47,7 +57,7 @@ DICT_SETTINGS_VIEWER = {
                     Press the button below to index the dummy data
                 </div>
                 <div class="">
-                    <button type="button" id="button_index_dummy_data" class="btn btn-sm btn-primary">Approve</button>
+                    <button type="button" id="button_index_dummy_data" class="btn btn-sm btn-primary">Index</button>
                 </div>
                 <script>
                     $(document).ready(function()

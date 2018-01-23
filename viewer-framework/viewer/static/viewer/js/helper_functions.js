@@ -291,11 +291,20 @@ function update_ui(info_filter_values)
 
     // reset the custom filters
     $.each(glob_filter_custom, function(key, value) {
-        $('.viewer__column_filter_active[data-data_field="'+ key +'"]').html('');
-        $.each(value, function(index, element) {
-            $('.viewer__column_filter_active[data-data_field="'+ key +'"]').append(create_filter_active(element, key, info_filter_values[key][element]));
-            hightlight_results(key, element)
-        });
+        if(value.length > 0)
+        {
+            // test if filter is of type bool
+            if(typeof(value[0]) == typeof(true))
+            {
+                $('button[data-data_field="'+key+'"][data-value="'+value[0]+'"]').addClass('active')
+            }
+        } else {
+            $('.viewer__column_filter_active[data-data_field="'+ key +'"]').html('');
+            $.each(value, function(index, element) {
+                $('.viewer__column_filter_active[data-data_field="'+ key +'"]').append(create_filter_active(element, key, info_filter_values[key][element]));
+                hightlight_results(key, element)
+            });
+        }
     })
 
     update_checkbox_select_all('input_toggle_columns', 'input_toggle_columns_all')

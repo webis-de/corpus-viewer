@@ -1,6 +1,7 @@
 def load_data(item_handle):
     # put import statements inside of this function: 
-    # import os
+    # import o
+    import random
     # import json
     # import csv
 
@@ -8,6 +9,7 @@ def load_data(item_handle):
     for x in range(0, 100):
         obj = {}
         obj['id'] = x
+        obj['some_boolean_value'] = random.choice([True, False])
         obj['some_short_text'] = 'Test string of item ' + str(x)
         obj['some_longer_text'] = 'This is only a longer test text of item ' + str(x) + ' to show the behaviour of long texts in the corpus viewer.'
         # register the item to the viewer
@@ -29,6 +31,10 @@ DICT_SETTINGS_VIEWER = {
             'type': 'number',
             'display_name': 'ID'
         },
+        'some_boolean_value': {
+            'type': 'boolean',
+            'display_name': 'Boolean'
+        },
         'some_short_text': {
             'type': 'string',
             'display_name': 'Text'
@@ -40,13 +46,19 @@ DICT_SETTINGS_VIEWER = {
     },
     'id': 'id',
     'displayed_fields': [
-        'id', 'some_short_text', 'some_longer_text'
+        'id', 'some_boolean_value', 'some_short_text', 'some_longer_text'
     ],
     'page_size': 25,
     'filters': [
         {
             'data_field': 'some_longer_text',
             'description': 'Text',
+            'placeholder': 'Text input',
+            'default_value': '',
+        },
+        {
+            'data_field': 'some_boolean_value',
+            'description': 'Bool',
             'placeholder': 'Text input',
             'default_value': '',
         },

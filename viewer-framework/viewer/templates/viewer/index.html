@@ -76,7 +76,7 @@
                                 <!-- </ul> -->
                             </div>
                         {% for filter_custom in settings.filters %}
-                            {% if filter_custom.data_field|get_is_filter_for_alphanumeric:settings %}
+                            {% if filter_custom.data_field|get_type_field:settings == 'string' or filter_custom.data_field|get_type_field:settings == 'text' %}
                                 <div class="form-group">
                                     <label for="input_{{ filter_custom.data_field }}">{{ filter_custom.description }}</label>
                                     <div class="input-group input-group-sm">
@@ -107,7 +107,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            {% else %}
+                            {% elif filter_custom.data_field|get_type_field:settings == 'number' %}
                                 <div class="form-group">
                                     <label for="input_{{ filter_custom.data_field }}">{{ filter_custom.description }}</label>
                                     <div class="input-group input-group-sm">
@@ -129,6 +129,14 @@
                                     <div class="row pl-1 pr-1">
                                         <div class="col viewer__column_filter_active viewer__wrapper_filter_active" data-data_field="{{ filter_custom.data_field }}">
                                         </div>
+                                    </div>
+                                </div>
+                            {% elif filter_custom.data_field|get_type_field:settings == 'boolean' %}
+                                <div class="form-group">
+                                    <label>{{ filter_custom.description }}</label>
+                                    <div>
+                                        <button type="button" data-data_field="{{ filter_custom.data_field }}" data-value="true" class="btn btn-secondary btn-sm viewer__button_boolean">True</button>
+                                        <button type="button" data-data_field="{{ filter_custom.data_field }}" data-value="false" class="btn btn-secondary btn-sm viewer__button_boolean">False</button>
                                     </div>
                                 </div>
                             {% endif %}
