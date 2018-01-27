@@ -1,4 +1,3 @@
-# this is the main dictionary containing the necessary information to load and display your corpus
 DICT_SETTINGS_VIEWER = {
     'name': 'Database Example',
     'description': 'This corpus gets its data from a database',
@@ -43,7 +42,7 @@ DICT_SETTINGS_VIEWER = {
         },
         {
             'data_field': 'some_boolean_value',
-            'description': 'Bool',
+            'description': 'Boolean',
             'placeholder': 'Text input',
             'default_value': '',
         },

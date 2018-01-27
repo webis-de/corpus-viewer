@@ -8,7 +8,7 @@ import json
 import traceback
 import sys
 import pprint
-
+from django.conf import settings
 import errno, stat
 
 modules = glob.glob('viewer/classes/index/Handle_Index_*.py')
@@ -70,6 +70,11 @@ class Manager_Data:
         # self.dict_corpora[id_corpus]['template']
 
     def init_data(self):
+        try:
+            self.path_settings = settings.PATH_FILES_SETTINGS
+        except AttributeError:
+            pass
+            
         self.create_paths_if_necessary()
         # for every settings-file in the directory load the settings into the empty dict_corpora
         for file in os.listdir(self.path_settings):
