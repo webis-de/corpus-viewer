@@ -29,8 +29,8 @@
     {% else %}
         style="flex-basis: {{ width_filters }}px; max-width: 100%;"
     {% endif %}
+    id="column_left"
     >
-        <div class="kritten_resizeable"></div>
 		<div class="row">
 			<div class="col">
 				<span id="info_number_of_items" class="text-muted">&nbsp;</span>
@@ -290,7 +290,7 @@
         </div>
         {% endfor %}        
 	</div>
-	<div class="col">
+	<div class="col" id="column_right">
         {% if width_filters == False %}
             <div class="kritten_open"></div>
         {% endif %}
