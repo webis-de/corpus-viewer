@@ -25,6 +25,13 @@ def get_state_sorted(context, field):
 
     return 'None'
 
+
+
+@register.simple_tag(takes_context=True)
+def get_width_filters(context):
+    current_corpus = context.request.session['viewer__viewer__current_corpus']
+    return context.request.session[current_corpus]['viewer__width_filters']
+
 @register.simple_tag(takes_context=True)
 def get_is_collapsed_div_filters(context):
     current_corpus = context.request.session['viewer__viewer__current_corpus']

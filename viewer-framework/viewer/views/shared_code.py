@@ -263,6 +263,7 @@ def set_sessions(request, id_corpus):
     if not glob_manager_data.check_if_corpus_available(id_corpus):
         return False
 
+    set_session(request, 'width_filters', default=True)
     set_session(request, 'is_collapsed_div_filters', default=True)
     set_session(request, 'is_collapsed_div_selections', default=True)
     set_session(request, 'is_collapsed_div_tags', default=True)

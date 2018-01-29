@@ -8,6 +8,8 @@
 {% get_is_collapsed_div_selections as is_collapsed_div_selections %}
 {% get_is_collapsed_div_tags as is_collapsed_div_tags %}
 
+{% get_width_filters as width_filters %}
+
 {% get_has_template_view_item as has_template_view_item %}
 
 {% get_is_allowed_editing as is_allowed_editing %}
@@ -20,7 +22,15 @@
         <div id="json_url_params" data-json_url_params="{{ json_url_params }}" class="d-none"></div>
         <div id="json_filters" data-json_filters="{{ json_filters }}" class="d-none"></div>
         <div id="tag_filter_active" data-tag_filter_active="{{ tag_filter_active }}" class="d-none"></div>
-	<div class="col-md-3 col-lg-2">
+	<div class="col-md-43 col-lg-3"
+    {% if width_filters == True %}
+    {% elif width_filters == False %}
+        style="display: none"
+    {% else %}
+        style="flex-basis: {{ width_filters }}px; max-width: 100%;"
+    {% endif %}
+    >
+        <div class="kritten_resizeable"></div>
 		<div class="row">
 			<div class="col">
 				<span id="info_number_of_items" class="text-muted">&nbsp;</span>
@@ -281,6 +291,9 @@
         {% endfor %}        
 	</div>
 	<div class="col">
+        {% if width_filters == False %}
+            <div class="kritten_open"></div>
+        {% endif %}
         <div class="row">
             <div class="col">
                 <div class="alert alert-warning text-center d-none" id="alert_mode_add_tag" role="alert">
@@ -464,6 +477,7 @@
 <script src="{% static 'viewer/js/popper.js' %}"></script>
 <script src="{% static 'viewer/js/bootstrap.js' %}"></script>
 <script src="{% static 'viewer/js/recommendation.js' %}"></script>
+<script src="{% static 'viewer/js/kritten_resizeable.js' %}"></script>
 <script src="{% static 'viewer/js/helper_functions.js' %}"></script>
 <script src="{% static 'viewer/js/index_functions.js' %}"></script>
 <script src="{% static 'viewer/js/index.js' %}"></script>
