@@ -14,6 +14,7 @@ $('head').append(
 		border-left: 10px solid rgba(0, 0, 0, 0.2);
 		border-top: 10px solid transparent;
 		border-bottom: 10px solid transparent;
+		min-height: 90vh;
 		height: calc(100% - 20px); 
 		top: 10px; 
 		z-index: 3; 
