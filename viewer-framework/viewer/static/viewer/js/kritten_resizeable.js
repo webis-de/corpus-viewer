@@ -27,35 +27,61 @@ class Resizeable
 	init_content()
 	{
 		this.m_slider = $(`
-        	<div class="resizeable_slider"></div>
+        	<div class="resizeable_slider_wrapper">
+        		<div class="resizeable_slider"></div>
+    		</div>
 		`);
 		this.m_column_resized.prepend(this.m_slider);
 	}
 
     init_events()
     {
-		$(document).on('mousedown', '.resizeable_slider', this,  this.mousedown);
-		$(document).on('click', '.resizeable_show', this,  this.click);
+		$(document).on('pointerdown', '.resizeable_slider_wrapper', this,  this.mousedown);
+		$(document).on('pointerdown', '.resizeable_show', this,  this.click);
     }
 
     init_styles()
     {
     	const css_column_resized = `
 	    	${this.m_id_column_resized} {
-	    		max-width', '100%
+	    		max-width: 100%;
 			}
     	`;
     	const css_slider = `
-	    	.resizeable_slider {
-				border-left: 4px solid rgba(0, 0, 0, 0.2);
-				height: calc(100% - 20px); 
-				top: 10px; 
+	    	.resizeable_slider_wrapper {
 				position: absolute; 
+				right: 0px; 
 				z-index: 3; 
-				right: -2px; 
+
+	    		width: 26px;
+				height: 100%; 
+
+				padding: 10px 11px;
 				cursor: col-resize;
+
+	    		touch-action: none;
+	    		right: -13px;
+	    	}
+
+	    	.resizeable_slider {
+	    		background-color: rgba(0, 0, 0, 0.2);
+				height: 100%;	    		
+				width: 100%;	    		
 			}
     	`;
+   //  	const css_slider = `
+	  //   	.resizeable_slider {
+			// 	border-left: 4px solid rgba(0, 0, 0, 0.2);
+			// 	height: calc(100% - 20px); 
+			// 	top: 10px; 
+			// 	position: absolute; 
+			// 	z-index: 3; 
+			// 	right: -2px; 
+			// 	cursor: col-resize;
+				
+	  //   		touch-action: none;
+			// }
+   //  	`;
     	const css_show = `
 	    	.resizeable_show {
 				border-left: 10px solid rgba(0, 0, 0, 0.2);
@@ -89,22 +115,29 @@ class Resizeable
 	mousedown(event)
 	{
 		// console.log('mousedown');
+		// console.log(event)
 		$('body').css('user-select', 'none');
 		event.data.m_width_start = event.data.m_column_resized.outerWidth();
 		event.data.m_column_resized.css('flex-grow', 0);
 		event.data.m_column_resized.css('flex-basis', event.data.m_width_start);
 		event.data.m_width_current = event.data.m_width_start;
-
 		event.data.m_mouse_start = event.pageX;
 
-		$(document).on('mousemove', event.data, event.data.mousemove);
-
-		$(document).on('mouseup', event.data, event.data.mouseup);
+		$(document).on('pointermove', event.data, event.data.mousemove);
+		$(document).on('pointerup', event.data, event.data.mouseup);
 	}
 
 	mousemove(event)
 	{
 		// console.log('mousemove');
+		// console.log(event.pageX);
+
+		// let delta_x = event.pageX;
+		// if(delta_x == undefined)
+		// {
+		// 	delta_x = event.originalEvent.touches[0].pageX;
+		// }
+
 		const flex_basis = event.data.m_width_start;
 		let width_new = flex_basis + (event.pageX - event.data.m_mouse_start);
 
@@ -120,7 +153,7 @@ class Resizeable
 		} else {
 			if(event.data.m_indicate_hide_filters)
 			{
-				event.data.m_slider.css('right', -2);
+				event.data.m_slider.css('right', -13);
 				event.data.m_indicate_hide_filters = false;
 				event.data.m_column_resized.css('opacity', 1)
 
@@ -133,17 +166,15 @@ class Resizeable
 		event.data.m_column_resized.css('flex-basis', width_new);
 		if(event.data.m_column_passive.width() + event.data.m_column_resized.width() < event.data.m_row.width())
 		{
-			// console.log('here');
 			event.data.m_width_current = width_new;
 		} else {
-			console.log('that');
 			event.data.m_column_resized.css('flex-basis', event.data.m_width_current);
 		}
 	}
 
 	click(event)
 	{
-		console.log('click');
+		// console.log('click');
 		if(event.data.m_width_last == undefined)
 		{
 			event.data.m_width_last = 300;
@@ -155,7 +186,7 @@ class Resizeable
 		event.data.m_column_resized.css('opacity', 1)
 		event.data.m_column_resized.show();
 		$(this).remove();
-		event.data.m_slider.css('right', -2);
+		event.data.m_slider.css('right', -13);
 	}
 
 	mouseup(event)
@@ -175,7 +206,7 @@ class Resizeable
 		}
 
 		$('body').css('user-select', '')
-		$(document).off('mousemove', event.data.mousemove);
-		$(document).off('mouseup', event.data.mouseup);
+		$(document).off('pointermove', event.data.mousemove);
+		$(document).off('pointerup', event.data.mouseup);
 	}
 }
