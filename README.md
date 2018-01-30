@@ -18,7 +18,7 @@ By default the tool uses the pure-Python search-engine [Whoosh](https://pypi.pyt
 ## Quickstart
 1. run `cd viewer-framework`
 1. run `python manage.py runserver` to start the server _([more](https://docs.djangoproject.com/en/1.10/ref/django-admin/#django-admin-runserver) on how to start a django server)_
-3. visit `localhost:8000`
+3. visit [localhost:8000](localhost:8000)
 
 ## Supported Features
 * loading of arbitrary corpora
