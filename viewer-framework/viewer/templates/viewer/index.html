@@ -18,18 +18,19 @@
 {% get_dark_mode as dark_mode %}
 <script src="{% static 'viewer/js/jquery-3.3.1.min.js' %}"></script>
 
-<div class="row">
-        <div id="json_url_params" data-json_url_params="{{ json_url_params }}" class="d-none"></div>
-        <div id="json_filters" data-json_filters="{{ json_filters }}" class="d-none"></div>
-        <div id="tag_filter_active" data-tag_filter_active="{{ tag_filter_active }}" class="d-none"></div>
-	<div class="col-lg-3 col-1"
+<div id="json_url_params" data-json_url_params="{{ json_url_params }}" class="d-none"></div>
+<div id="json_filters" data-json_filters="{{ json_filters }}" class="d-none"></div>
+<div id="tag_filter_active" data-tag_filter_active="{{ tag_filter_active }}" class="d-none"></div>
+<div id="json_filters" data-json_filters="{{ json_filters }}" class="d-none"></div>
+
+<div class="row" data-kritten_resize>
+	<div class="col-md-5 col-lg-3"
     {% if width_filters == True %}
     {% elif width_filters == False %}
         style="display: none"
     {% else %}
         style="flex-basis: {{ width_filters }}px; max-width: 100%;"
     {% endif %}
-    id="column_left"
     >
 		<div class="row">
 			<div class="col">
@@ -290,7 +291,7 @@
         </div>
         {% endfor %}        
 	</div>
-	<div class="col" id="column_right">
+	<div class="col">
         {% if width_filters == False %}
             <div class="resizeable_show"></div>
         {% endif %}
@@ -477,7 +478,7 @@
 <script src="{% static 'viewer/js/popper.js' %}"></script>
 <script src="{% static 'viewer/js/bootstrap.min.js' %}"></script>
 <script src="{% static 'viewer/js/recommendation.js' %}"></script>
-<script src="{% static 'viewer/js/kritten_resizeable.js' %}"></script>
+<script src="{% static 'viewer/js/kritten_resize.js' %}"></script>
 <script src="{% static 'viewer/js/helper_functions.js' %}"></script>
 <script src="{% static 'viewer/js/index_functions.js' %}"></script>
 <script src="{% static 'viewer/js/index.js' %}"></script>
