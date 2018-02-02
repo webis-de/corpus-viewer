@@ -681,37 +681,36 @@ def add_tag(obj, list_ids, request):
     id_corpus = get_current_corpus(request)
     # print('################################################')
     # print(obj)
-
     [db_obj_tag, created_tag] = get_or_create_tag(obj['tag'], defaults={'color': obj['color']}, request=request)
 
-    entities = []
-    if obj['ids'] == 'all':
-        if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
-            raise NotImplementedError()
-            entities = list_ids
+    if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
+        print(obj)
+        if obj['ids'] == 'all':
+            db_obj_tag.corpus_viewer_items.add(*list_ids)
+            pass
         else:
+            module_custom = importlib.import_module(glob_manager_data.get_setting_for_corpus('app_label', id_corpus)+'.models')
+            model_custom = getattr(module_custom, glob_manager_data.get_setting_for_corpus('model_name', id_corpus))
+
+            queryset = model_custom.objects.filter(id__in=[x['viewer__id_item_internal'] for x in obj['ids']])
+
+            db_obj_tag.corpus_viewer_items.add(*queryset)
+
+        return {'created_tag': created_tag, 'tag': {'id': db_obj_tag.id, 'name': db_obj_tag.name, 'color': db_obj_tag.color} }
+    else:
+        entities = []
+        if obj['ids'] == 'all':
             for id_item in list_ids:
                 obj_item = glob_manager_data.get_item(id_corpus, id_item)
                 entities.append({
                     'id_item': str(obj_item[glob_manager_data.get_setting_for_corpus('id', id_corpus)]),
                     'viewer__id_item_internal': id_item
                 })
-    else:
-        if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
-            raise NotImplementedError()
-            entities = list(model_custom.objects.filter(post_id_str__in=obj['ids']))
         else:
             entities = obj['ids']
 
-    if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
-        raise NotImplementedError()
-        n = 900
-        chunks = [entities[x:x+n] for x in range(0, len(entities), n)]
-        for chunk in chunks:
-            db_obj_tag.m2m_custom_model.add(*chunk)
-    else:
         index_missing_entities(entities, id_corpus)
-        # print(entities)
+
         n = 900
         chunks = [entities[x:x+n] for x in range(0, len(entities), n)]
         for chunk in chunks:
@@ -720,11 +719,11 @@ def add_tag(obj, list_ids, request):
             print(db_obj_entities)
             db_obj_tag.m2m_entity.add(*db_obj_entities)
 
-    if db_obj_tag.color != obj['color']:
-        db_obj_tag.color = obj['color']
-        db_obj_tag.save()
+        if db_obj_tag.color != obj['color']:
+            db_obj_tag.color = obj['color']
+            db_obj_tag.save()
 
-    return {'created_tag': created_tag, 'tag': {'id': db_obj_tag.id, 'name': db_obj_tag.name, 'color': db_obj_tag.color} }
+        return {'created_tag': created_tag, 'tag': {'id': db_obj_tag.id, 'name': db_obj_tag.name, 'color': db_obj_tag.color} }
 
 def index_missing_entities(entities, id_corpus):
     
