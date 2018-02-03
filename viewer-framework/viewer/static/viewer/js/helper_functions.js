@@ -324,13 +324,9 @@ function update_ui(info_filter_values)
 
     // reset the custom filters
     $.each(glob_filter_custom, function(key, value) {
-        if(value.length > 0)
+        if(typeof(value[0]) == typeof(true))
         {
-            // test if filter is of type bool
-            if(typeof(value[0]) == typeof(true))
-            {
-                $('button[data-data_field="'+key+'"][data-value="'+value[0]+'"]').addClass('active')
-            }
+            $('button[data-data_field="'+key+'"][data-value="'+value[0]+'"]').addClass('active')
         } else {
             $('.viewer__column_filter_active[data-data_field="'+ key +'"]').html('');
             $.each(value, function(index, element) {
