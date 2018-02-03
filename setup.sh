@@ -1,7 +1,9 @@
 #!/bin/bash
 # do necessary inital tasks
 
-pip install -r requirements.txt
+git submodule update --recursive --remote --init
+
+pip3 install -r requirements.txt
 
 cd ./viewer-framework
 python3 manage.py createcachetable
