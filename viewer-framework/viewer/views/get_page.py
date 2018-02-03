@@ -1,5 +1,5 @@
 from .shared_code import set_sessions, load_data, get_or_create_tag, \
-    get_items_by_indices, get_item_by_ids, glob_manager_data, get_current_corpus
+    get_items_by_indices, get_item_by_ids, glob_manager_data, get_current_corpus, get_filters_if_not_empty
 import collections
 import re
 import os
@@ -521,21 +521,6 @@ def filter_data(request, obj_filter):
     if list_data == None:
         list_data = []
     return list_data, info_values, skipped
-
-def get_filters_if_not_empty(request, id_corpus):
-    dict_filters = request.session[id_corpus]['viewer__viewer__filter_custom'].copy()
-    dict_filters['viewer__filter_tags'] = request.session[id_corpus]['viewer__viewer__filter_tags'].copy()
-
-    is_empty = True
-    for values in dict_filters.values():
-        if len(values) != 0:
-            is_empty = False
-            break
-
-    if is_empty == True:
-        return None 
-    else:
-        return dict_filters
 
 def parse_values(values):
     values_parsed = {}

@@ -1,4 +1,4 @@
-from .shared_code import set_sessions, glob_manager_data, get_current_corpus
+from .shared_code import set_sessions, glob_manager_data, get_current_corpus, get_filters_if_not_empty
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from viewer.models import m_Tag, m_Entity
@@ -98,6 +98,7 @@ def index(request, id_corpus):
 
     context['has_access_to_editing'] = has_access_to_editing
 
+    context['are_filters_set'] = False if get_filters_if_not_empty(request, id_corpus) == None else True
 
     context['json_url_params'] = json.dumps(dict_tmp)
     context['tag_filter_active'] = json.dumps(get_tag_filter_active(id_corpus, dict_tmp['viewer__filter_tags']))

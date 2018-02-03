@@ -261,8 +261,41 @@ function hightlight_results(key, value)
     }
 }
 
+
+function get_filters_empty()
+{
+    if(Object.keys(glob_filter_tags).length > 0)
+    {
+        return false;
+    }
+    
+    let is_empty = true;
+    $.each(glob_filter_custom, function(i, element) {
+        if(element.length > 0)
+        {
+            is_empty = false;
+            return false;
+        }
+    });
+
+    return is_empty;
+}
+
 function update_ui(info_filter_values)
 {
+    if(get_filters_empty())
+    {
+        $('#wrapper_info_filters').html(`
+            <span class="float-right text-muted">No filters are active</span>
+        `);
+    } else {
+        $('#wrapper_info_filters').html(`
+            <span class="float-right text-muted"> Filters are active
+                <a href="#" id="link_reset_filters">clear</a>
+            </span>
+        `);
+    }
+
     if(glob_prev_page != undefined)
     {
         $('#info_paginator button[data-direction="left"]').prop('disabled', false);

@@ -66,7 +66,15 @@
                 <div class="card">
                     <div class="card-header py-1 px-2">
                         <a data-toggle="collapse" href="#div_filters" class="text-muted">Filters</a>
-                        <a href="#" id="link_reset_filters" class="float-right">Reset filters</a>
+                        <span id="wrapper_info_filters">
+                        {% if are_filters_set == True %}
+                            <span class="float-right text-muted"> Filters are active
+                                <a href="#" id="link_reset_filters">clear</a>
+                            </span>
+                        {% else %}
+                            <span class="float-right text-muted">No filters are active</span>
+                        {% endif %}
+                        </span>
                     </div>
                     <div class="collapse {% if is_collapsed_div_filters == False %}show{% endif %}" id="div_filters">
                         <div class="card-body py-1 px-2">
