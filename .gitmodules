@@ -1,0 +1,3 @@
+[submodule "resize"]
+	path = resize
+	url = https://github.com/Kritten/resize

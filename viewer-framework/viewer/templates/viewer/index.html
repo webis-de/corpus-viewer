@@ -16,20 +16,21 @@
 {% get_has_secret_token_editing as has_secret_token_editing %}
 
 {% get_dark_mode as dark_mode %}
-<script src="{% static 'viewer/js/jquery-3.1.1.min.js' %}"></script>
+<script src="{% static 'viewer/js/jquery-3.3.1.min.js' %}"></script>
 
-<div class="row">
-        <div id="json_url_params" data-json_url_params="{{ json_url_params }}" class="d-none"></div>
-        <div id="json_filters" data-json_filters="{{ json_filters }}" class="d-none"></div>
-        <div id="tag_filter_active" data-tag_filter_active="{{ tag_filter_active }}" class="d-none"></div>
-	<div class="col-lg-3 col-1"
+<div id="json_url_params" data-json_url_params="{{ json_url_params }}" class="d-none"></div>
+<div id="json_filters" data-json_filters="{{ json_filters }}" class="d-none"></div>
+<div id="tag_filter_active" data-tag_filter_active="{{ tag_filter_active }}" class="d-none"></div>
+<div id="json_filters" data-json_filters="{{ json_filters }}" class="d-none"></div>
+
+<div class="row" data-kritten_resize>
+	<div class="col-md-5 col-lg-3"
     {% if width_filters == True %}
     {% elif width_filters == False %}
         style="display: none"
     {% else %}
         style="flex-basis: {{ width_filters }}px; max-width: 100%;"
     {% endif %}
-    id="column_left"
     >
 		<div class="row">
 			<div class="col">
@@ -65,7 +66,15 @@
                 <div class="card">
                     <div class="card-header py-1 px-2">
                         <a data-toggle="collapse" href="#div_filters" class="text-muted">Filters</a>
-                        <a href="#" id="link_reset_filters" class="float-right">Reset filters</a>
+                        <span id="wrapper_info_filters">
+                        {% if are_filters_set == True %}
+                            <span class="float-right text-muted"> Filters are active
+                                <a href="#" id="link_reset_filters">clear</a>
+                            </span>
+                        {% else %}
+                            <span class="float-right text-muted">No filters are active</span>
+                        {% endif %}
+                        </span>
                     </div>
                     <div class="collapse {% if is_collapsed_div_filters == False %}show{% endif %}" id="div_filters">
                         <div class="card-body py-1 px-2">
@@ -290,7 +299,7 @@
         </div>
         {% endfor %}        
 	</div>
-	<div class="col" id="column_right">
+	<div class="col">
         {% if width_filters == False %}
             <div class="resizeable_show"></div>
         {% endif %}
@@ -475,9 +484,9 @@
 <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script> -->
 
 <script src="{% static 'viewer/js/popper.js' %}"></script>
-<script src="{% static 'viewer/js/bootstrap.js' %}"></script>
+<script src="{% static 'viewer/js/bootstrap.min.js' %}"></script>
 <script src="{% static 'viewer/js/recommendation.js' %}"></script>
-<script src="{% static 'viewer/js/kritten_resizeable.js' %}"></script>
+<script src="{% static 'viewer/js/kritten_resize.min.js' %}"></script>
 <script src="{% static 'viewer/js/helper_functions.js' %}"></script>
 <script src="{% static 'viewer/js/index_functions.js' %}"></script>
 <script src="{% static 'viewer/js/index.js' %}"></script>

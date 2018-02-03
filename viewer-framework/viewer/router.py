@@ -35,11 +35,11 @@ class MainRouter:
         # print('########### allow_relation')
         # print(obj1._meta.app_label)
         # print(obj2._meta.app_label)
-        if obj1._meta.app_label == obj2._meta.app_label:
-            print('yes') 
+        if obj1._meta.app_label == obj2._meta.app_label or obj1._meta.app_label == 'viewer' or obj2._meta.app_label == 'viewer':
+            # print('yes') 
             return True
         else:
-            print('no')
+            # print('no')
             return False
 
         return None

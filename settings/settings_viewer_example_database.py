@@ -50,13 +50,13 @@ DICT_SETTINGS_VIEWER = {
     'secret_token_editing': '',
     'cards': [
         {
-            'name': 'Index dummy data',
+            'name': 'Load dummy data',
             'content': '''
                 <div class="mb-2">
-                    Press the button below to index the dummy data
+                    Press the button below to load the dummy data
                 </div>
                 <div class="">
-                    <button type="button" id="button_index_dummy_data" class="btn btn-sm btn-primary">Index</button>
+                    <button type="button" id="button_index_dummy_data" class="btn btn-sm btn-primary">Load</button>
                 </div>
                 <script>
                     $(document).ready(function()

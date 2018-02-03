@@ -1,8 +1,9 @@
-from .shared_code import set_sessions, glob_manager_data, get_current_corpus
+from .shared_code import set_sessions, glob_manager_data, get_current_corpus, get_filters_if_not_empty
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from viewer.models import m_Tag, m_Entity
 import json
+import importlib
 from threading import Thread
 from django.conf import settings
 
@@ -97,6 +98,7 @@ def index(request, id_corpus):
 
     context['has_access_to_editing'] = has_access_to_editing
 
+    context['are_filters_set'] = False if get_filters_if_not_empty(request, id_corpus) == None else True
 
     context['json_url_params'] = json.dumps(dict_tmp)
     context['tag_filter_active'] = json.dumps(get_tag_filter_active(id_corpus, dict_tmp['viewer__filter_tags']))
@@ -132,7 +134,12 @@ def toggle_item_to_tag(obj, id_corpus):
     db_obj_tag = m_Tag.objects.get(id=obj['id_tag'])
 
     if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
-        print('TO BE IMPLEMENTED')
+        db_obj_tag = m_Tag.objects.get(id=obj['id_tag'])
+
+        module_custom = importlib.import_module(glob_manager_data.get_setting_for_corpus('app_label', id_corpus)+'.models')
+        model_custom = getattr(module_custom, glob_manager_data.get_setting_for_corpus('model_name', id_corpus))
+
+        db_obj_tag.corpus_viewer_items.add(model_custom.objects.get(id=obj['viewer__id_item_internal']))
     else:
         print(str(obj['id_item']))
         try:
@@ -161,8 +168,10 @@ def delete_tag_from_item(obj, id_corpus):
 
     db_obj_tag = m_Tag.objects.get(id=obj['id_tag'])
     if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
-        db_obj_item = model_custom.objects.get(**{glob_manager_data.get_setting_for_corpus('id', id_corpus): obj['id_item']})
-        db_obj_tag.m2m_custom_model.remove(db_obj_item)
+        module_custom = importlib.import_module(glob_manager_data.get_setting_for_corpus('app_label', id_corpus)+'.models')
+        model_custom = getattr(module_custom, glob_manager_data.get_setting_for_corpus('model_name', id_corpus))
+
+        db_obj_tag.corpus_viewer_items.remove(model_custom.objects.get(id=obj['id_item']))
         response['status'] = 'success'
     else:
         db_obj_tag = m_Tag.objects.get(id=obj['id_tag'])

@@ -36,6 +36,21 @@ glob_manager_data = Manager_Data()
 # cache.set('data_', {})
 
 
+def get_filters_if_not_empty(request, id_corpus):
+    dict_filters = request.session[id_corpus]['viewer__viewer__filter_custom'].copy()
+    dict_filters['viewer__filter_tags'] = request.session[id_corpus]['viewer__viewer__filter_tags'].copy()
+
+    is_empty = True
+    for values in dict_filters.values():
+        if len(values) != 0:
+            is_empty = False
+            break
+
+    if is_empty == True:
+        return None 
+    else:
+        return dict_filters
+
 def get_or_create_tag(name, request, defaults={}):
     name = name.strip()
     name = name.replace(' ', '-')
