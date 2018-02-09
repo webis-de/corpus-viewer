@@ -99,8 +99,8 @@ def get_page(request, id_corpus):
 
     print(glob_manager_data.dict_corpora[id_corpus]['size'])
 
-    if get_filters_if_not_empty(request, id_corpus) == None:
-        paginator.count = glob_manager_data.dict_corpora[id_corpus]['size']
+    # if get_filters_if_not_empty(request, id_corpus) == None:
+    #     paginator.count = glob_manager_data.dict_corpora[id_corpus]['size']
 
     # paginator = Paginator(data, get_setting('page_size', request=request))
     try:
