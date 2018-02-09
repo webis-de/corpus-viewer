@@ -1,5 +1,6 @@
 from django.core.cache import cache
 from .Handle_Item import *
+from .Corpus import *
 import glob
 import importlib
 import os
