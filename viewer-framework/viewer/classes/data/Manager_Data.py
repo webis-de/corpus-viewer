@@ -109,6 +109,13 @@ class Manager_Data:
             for id_corpus in self.dict_corpora.keys():
                 self.dict_corpora[id_corpus].update(self.get_default_settings())
 
+                if self.dict_corpora[id_corpus]['settings']['data_type'] == 'database':
+                    module_custom = importlib.import_module(self.get_setting_for_corpus('app_label', id_corpus)+'.models')
+                    model_custom = getattr(module_custom, self.get_setting_for_corpus('model_name', id_corpus))
+                    self.dict_corpora[id_corpus]['size'] = model_custom.objects.filter(
+                        **self.get_setting_for_corpus('database_filters', id_corpus)
+                    ).count()
+
         for id_corpus, value in self.dict_corpora.items():
             print(value.keys())
 

@@ -96,6 +96,12 @@ def get_page(request, id_corpus):
     start = time.time()
     # paginator = Paginator(range(0, get_setting('page_size', request=request))
     paginator = Paginator(list_ids, glob_manager_data.get_setting_for_corpus('page_size', id_corpus))
+
+    print(glob_manager_data.dict_corpora[id_corpus]['size'])
+
+    if get_filters_if_not_empty(request, id_corpus) == None:
+        paginator.count = glob_manager_data.dict_corpora[id_corpus]['size']
+
     # paginator = Paginator(data, get_setting('page_size', request=request))
     try:
         page_current = paginator.page(request.session[id_corpus]['viewer__viewer__page'])
