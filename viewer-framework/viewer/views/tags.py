@@ -5,6 +5,7 @@ from django.shortcuts import render
 from viewer.models import m_Tag, m_Entity
 import json
 import os
+import importlib
 import time
 
 def tags_export(request, id_corpus):
@@ -32,7 +33,7 @@ def tags_export(request, id_corpus):
     response = HttpResponse(json_result, content_type="text/json")
     response['Content-Disposition'] = 'attachment; filename=' + 'tags_{}_.json'.format(id_corpus)
     return response
-    
+
 def tags(request, id_corpus):
     tags = m_Tag.objects.filter(key_corpus=id_corpus)
 
@@ -42,31 +43,32 @@ def tags(request, id_corpus):
     #             f.write(1)
 
     if request.method == 'POST':
-        cookie_id = request.COOKIES['csrftoken']
-        response = {}
-        obj = json.loads(request.body.decode("utf-8"))
+        try:
+            cookie_id = request.COOKIES['csrftoken']
+            response = {}
+            obj = json.loads(request.body.decode("utf-8"))
+            if obj['task'] == 'set_session_entry':
+                if obj['session_key'] == 'dark_mode':
+                    request.session['viewer__'+obj['session_key']] = obj['session_value']
+                else:
+                    request.session[id_corpus]['viewer__'+obj['session_key']] = obj['session_value']
+                    request.session.modified = True
+                response['status'] = 'success'
+            elif obj['task'] == 'update_name':
+                response = update_name(obj, request)
+            elif obj['task'] == 'merge_tags':
+                response['data'] = merge_tags(obj)
+            elif obj['task'] == 'update_color':
+                response = update_color(obj)
+            elif obj['task'] == 'delete_tag':
+                response = delete_tag(obj)
+            elif obj['task'] == 'export_tags':
+                response = export_tags(obj, request)
+            elif obj['task'] == 'add_items':
+                response = add_items(obj, request)
+        except:
+            response = import_tags(request, id_corpus)
 
-        if obj['task'] == 'set_session_entry':
-            if obj['session_key'] == 'dark_mode':
-                request.session['viewer__'+obj['session_key']] = obj['session_value']
-            else:
-                request.session[id_corpus]['viewer__'+obj['session_key']] = obj['session_value']
-                request.session.modified = True
-            response['status'] = 'success'
-        elif obj['task'] == 'update_name':
-            response = update_name(obj, request)
-        elif obj['task'] == 'merge_tags':
-            response['data'] = merge_tags(obj)
-        elif obj['task'] == 'update_color':
-            response = update_color(obj)
-        elif obj['task'] == 'delete_tag':
-            response = delete_tag(obj)
-        elif obj['task'] == 'export_tags':
-            response = export_tags(obj, request)
-        elif obj['task'] == 'import_tags':
-            response = import_tags(obj, id_corpus)
-        elif obj['task'] == 'add_items':
-            response = add_items(obj, request)
 
         return JsonResponse(response)
 
@@ -90,51 +92,96 @@ def add_items(obj, request):
 
     return response
 
-def import_tags(obj, id_corpus):
+def import_tags(request, id_corpus):
     response = {}
+
+    if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) != 'database':
+        dict_ids_to_ids_internal = glob_manager_data.get_dict_ids_to_ids_internal(id_corpus)
+    else:
+        module_custom = importlib.import_module(glob_manager_data.get_setting_for_corpus('app_label', id_corpus)+'.models')
+        model_custom = getattr(module_custom, glob_manager_data.get_setting_for_corpus('model_name', id_corpus))
+
+    for line in request.FILES['file'].read().decode('utf-8').strip().split('\n'):
+        obj_json = json.loads(line)
+        obj_tag = m_Tag.objects.get_or_create(name = obj_json['name'], key_corpus=id_corpus, color = obj_json['color'])[0]
+        
+        if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
+            ThroughModel = m_Tag.corpus_viewer_items.through
+            list_tmp = []
+
+            for id_item in obj_json['ids']:
+                obj_db_entity = model_custom.objects.get(id=id_item)
+                list_tmp.append(ThroughModel(**{
+                    'm_tag_id': obj_tag.pk, 
+                    glob_manager_data.get_setting_for_corpus('model_name', id_corpus).lower()+'_id': obj_db_entity.pk
+                }))
+
+            ThroughModel.objects.bulk_create(list_tmp)
+        else:
+            ThroughModel = m_Tag.m2m_entity.through
+            list_tmp = []
+
+            print(obj_json['ids'])
+
+            entities = []
+
+            for id_item in obj_json['ids']:
+                entities.append({'id_item': id_item, 'viewer__id_item_internal': dict_ids_to_ids_internal[id_item]})
+
+
+            index_missing_entities(entities, id_corpus)
+
+            for id_item in obj_json['ids']:
+                obj_db_entity = m_Entity.objects.get(id_item=id_item, key_corpus=id_corpus)
+                list_tmp.append(ThroughModel(m_tag_id=obj_tag.pk, m_entity_id=obj_db_entity.pk))
+
+            ThroughModel.objects.bulk_create(list_tmp)
     
-    dict_ids_to_ids_internal = glob_manager_data.get_dict_ids_to_ids_internal(id_corpus)
-
-    if os.path.isfile(obj['path']):
-        with open(obj['path'], 'r') as f:
-            for line in f:
-                obj_json = json.loads(line)
-
-                obj_tag = m_Tag.objects.get_or_create(name = obj_json['name'], key_corpus=id_corpus, color = obj_json['color'])[0]
-
-                if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
-                    ThroughModel = m_Tag.m2m_custom_model.through
-                    list_tmp = []
-
-                    for id_item in obj_json['ids']:
-                        obj_db_entity = model_custom.objects.get(id_item=id_item)
-                        list_tmp.append(ThroughModel(**{
-                            'm_tag_id': obj_tag.pk, 
-                            glob_manager_data.get_setting_for_corpus('model_name', id_corpus).lower()+'_id': obj_db_entity.pk
-                        }))
-
-                    ThroughModel.objects.bulk_create(list_tmp)
-                else:
-                    ThroughModel = m_Tag.m2m_entity.through
-                    list_tmp = []
-
-                    print(obj_json['ids'])
-
-                    entities = []
-
-                    for id_item in obj_json['ids']:
-                        entities.append({'id_item': id_item, 'viewer__id_item_internal': dict_ids_to_ids_internal[id_item]})
-
-
-                    index_missing_entities(entities, id_corpus)
-
-                    for id_item in obj_json['ids']:
-                        obj_db_entity = m_Entity.objects.get(id_item=id_item, key_corpus=id_corpus)
-                        list_tmp.append(ThroughModel(m_tag_id=obj_tag.pk, m_entity_id=obj_db_entity.pk))
-
-                    ThroughModel.objects.bulk_create(list_tmp)
-
     return response
+    # response = {}
+    
+    # dict_ids_to_ids_internal = glob_manager_data.get_dict_ids_to_ids_internal(id_corpus)
+
+    # if os.path.isfile(obj['path']):
+    #     with open(obj['path'], 'r') as f:
+    #         for line in f:
+    #             obj_json = json.loads(line)
+
+    #             obj_tag = m_Tag.objects.get_or_create(name = obj_json['name'], key_corpus=id_corpus, color = obj_json['color'])[0]
+
+    #             if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
+    #                 ThroughModel = m_Tag.m2m_custom_model.through
+    #                 list_tmp = []
+
+    #                 for id_item in obj_json['ids']:
+    #                     obj_db_entity = model_custom.objects.get(id_item=id_item)
+    #                     list_tmp.append(ThroughModel(**{
+    #                         'm_tag_id': obj_tag.pk, 
+    #                         glob_manager_data.get_setting_for_corpus('model_name', id_corpus).lower()+'_id': obj_db_entity.pk
+    #                     }))
+
+    #                 ThroughModel.objects.bulk_create(list_tmp)
+    #             else:
+    #                 ThroughModel = m_Tag.m2m_entity.through
+    #                 list_tmp = []
+
+    #                 print(obj_json['ids'])
+
+    #                 entities = []
+
+    #                 for id_item in obj_json['ids']:
+    #                     entities.append({'id_item': id_item, 'viewer__id_item_internal': dict_ids_to_ids_internal[id_item]})
+
+
+    #                 index_missing_entities(entities, id_corpus)
+
+    #                 for id_item in obj_json['ids']:
+    #                     obj_db_entity = m_Entity.objects.get(id_item=id_item, key_corpus=id_corpus)
+    #                     list_tmp.append(ThroughModel(m_tag_id=obj_tag.pk, m_entity_id=obj_db_entity.pk))
+
+    #                 ThroughModel.objects.bulk_create(list_tmp)
+
+    # return response
 
 # def export_tags(obj, request):
 #     id_corpus = get_current_corpus(request)

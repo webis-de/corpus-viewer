@@ -72,19 +72,40 @@ function export_tags(modal)
 
 function import_tags(modal)
 {
-    let data = {};
-    data.task = 'import_tags';
-    data.path = $('#'+modal.attr('id')+' input[name="path"]').val();
+    let data_form = new FormData();
+    data_form.append('csrfmiddlewaretoken', $('input[name="csrfmiddlewaretoken"]').val());
+    data_form.append('file', modal.find('input[type="file"]')[0].files[0]);
+
+    // let data = {};
+    // data.task = 'import_tags';
+    // data.path = data_form;
+    // data.path = data_form;
 
     $.ajax({
         method: 'POST',
-        contentType: 'application/json',
+        // contentType: 'application/json',
         headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
-        data: JSON.stringify(data),
+        contentType: false,
+        data: data_form,
+        processData: false,
         success: function(result) {
-            modal.modal('hide');
+            location.reload();
         },
     });
+    return
+    // let data = {};
+    // data.task = 'import_tags';
+    // data.path = $('#'+modal.attr('id')+' input[name="path"]').val();
+
+    // $.ajax({
+    //     method: 'POST',
+    //     contentType: 'application/json',
+    //     headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+    //     data: JSON.stringify(data),
+    //     success: function(result) {
+    //         modal.modal('hide');
+    //     },
+    // });
 }
 
 function request_delete_tag(id_tag, tag_name)
