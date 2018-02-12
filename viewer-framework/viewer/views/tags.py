@@ -1,12 +1,38 @@
 from .shared_code import get_current_corpus, glob_manager_data
 from .get_page import index_missing_entities
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from viewer.models import m_Tag, m_Entity
 import json
 import os
 import time
 
+def tags_export(request, id_corpus):
+    json_result = ''
+    queryset_tags = m_Tag.objects.filter(key_corpus=id_corpus)
+    if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
+        queryset_tags = queryset_tags.prefetch_related('corpus_viewer_items')
+    else:
+        queryset_tags = queryset_tags.prefetch_related('m2m_entity')
+    for tag in queryset_tags:
+        obj_tag = {}
+        obj_tag['name'] = tag.name
+        obj_tag['color'] = tag.color
+        list_ids = []
+        if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
+            for entity in tag.corpus_viewer_items.all():
+                list_ids.append(entity.id)
+        else:
+            for entity in tag.m2m_entity.all():
+                list_ids.append(entity.id_item)
+
+        obj_tag['ids'] = list_ids
+        json_result += json.dumps(obj_tag) + '\n'
+
+    response = HttpResponse(json_result, content_type="text/json")
+    response['Content-Disposition'] = 'attachment; filename=' + 'tags_{}_.json'.format(id_corpus)
+    return response
+    
 def tags(request, id_corpus):
     tags = m_Tag.objects.filter(key_corpus=id_corpus)
 
@@ -110,41 +136,41 @@ def import_tags(obj, id_corpus):
 
     return response
 
-def export_tags(obj, request):
-    id_corpus = get_current_corpus(request)
+# def export_tags(obj, request):
+#     id_corpus = get_current_corpus(request)
 
-    response = {}
+#     response = {}
 
-    if obj['path'].strip() != '':
-        if not os.path.exists(obj['path']):
-            os.makedirs(obj['path'])
+#     if obj['path'].strip() != '':
+#         if not os.path.exists(obj['path']):
+#             os.makedirs(obj['path'])
         
-    name_file = 'tags_exported_'+str(int(time.time()))+'.ldjson'
-    path_file = os.path.join(obj['path'], name_file)
+#     name_file = 'tags_exported_'+str(int(time.time()))+'.ldjson'
+#     path_file = os.path.join(obj['path'], name_file)
 
 
-    with open(path_file, 'w') as f:
-        queryset_tags = m_Tag.objects.filter(key_corpus=id_corpus)
-        if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
-            queryset_tags = queryset_tags.prefetch_related('m2m_custom_model')
-        else:
-            queryset_tags = queryset_tags.prefetch_related('m2m_entity')
-        for tag in queryset_tags:
-            obj_tag = {}
-            obj_tag['name'] = tag.name
-            obj_tag['color'] = tag.color
-            list_ids = []
-            if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
-                for entity in tag.m2m_custom_model.all():
-                    list_ids.append(entity.id)
-            else:
-                for entity in tag.m2m_entity.all():
-                    list_ids.append(entity.id_item)
+#     with open(path_file, 'w') as f:
+#         queryset_tags = m_Tag.objects.filter(key_corpus=id_corpus)
+#         if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
+#             queryset_tags = queryset_tags.prefetch_related('m2m_custom_model')
+#         else:
+#             queryset_tags = queryset_tags.prefetch_related('m2m_entity')
+#         for tag in queryset_tags:
+#             obj_tag = {}
+#             obj_tag['name'] = tag.name
+#             obj_tag['color'] = tag.color
+#             list_ids = []
+#             if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
+#                 for entity in tag.m2m_custom_model.all():
+#                     list_ids.append(entity.id)
+#             else:
+#                 for entity in tag.m2m_entity.all():
+#                     list_ids.append(entity.id_item)
 
-            obj_tag['ids'] = list_ids
-            f.write(json.dumps(obj_tag)+'\n')
+#             obj_tag['ids'] = list_ids
+#             f.write(json.dumps(obj_tag)+'\n')
 
-    return response
+#     return response
 
 def delete_tag(obj):
     response = {}

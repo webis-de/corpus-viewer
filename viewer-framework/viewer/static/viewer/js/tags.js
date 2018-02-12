@@ -45,19 +45,29 @@ function add_items(modal)
 
 function export_tags(modal)
 {
-    let data = {};
-    data.task = 'export_tags';
-    data.path = $('#'+modal.attr('id')+' input[name="path"]').val();
+    let url = 'tags/export';
 
-    $.ajax({
-        method: 'POST',
-        contentType: 'application/json',
-        headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
-        data: JSON.stringify(data),
-        success: function(result) {
-            modal.modal('hide');
-        },
-    });
+    // const list_ids = [];
+    // $.each(glob_selected_items, function( i, val ) {
+    //     list_ids.push(val.viewer__id_item_internal);
+    // });
+    // url += JSON.stringify(list_ids);
+    window.open(url, '_blank');
+    modal.modal('hide');
+
+    // let data = {};
+    // data.task = 'export_tags';
+    // data.path = $('#'+modal.attr('id')+' input[name="path"]').val();
+
+    // $.ajax({
+    //     method: 'POST',
+    //     contentType: 'application/json',
+    //     headers: {'X-CSRFToken':$('input[name="csrfmiddlewaretoken"]').val()},
+    //     data: JSON.stringify(data),
+    //     success: function(result) {
+    //         modal.modal('hide');
+    //     },
+    // });
 }
 
 function import_tags(modal)

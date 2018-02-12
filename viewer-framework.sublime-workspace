@@ -4,32 +4,16 @@
 		"selected_items":
 		[
 			[
+				"list",
+				"list_tags"
+			],
+			[
+				"key",
+				"key_corpus"
+			],
+			[
 				"id_",
-				"id_corpus"
-			],
-			[
-				"model",
-				"model_custom"
-			],
-			[
-				"db_obj",
-				"db_obj_tag"
-			],
-			[
-				"if",
-				"if\tif"
-			],
-			[
-				"column",
-				"column_left"
-			],
-			[
-				"colum",
-				"column_right"
-			],
-			[
-				"left",
-				"column_left"
+				"id_item"
 			],
 			[
 				"set",
@@ -46,10 +30,6 @@
 			[
 				"m_in",
 				"m_index_position"
-			],
-			[
-				"key",
-				"keyCode"
 			],
 			[
 				"trigger",
@@ -122,10 +102,6 @@
 			[
 				"id",
 				"id_corpus"
-			],
-			[
-				"list",
-				"list_keys"
 			],
 			[
 				"dict",
@@ -254,6 +230,10 @@
 			[
 				"lsit",
 				"list_ids"
+			],
+			[
+				"column",
+				"column_to_sortx"
 			],
 			[
 				"sort",
@@ -514,16 +494,179 @@
 			[
 				"spli",
 				"splitted_line"
+			],
+			[
+				"set_",
+				"set_referenced_missing_documents"
+			],
+			[
+				"judg",
+				"judgements_user"
+			],
+			[
+				"tax",
+				"tax_class"
+			],
+			[
+				"found",
+				"found_class"
+			],
+			[
+				"get",
+				"get_name"
 			]
 		]
 	},
 	"buffers":
 	[
 		{
-			"file": "viewer-framework/viewer/static/viewer/js/kritten_resize.js",
+			"file": "viewer-framework/viewer/models.py",
 			"settings":
 			{
-				"buffer_size": 5985,
+				"buffer_size": 1160,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "<dom-module id=\"viewer-template\">\n\n    <template>\n\n        <style>\n            /* shadow DOM styles go here */\n            :host {\n                display: inline-block;\n            }\n        </style>\n\n        <!-- shadow DOM goes here -->\n        <div></div>\n        <div>[[ objItem.text ]]</div>\n        <div>[[ objItem.id ]]</div>\n    </template>\n\n    <script>\n        class ViewerTemplate extends Polymer.Element {\n            static get is() {\n                return 'viewer-template';\n            }\n            static get properties() {\n                return {\n                    objItem: {\n                        type: Object\n                    },\n                }\n            }\n            constructor() {\n                super();\n            }\n        }\n        customElements.define(ViewerTemplate.is, ViewerTemplate);\n    </script>\n\n</dom-module>\n",
+			"file": "viewer-framework/viewer/static/viewer/bower_components/viewer-template.html",
+			"file_size": 863,
+			"file_write_time": 131489904767653470,
+			"settings":
+			{
+				"buffer_size": 863,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "def load_data(item_handle):\n    import csv\n    \n    def get_corrections(row):\n        list_corrections = []\n        for element in row[2:]:\n            if element == '':\n                break\n            else: \n                list_corrections.append(element)\n        return list_corrections\n\n    path = \"../corpora/webis-query-speller-corpus.csv\"\n    with open(path, 'r') as csvfile:\n        spamreader = csv.reader(csvfile, delimiter=';', quotechar='\"')\n        for row in spamreader:\n            list_corrections = get_corrections(row)\n\n            entry = {}\n            entry['id'] = row[0]\n            entry['query'] = row[1]\n            entry['corrections'] = ', '.join(list_corrections)\n            entry['count_corrections'] = len(list_corrections)\n\n            item_handle.add(entry)\n\n\nDICT_SETTINGS_VIEWER = {\n    # possible values: 'csv-file', 'ldjson-file', 'custom', 'database'\n    'name': 'Webis-QSpell-17',\n    'description': '',\n    'data_type': 'custom',\n    # function to load the data\n    'load_data_function': load_data,\n    'use_cache': True,\n    'data_fields': {\n        'id': {\n            'type': 'number',\n            'display_name': 'ID'\n        },\n        'corrections': {\n            'type': 'text',\n            'display_name': 'Spelling variants'\n        },\n        'query': {\n            'type': 'string',\n            'display_name': 'Query'\n        },\n        'count_corrections': {\n            'type': 'number',\n            'display_name': '#Variants'\n        }\n    },\n    'id': 'id',\n    'displayed_fields': [\n        'id', 'query', 'count_corrections', 'corrections'\n    ],\n    'page_size': 25,\n    'filters': [\n        {\n            'data_field': 'query',\n            'description': 'Query',\n            'placeholder': '',\n            'default_value': '',\n        },\n        {\n            'data_field': 'id',\n            'description': 'ID',\n            'placeholder': '',\n            'default_value': '',\n        },\n        {\n            'data_field': 'count_corrections',\n            'description': '#Variants',\n            'placeholder': '',\n            'default_value': '',\n        },\n        {\n            'data_field': 'corrections',\n            'description': 'Variants',\n            'placeholder': '',\n            'default_value': '',\n        },\n    ],\n    'secret_token_tagging': '1234',\n    'template_html': \"\"\"<dom-module id=\"viewer-template\">\n\n    <template>\n        <link rel=\"stylesheet\" href=\"[[ bootstrapCss ]]\">\n        <style>\n            /* shadow DOM styles go here */\n            :host {\n                /*display: inline-block;*/\n            }\n\n        </style>\n        <div class=\"row\">\n            <div class=\"col\">\n                <h1>Query: \"{{ objItem.query }}\"</h1>\n\n                <table id=\"table_test\" class=\"table table-striped\">\n                    <thead>\n                        <tr>\n                            <th></th>\n                            <th>Variants</th>\n                        </tr>\n                    </thead>\n                    <tbody>\n                    </tbody>\n                </table>\n            </div>\n        </div>\n    </template>\n\n    <script>\n        function get_position_of_first_difference(a, b) {\n            let length_a = a.length;\n            let length_b = b.length;\n\n            let position = -1;\n\n            for (let i = 0; i < a.length; i++) \n            {\n                character_current_a = a[i];\n                if(i < length_b)\n                {\n                    character_current_b = b[i];\n                    if(character_current_a != character_current_b)\n                    {\n                        return i\n                    }\n                } else {\n                    return position;\n                }\n            }\n            return position;\n        }\n\n        class ViewerTemplate extends Polymer.Element {\n            static get is() {\n                return 'viewer-template';\n            }\n            static get properties() {\n                return {\n                    objItem: {\n                        type: Object,\n                    },\n                    bootstrapCss: {\n                        type: String\n                    },\n                    bootstrapJs: {\n                        type: String\n                    },\n                    jqueryJs: {\n                        type: String\n                    }\n                }\n            }\n            constructor() {\n                super();\n            }\n            ready() {\n                super.ready()\n                this.objItem.corrections = this.objItem.corrections.split(',')\n                let element_table = this.shadowRoot.querySelector('#table_test tbody');\n                const replacement = '<span class=\"bg-warning\">PLACEHOLDER</span>'\n\n                for (let i = 0; i < this.objItem.corrections.length; i++) {\n                    let correction = this.objItem.corrections[i].trim();\n                    let position_of_first_difference = -1;\n                    if(i > 0)\n                    {\n                        let string_a = correction;\n                        let string_b = this.objItem.corrections[i-1].trim();\n                        position_of_first_difference = get_position_of_first_difference(string_a, string_b);\n                    }\n\n                    if(position_of_first_difference != -1)\n                    {\n                        correction[position_of_first_difference]\n                        const replacement_custom = replacement.replace('PLACEHOLDER', correction[position_of_first_difference])\n                        correction = correction.substr(0, position_of_first_difference) + replacement_custom + correction.substr(position_of_first_difference + 1)\n                    }\n\n                    let row = element_table.insertRow(-1);\n                    let cell1 = row.insertCell(0);\n                    cell1.innerHTML = i+1;\n                    let cell2 = row.insertCell(1);\n                    cell2.innerHTML = correction;\n                    // let row_new = `\n                    //     <tr>\n                    //         <td>`+(i+1)+`</td>\n                    //         <td>`+correction+`</td>\n                    //     </tr>\n                    // `\n                    // element_table.innerHTML = element_table.innerHTML + row_new;\n                }\n            }\n        }\n        customElements.define(ViewerTemplate.is, ViewerTemplate);\n    </script>\n\n</dom-module>\n\"\"\"\n    # 'template_path': \"\"\"../corpora/template_query_speller.html\"\"\"\n}",
+			"file": "settings/settings_viewer_query_speller.py",
+			"file_size": 6534,
+			"file_write_time": 131514093722413673,
+			"settings":
+			{
+				"buffer_size": 6534,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "settings/settings_viewer_example.py",
+			"settings":
+			{
+				"buffer_size": 2531,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "def load_data(item_handle):\n    import os\n    import json\n    import csv\n\n    def load_annotations(path_truth, annotator):\n        dict_annotations = {}\n        with open(os.path.join(path_truth, annotator+'.csv'), 'r') as f:\n            spamreader = csv.reader(f)\n            for row in spamreader:\n                id_tweet = int(row[0])\n                score = row[1]\n                dict_annotations[id_tweet] = score\n\n        return dict_annotations\n\n    path_corpora = '../corpora/webis-cbc-16'\n    path_truth = os.path.join(path_corpora, 'truth')\n    path_problems = os.path.join(path_corpora, 'problems')\n\n\n    dict_annotations_annotatorA = load_annotations(path_truth, 'annotatorA')\n    dict_annotations_annotatorB = load_annotations(path_truth, 'annotatorB')\n    dict_annotations_annotatorC = load_annotations(path_truth, 'annotatorC')\n    dict_annotations_majority = load_annotations(path_truth, 'majority')\n\n    counter_error = 0\n    for folder in os.listdir(path_problems):\n        path_problem = os.path.join(path_problems, folder)\n        for file in os.listdir(path_problem):\n            path_file = os.path.join(path_problem, file)\n            if file.endswith('.json'):\n                with open(path_file, 'r') as f:\n                    try:\n                        obj_json = json.loads(f.read())\n                        obj_tweet = {}\n                        obj_tweet['id'] = obj_json['id']\n                        obj_tweet['text'] = obj_json['text']\n                        obj_tweet['retweet_count'] = int(obj_json['retweet_count'])\n                        obj_tweet['annotatorA'] = dict_annotations_annotatorA[obj_json['id']]\n                        obj_tweet['annotatorB'] = dict_annotations_annotatorB[obj_json['id']]\n                        obj_tweet['annotatorC'] = dict_annotations_annotatorC[obj_json['id']]\n                        obj_tweet['majority'] = dict_annotations_majority[obj_json['id']]\n                        item_handle.add(obj_tweet)\n                    except (json.decoder.JSONDecodeError, UnicodeDecodeError):\n                        counter_error += 1\n\n    print('counter_error')\n    print(counter_error)\n    print('counter_error')\n\n# this is the main dictionary containing the necessary information to load and display your corpus\nDICT_SETTINGS_VIEWER = {\n    'name': 'Webis-Clickbait-16',\n    'description': 'This corpus holds 2992 annotated Tweets.',\n    'data_type': 'custom',\n    'load_data_function': load_data,\n    'data_fields': {\n        'id': {\n            'type': 'number',\n            'display_name': 'ID'\n        },\n        'text': {\n            'type': 'text',\n            'display_name': 'Text'\n        },\n        'retweet_count': {\n            'type': 'number',\n            'display_name': 'Retweets'\n        },\n        'annotatorA': {\n            'type': 'string',\n            'display_name': 'A'\n        },\n        'annotatorB': {\n            'type': 'string',\n            'display_name': 'B'\n        },\n        'annotatorC': {\n            'type': 'string',\n            'display_name': 'C'\n        },\n        'majority': {\n            'type': 'string',\n            'display_name': 'majority'\n        }\n    },\n    'id': 'id',\n    'displayed_fields': [\n        'id', 'retweet_count', 'text', 'annotatorA', 'annotatorB', 'annotatorC', 'majority'\n    ],\n    'page_size': 25,\n    'filters': [\n        {\n            'data_field': 'text',\n            'description': 'Tweet Text',\n            'placeholder': 'Text Input',\n            'default_value': '',\n        },\n        {\n            'data_field': 'majority',\n            'description': 'Majority',\n            'placeholder': 'Text Input',\n            'default_value': '',\n        },\n        {\n            'data_field': 'retweet_count',\n            'description': 'Count Retweets',\n            'placeholder': 'Count Input',\n            'default_value': '',\n        },\n    ],\n    'secret_token': 'test',\n    'template_html': \"\"\"<style>\n    .box_tweet {\n        border: 1px solid #ddd;\n        border-radius: 7px;\n        padding: 30px 40px;\n    }\n    .box_color {\n        height: 3rem;\n        width: 3rem;\n    }\n</style>\n<div class=\"row justify-content-center mt-5\">\n    <div class=\"col-lg-5 col-md-8 col-sm-10\">\n        <div class=\"box_tweet\">\n            <p id=\"text_tweet\" style=\"font-size: 26px\"></p>\n            <div id=\"wrapper_images_'+tweet[0]+'\" class=\"row\"></div>\n        </div>\n    </div>\n</div>\n<div class=\"row justify-content-center mt-5\">\n    <div class=\"col col-md-auto\">\n        <div class=\"row text-nowrap\">\n            <div class=\"col\">\n                <div id=\"annotation_a\" class=\"box_color mx-auto\"></div>\n                Annotator A\n            </div>\n            <div class=\"col\">\n                <div id=\"annotation_b\" class=\"box_color mx-auto\"></div>\n                Annotator B\n            </div>\n            <div class=\"col\">\n                <div id=\"annotation_c\" class=\"box_color mx-auto\"></div>\n                Annotator C\n            </div>\n            <div class=\"col\">\n                <div id=\"annotation_majority\" class=\"box_color mx-auto\"></div>\n                Majority\n            </div>\n        </div>\n    </div>\n</div>\n\n<script>\n    function linkify(text){\n        if (text) {\n            text = text.replace(\n                /((https?\\:\\/\\/)|(www\\.))(\\S+)(\\w{2,4})(:[0-9]+)?(\\/|\\/([\\w#!:.?+=&%@!\\-\\/]))?/gi,\n                function(url){\n                    var full_url = url;\n                    if (!full_url.match('^https?:\\/\\/')) {\n                        full_url = 'http://' + full_url;\n                    }\n                    return '<a href=\"' + full_url + '\">' + 'Link' + '</a>';\n                }\n            );\n        }\n        return text;\n    }\n\n    function preprocess_text(text)\n    {\n        return linkify(text);\n    }\n\n    function get_color(annotation)\n    {\n        if(annotation == 'strong' || annotation == 'clickbait')\n        {\n            return \"hsl(0,100%,50%)\";\n        } else if(annotation == 'medium') {\n            return \"hsl(40,100%,50%)\";\n        } else if(annotation == 'weak') {\n            return \"hsl(80,100%,50%)\";\n        } else if(annotation == 'none' || annotation == 'no-clickbait') {\n            return \"hsl(120,100%,50%)\";\n        }\n        console.log('error')\n    }\n\n    $(document).ready(function()\n    {\n        console.log(obj_item)\n        $('#text_tweet').html(preprocess_text(obj_item.text));\n        $('#annotation_a').css('background-color', get_color(obj_item.annotatorA));\n        $('#annotation_b').css('background-color', get_color(obj_item.annotatorB));\n        $('#annotation_c').css('background-color', get_color(obj_item.annotatorC));\n        $('#annotation_majority').css('background-color', get_color(obj_item.majority));\n    });\n</script>\"\"\"\n    # 'template_path': '../corpora/webis-cbc-16/template.html'\n}",
+			"file": "settings/Webis-Clickbait-16.py",
+			"file_size": 6831,
+			"file_write_time": 131603915607350378,
+			"settings":
+			{
+				"buffer_size": 6831,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "viewer-framework/viewer/templates/viewer/view_item.html",
+			"settings":
+			{
+				"buffer_size": 645,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "viewer-framework/viewer/classes/data/Manager_Data.py",
+			"settings":
+			{
+				"buffer_size": 23119,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "import os\nimport csv\nimport json\n\ndef load_data(item_handle):\n    print('function 2')\n\n    # for x in range(0,10):\n    #     obj = {}\n    #     obj['id'] = x\n    #     obj['text'] = 'this is only a test test'\n\n    item_handle.add({'id':0, 'text': 'test'})\n    item_handle.add({'id':1, 'text': 'test test abc'})\n    item_handle.add({'id':2, 'text': 'Test test '})\n    item_handle.add({'id':5, 'text': 'abc test test'})\n    item_handle.add({'id':3, 'text': 'TESTTEST'})\n    item_handle.add({'id':4, 'text': ''})\n\n\nDICT_SETTINGS_VIEWER = {\n    # possible values: 'csv-file', 'ldjson-file', 'custom', 'database'\n    'name': 'test',\n    'description': '',\n    'data_type': 'custom',\n        # only necessary if data_type is '*-file'\n            # path to data,\n            # 'data_path': '../corpora/webis-cbc-16',\n            'data_path': '../corpora/file.ldjson',\n            # structure of data in file\n            'data_structure': ['name', 'retweet_count', 'id'],\n\n\n        # only necessary if data_type is 'custom'\n            # function to load the data\n            'load_data_function': load_data,\n        # only necessary if data_type is 'database'\n            # name of the app where the model is located\n            'app_label': 'example_app',\n            # name of the model\n            'model_name': 'Example_Model',\n    'use_cache': True,\n    'data_fields': {\n        'id': {\n            'type': 'number',\n            'display_name': 'ID'\n        },\n        'text': {\n            'type': 'string',\n            'display_name': 'Text'\n        }\n    },\n    'id': 'id',\n    'displayed_fields': [\n        'id', 'text'\n    ],\n    'page_size': 10,\n    # Possible filter types: 'text', 'checkbox'\n    #\n    'filters': [\n        {\n            'data_field': 'text',\n            'description': 'Text',\n            'placeholder': 'Text Input',\n            'default_value': '',\n        },\n        {\n            'data_field': 'id',\n            'description': 'Id',\n            'placeholder': 'Count Input',\n            'default_value': '',\n        },\n    ],\n    'secret_token_editing': 'test',\n    # 'template': '../corpora/template_query_speller.html',\n}",
+			"file": "settings/settings_viewer_test.py",
+			"file_size": 2150,
+			"file_write_time": 131603915607350378,
+			"settings":
+			{
+				"buffer_size": 2150,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "viewer-framework/viewer/templates/viewer/table.html",
+			"settings":
+			{
+				"buffer_size": 4546,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "viewer-framework/viewer/static/viewer/js/helper_functions.js",
+			"settings":
+			{
+				"buffer_size": 13326,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "viewer-framework/dashboard/views.py",
+			"settings":
+			{
+				"buffer_size": 2882,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "viewer-framework/dashboard/static/dashboard/js/index.js",
+			"settings":
+			{
+				"buffer_size": 6405,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "viewer-framework/viewer/templates/viewer/tags.html",
+			"settings":
+			{
+				"buffer_size": 8478,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "viewer-framework/viewer/static/viewer/js/recommendation.js",
+			"settings":
+			{
+				"buffer_size": 8092,
+				"encoding": "UTF-8",
+				"line_ending": "Unix",
+				"name": "recomm"
+			}
+		},
+		{
+			"file": "viewer-framework/viewer/templates/viewer/index.html",
+			"settings":
+			{
+				"buffer_size": 27368,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "viewer-framework/viewer/templates/viewer/add_token.html",
+			"settings":
+			{
+				"buffer_size": 1193,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -538,21 +681,94 @@
 			}
 		},
 		{
-			"file": "viewer-framework/viewer/templates/viewer/index.html",
+			"file": "viewer-framework/viewer/static/viewer/js/index_functions.js",
 			"settings":
 			{
-				"buffer_size": 26998,
+				"buffer_size": 29761,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "settings/settings_viewer_example_database.py",
+			"file": "viewer-framework/viewer/views/get_page.py",
 			"settings":
 			{
-				"buffer_size": 2430,
+				"buffer_size": 38271,
 				"encoding": "UTF-8",
-				"line_ending": "Windows"
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "viewer-framework/viewer/classes/data/Handle_Item.py",
+			"settings":
+			{
+				"buffer_size": 5255,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "<div class=\"col-12\">\n\t<div class=\"row\">\n\t\t<div class=\"col\">\n\t\t\t<b>This is how a HIT could look like</b>\n\t\t\t<ul>\n\t\t\t</ul>\n\t\t</div>\n\t</div>\n\t<div class=\"row\">\n\t\t<div class=\"col\">\n    \t\t<div data-inject_assignments></div>\n\t\t</div>\n\t</div>\n\t<hr>\n</div>\n<script>\n    hit_wrapper.find('ul').append('<li>'+question.link_2+'</li>');\n</script>",
+			"settings":
+			{
+				"buffer_size": 334,
+				"line_ending": "Unix",
+				"name": "<div class=\"col-12\">"
+			}
+		},
+		{
+			"contents": "import os\nimport csv\nimport json\n\ndef load_data(item_handle):\n    text = '2132'\n    # text = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.'\n\n    # with open('../large_corpus.txt') as f:\n    #     counter = 0\n    #     for line in f:\n    #         obj = {}\n    #         obj['id'] = counter\n    #         obj['text'] = text  \n    #         item_handle.add(obj)\n    #         counter += 1\n    #         if counter % 1000000 == 0:\n    #             print(counter)\n    #         if counter == 10000000:\n    #             return\n\n    # for x in range(0, 1):\n    for x in range(0, 1000000):\n    # for x in range(0, 100000):\n    # for x in range(0, 1000000):\n    # for x in range(0, 5000000):\n        obj = {}\n        obj['id'] = 'id_'+str(x)\n        obj['text'] = text\n        # obj['text'] = 'text_'+str(x % 5)\n        item_handle.add(obj)\n\n\n\nDICT_SETTINGS_VIEWER = {\n    # possible values: 'csv-file', 'ldjson-file', 'custom', 'database'\n    'name': 'large corpus',\n    'description': '',\n    'data_type': 'custom',\n        # only necessary if data_type is '*-file'\n            # path to data,\n            # 'data_path': '../corpora/webis-cbc-16',\n            'data_path': '../corpora/file.ldjson',\n            # structure of data in file\n            'data_structure': ['name', 'retweet_count', 'id'],\n\n\n        # only necessary if data_type is 'custom'\n            # function to load the data\n            'load_data_function': load_data,\n        # only necessary if data_type is 'database'\n            # name of the app where the model is located\n            'app_label': 'example_app',\n            # name of the model\n            'model_name': 'Example_Model',\n    'use_cache': True,\n    'data_fields': {\n        'id': {\n            'type': 'string',\n            'display_name': 'ID'\n        },\n        'text': {\n            # 'type': 'string',\n            'type': 'text',\n            'display_name': 'Text'\n        }\n    },\n    'id': 'id',\n    'displayed_fields': [\n        'id', 'text'\n    ],\n    'secret_token_editing': '',\n    'page_size': 25,\n    # Possible filter types: 'text', 'checkbox'\n    #\n    'filters': [\n        {\n            'data_field': 'text',\n            'description': 'Text',\n            'placeholder': 'Text Input',\n            'default_value': '',\n        },\n        {\n            'data_field': 'id',\n            'description': 'Id',\n            'placeholder': 'Count Input',\n            'default_value': '',\n        },\n    ],\n}",
+			"file": "settings/settings_viewer_large_corpus.py",
+			"file_size": 2997,
+			"file_write_time": 131608746571780428,
+			"settings":
+			{
+				"buffer_size": 2997,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "viewer-framework/example_app/models.py",
+			"settings":
+			{
+				"buffer_size": 311,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "viewer-framework/viewer/views/tags.py",
+			"settings":
+			{
+				"buffer_size": 6651,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "viewer-framework/viewer/static/viewer/js/tags.js",
+			"settings":
+			{
+				"buffer_size": 6652,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "viewer-framework/viewer/static/viewer/css/formats.css",
+			"settings":
+			{
+				"buffer_size": 3060,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "viewer-framework/dashboard/templates/dashboard/documentation.html",
+			"settings":
+			{
+				"buffer_size": 25339,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
 			}
 		},
 		{
@@ -560,6 +776,15 @@
 			"settings":
 			{
 				"buffer_size": 10279,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "viewer-framework/example_app/views.py",
+			"settings":
+			{
+				"buffer_size": 635,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -574,12 +799,15 @@
 			}
 		},
 		{
-			"file": "viewer-framework/viewer/views/get_page.py",
+			"contents": "# this is the main dictionary containing the necessary information to load and display your corpus\nDICT_SETTINGS_VIEWER = {\n    'name': 'Database',\n    'description': '',\n    'data_type': 'database',\n    'app_label': 'example_app',\n    'model_name': 'Example_Model',\n    'database_prefetch_related': [\n    ],\n    'database_select_related': [\n    ],\n    'database_filters': {\n    },\n\n    'data_fields': {\n        'id': {\n            'type': 'number',\n            'display_name': 'ID'\n        },\n        'name': {\n            'type': 'string',\n            'display_name': 'Name'\n        },\n        'count_of_something': {\n            'type': 'number',\n            'display_name': 'Count'\n        }\n    },\n    'id': 'id',\n    'displayed_fields': [\n        'id', 'name', 'count_of_something'\n    ],\n    'page_size': 25,\n    'filters': [\n        {\n            'data_field': 'count_of_something',\n            'description': 'Count',\n            'placeholder': '',\n        },\n    ],\n    'secret_token_editing': '',\n    # 'secret_token': 'test',\n    # 'secret_token_editing': 'tesst',\n    # 'template': '../corpora/index.html'\n}\n",
+			"file": "settings/database.py",
+			"file_size": 1121,
+			"file_write_time": 131608746754384339,
 			"settings":
 			{
-				"buffer_size": 38066,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
+				"buffer_size": 1121,
+				"line_ending": "Unix",
+				"name": "database.py"
 			}
 		},
 		{
@@ -592,19 +820,55 @@
 			}
 		},
 		{
-			"file": "viewer-framework/viewer/router.py",
 			"settings":
 			{
-				"buffer_size": 1993,
+				"buffer_size": 0,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "README.md",
+			"settings":
+			{
+				"buffer_size": 1888,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/home/kritten/Documents/simple-bootstrap-gallery/js/sbg_dev.js",
+			"file": "setup.sh",
 			"settings":
 			{
-				"buffer_size": 13295,
+				"buffer_size": 270,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "viewer-framework/viewer/classes/data/Corpus.py",
+			"settings":
+			{
+				"buffer_size": 361,
+				"encoding": "UTF-8",
+				"line_ending": "Unix",
+				"name": "Corpus"
+			}
+		},
+		{
+			"file": "requirements.txt",
+			"settings":
+			{
+				"buffer_size": 25,
+				"encoding": "UTF-8",
+				"line_ending": "Unix",
+				"name": "requirements.txt"
+			}
+		},
+		{
+			"file": "viewer-framework/viewer/classes/index/Handle_Index_Whoosh.py",
+			"settings":
+			{
+				"buffer_size": 7785,
 				"line_ending": "Unix"
 			}
 		}
@@ -659,56 +923,25 @@
 		"/home/kritten/Documents/corpus-viewer/settings",
 		"/home/kritten/Documents/corpus-viewer/viewer-framework",
 		"/home/kritten/Documents/corpus-viewer/viewer-framework/example_app",
+		"/home/kritten/Documents/corpus-viewer/viewer-framework/example_app/migrations",
 		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer",
+		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/classes",
+		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/classes/data",
 		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/static",
 		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/static/viewer",
 		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/static/viewer/js",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/templates",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/templates/viewer",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/templatetags",
 		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/views",
 		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer-framework"
 	],
 	"file_history":
 	[
-		"/usr/share/applications/org.kde.konsole.desktop",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/templates/viewer/header_pure.html",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/classes/index/Handle_Index_Whoosh.py",
-		"/home/kritten/Documents/corpus-viewer/requirements.txt",
-		"/home/kritten/Documents/corpus-viewer/settings/settings_viewer_example_database.py",
-		"/home/kritten/Documents/corpus-viewer/README.md",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/views/shared_code.py",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/views/index.py",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/static/viewer/css/formats.css",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/static/viewer/js/tags.js",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/views/tags.py",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/views/get_page.py",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/static/viewer/js/index.js",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/dashboard/templates/dashboard/index.html",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/models.py",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/static/viewer/bower_components/viewer-template.html",
-		"/home/kritten/Documents/corpus-viewer/settings/settings_viewer_query_speller.py",
-		"/home/kritten/Documents/corpus-viewer/settings/settings_viewer_example.py",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/classes/data/Manager_Data.py",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/templates/viewer/table.html",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/static/viewer/js/helper_functions.js",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/static/viewer/js/recommendation.js",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/templates/viewer/not_loaded.html",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/dashboard/templates/dashboard/documentation.html",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/templates/viewer/add_token.html",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/templates/viewer/index.html",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/dashboard/views.py",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/templates/viewer/edit.html",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/templates/viewer/tags.html",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/templates/viewer/view_item.html",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/dashboard/static/dashboard/js/index.js",
-		"/home/kritten/Documents/corpus-viewer/settings/settings_viewer_test.py",
-		"/home/kritten/Documents/corpus-viewer/settings/Webis-Clickbait-16.py",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/static/viewer/js/index_functions.js",
+		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer-framework/urls.py",
+		"/home/kritten/Documents/corpus-viewer/viewer-framework/example_app/urls.py",
+		"/home/kritten/Documents/corpus-viewer/viewer-framework/install_django.sh",
 		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/static/viewer/bower_components/templates/settings_viewer_query_speller.html",
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django_live_system/viewer-framework/settings_viewer/settings_viewer_cbc.py",
-		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/static/viewer/bower_components/templates/Webis-Clickbait-16.html",
 		"/home/kritten/Documents/corpus-viewer/corpora/webis-cbc-16/template.html",
+		"/home/kritten/Documents/corpus-viewer/viewer-framework/viewer/static/viewer/bower_components/templates/Webis-Clickbait-16.html",
 		"/home/kritten/Documents/corpus-viewer/corpora/template_query_speller.html",
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django_polymer_alternative/corpora/webis-cbc-16/template.html",
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django_polymer_alternative/corpora/template_query_speller.html",
@@ -798,18 +1031,48 @@
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/classes/data/Manager_Corpora.py",
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/settings_viewer/settings_viewer_large_corpus.py",
 		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/classes/data/__init__.py",
-		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/classes/__init__.py"
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/classes/__init__.py",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/settings_viewer/__init__.py",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/dashboard/templatetags/tags_custom_dashboard.py",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/dashboard/templatetags/__init__,py",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/Handle_Index.py",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/Data_Manager.py",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/Item_Handle.py",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/models.py",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/static/viewer/css/formats_documentation.css",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/corpora/wikipedia_talk_labels/attack_annotations.tsv",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/corpora/wikipedia_talk_labels/attack_worker_demographics.tsv",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django_live_system/viewer-framework/viewer/views/shared_code.py",
+		"/home/yiro4618/Downloads/test.html",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/cache/settings_viewer_large_corpus.bin",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/cache/settings_viewer_test.ldjson",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/settings_viewer_test.bin",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/corpora/wikipedia_talk_labels/attack_annotated_comments.tsv",
+		"/home/yiro4618/Documents/hiwi/yamen/solr-6.6.0/bin/post",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/settings_viewer/settings_viewer.py",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/dashboard/models.py",
+		"/run/user/1001/gvfs/sftp:host=webis16,user=webis/media/storage1/corpora/corpora-notes.txt",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/corpora/corpus-arguana-tripadvisor/uima/uima/README.txt",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/corpora/corpus-yahoo-news-quality/documentation/news-quality-dataset-notes.txt",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/corpora/corpus-yahoo-news-quality/uima/uima/v08/complete/1-handball-several-montpellier-players-arrested-171754628--spt.xmi",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework-cbc/settings_viewer/settings_viewer.py",
+		"/run/user/1001/gvfs/sftp:host=webis42,user=yiro4618/home/yiro4618/logs_cronjob_twitter_crawler/2017-04-25 08:00:01.txt",
+		"/run/user/1001/gvfs/sftp:host=webis42,user=yiro4618/home/yiro4618/Documents/uni/master/wstud-clickbait-ws16/src-py/clickbait_server_real/corpus/views/twitter_crawler.py",
+		"/run/user/1001/gvfs/sftp:host=webis42,user=yiro4618/home/yiro4618/Documents/uni/master/wstud-clickbait-ws16/src-py/clickbait_server_real/corpus/views/tweet_index.py",
+		"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/corpora/corpus-arguana-tripadvisor/uima/uima/annotated/test/Barcelona_Catalonia/hotel_190616_255_16.xmi",
+		"/home/yiro4618/.cache/.fr-epElAX/uima/v08/.DS_Store",
+		"/run/user/1001/gvfs/sftp:host=webis42,user=yiro4618/home/yiro4618/Desktop/list_tweets.txt",
+		"/run/user/1001/gvfs/sftp:host=webis42,user=yiro4618/home/yiro4618/Desktop/archive-remote.sh"
 	],
 	"find":
 	{
-		"height": 25.0
+		"height": 35.0
 	},
 	"find_in_files":
 	{
-		"height": 101.0,
+		"height": 93.0,
 		"where_history":
 		[
-			"/home/kritten/Documents/corpus-viewer",
 			"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/static/viewer/js",
 			"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/templates/viewer",
 			"/home/yiro4618/Documents/hiwi/wstud-viewer-framework-django/viewer-framework/viewer/static/viewer/js",
@@ -845,18 +1108,13 @@
 		"case_sensitive": false,
 		"find_history":
 		[
-			"importlib",
-			"print",
+			"id",
+			"sort_by_columns",
 			"get_tags_filtered_items",
-			"get_filtered_data_database",
-			"        list_ids, info_filter_values = get_filtered_data_database(request)\n",
-			"add_tag",
-			"Listener_Touch",
-			"m_id_column_resized",
-			"bootstrap.css",
-			"bootstrap.js",
-			"jquery-3.1.1",
-			"navigationtest",
+			"UNION ALL SELECT",
+			"xrange",
+			"list_data",
+			"get_filtered_data",
 			"enable",
 			"input_list_items",
 			"request_delete_tag",
@@ -972,7 +1230,12 @@
 			"obj_item",
 			"icon-toggle",
 			"-item",
-			"icon-toggle"
+			"icon-toggle",
+			"div",
+			"add_tags",
+			"get_filters_if_not_empty",
+			"dict_filters",
+			"get_filters_if_not_empty"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -980,8 +1243,6 @@
 		"regex": false,
 		"replace_history":
 		[
-			"bootstrap.min.js",
-			"jquery-3.3.1",
 			"http://webis24.medien.uni-weimar.de:8008",
 			"btn-outline-secondary",
 			"\\n",
@@ -999,173 +1260,24 @@
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 35,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "viewer-framework/viewer/static/viewer/js/kritten_resize.js",
+					"file": "viewer-framework/viewer/models.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5985,
+						"buffer_size": 1160,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5178,
-								5178
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 3454.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "viewer-framework/viewer/static/viewer/js/index.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 13987,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4928,
-								4928
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1887.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "viewer-framework/viewer/templates/viewer/index.html",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 26998,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3270,
-								3270
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 714.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "settings/settings_viewer_example_database.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2430,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2021,
-								2021
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 663.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "viewer-framework/viewer/views/index.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 10279,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4303,
-								4318
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1173.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "viewer-framework/viewer-framework/middleware.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1242,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								825,
-								825
+								1160,
+								1160
 							]
 						],
 						"settings":
@@ -1182,50 +1294,50 @@
 					"type": "text"
 				},
 				{
-					"buffer": 6,
-					"file": "viewer-framework/viewer/views/get_page.py",
+					"buffer": 1,
+					"file": "viewer-framework/viewer/static/viewer/bower_components/viewer-template.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 38066,
+						"buffer_size": 863,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								23115,
-								23115
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Python/Python.sublime-syntax",
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 8460.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 36,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
-					"file": "viewer-framework/viewer/views/shared_code.py",
+					"buffer": 2,
+					"file": "settings/settings_viewer_query_speller.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 13380,
+						"buffer_size": 6534,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1836,
-								1836
+								2332,
+								2332
 							]
 						],
 						"settings":
@@ -1235,27 +1347,149 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 102.0,
+						"translation.y": 1081.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 26,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "settings/settings_viewer_example.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2531,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								756,
+								756
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 18,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "settings/Webis-Clickbait-16.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6831,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3908,
+								3908
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1552.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "viewer-framework/viewer/templates/viewer/view_item.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 645,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 35,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "viewer-framework/viewer/classes/data/Manager_Data.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 23119,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								975,
+								975
+							]
+						],
+						"settings":
+						{
+							"rulers":
+							[
+								100
+							],
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 108.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 2,
 					"type": "text"
 				},
 				{
-					"buffer": 8,
-					"file": "viewer-framework/viewer/router.py",
+					"buffer": 7,
+					"file": "settings/settings_viewer_test.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1993,
+						"buffer_size": 2150,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1343,
-								1343
+								1884,
+								1720
 							]
 						],
 						"settings":
@@ -1265,31 +1499,505 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 204.0,
+						"translation.y": 675.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 14,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
-					"file": "/home/kritten/Documents/simple-bootstrap-gallery/js/sbg_dev.js",
+					"buffer": 8,
+					"file": "viewer-framework/viewer/templates/viewer/table.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 13295,
+						"buffer_size": 4546,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								159,
-								173
-							],
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 646.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 33,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "viewer-framework/viewer/static/viewer/js/helper_functions.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 13326,
+						"regions":
+						{
+						},
+						"selection":
+						[
 							[
-								4710,
-								4724
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1140.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 32,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "viewer-framework/dashboard/views.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2882,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 27,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "viewer-framework/dashboard/static/dashboard/js/index.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6405,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1824.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 30,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "viewer-framework/viewer/templates/viewer/tags.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8478,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								510,
+								510
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 22,
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "viewer-framework/viewer/static/viewer/js/recommendation.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8092,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"auto_name": "recomm",
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2772.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 29,
+					"type": "text"
+				},
+				{
+					"buffer": 14,
+					"file": "viewer-framework/viewer/templates/viewer/index.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 27368,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2545.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 25,
+					"type": "text"
+				},
+				{
+					"buffer": 15,
+					"file": "viewer-framework/viewer/templates/viewer/add_token.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1193,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 24,
+					"type": "text"
+				},
+				{
+					"buffer": 16,
+					"file": "viewer-framework/viewer/static/viewer/js/index.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 13987,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								13085,
+								13100
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 4628.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 17,
+					"file": "viewer-framework/viewer/static/viewer/js/index_functions.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 29761,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								14412,
+								14412
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 8534.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+					"type": "text"
+				},
+				{
+					"buffer": 18,
+					"file": "viewer-framework/viewer/views/get_page.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 38271,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4512,
+								4512
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1404.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 19,
+					"file": "viewer-framework/viewer/classes/data/Handle_Item.py",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 5255,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								868,
+								868
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 20,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 334,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								334,
+								334
+							]
+						],
+						"settings":
+						{
+							"auto_name": "<div class=\"col-12\">",
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 21,
+					"file": "settings/settings_viewer_large_corpus.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2997,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2357,
+								2357
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 756.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 22,
+					"file": "viewer-framework/example_app/models.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 311,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								238,
+								238
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 17,
+					"type": "text"
+				},
+				{
+					"buffer": 23,
+					"file": "viewer-framework/viewer/views/tags.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6651,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": -0.0,
+						"translation.y": 570.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 28,
+					"type": "text"
+				},
+				{
+					"buffer": 24,
+					"file": "viewer-framework/viewer/static/viewer/js/tags.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6652,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1531,
+								1531
 							]
 						],
 						"settings":
@@ -1302,7 +2010,388 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+					"stack_index": 23,
+					"type": "text"
+				},
+				{
+					"buffer": 25,
+					"file": "viewer-framework/viewer/static/viewer/css/formats.css",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3060,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CSS/CSS.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1824.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 31,
+					"type": "text"
+				},
+				{
+					"buffer": 26,
+					"file": "viewer-framework/dashboard/templates/dashboard/documentation.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 25339,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4406,
+								4406
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 594.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 19,
+					"type": "text"
+				},
+				{
+					"buffer": 27,
+					"file": "viewer-framework/viewer/views/index.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10279,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								9347,
+								9347
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3456.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 13,
+					"type": "text"
+				},
+				{
+					"buffer": 28,
+					"file": "viewer-framework/example_app/views.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 635,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								134,
+								134
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 15,
+					"type": "text"
+				},
+				{
+					"buffer": 29,
+					"file": "viewer-framework/viewer-framework/middleware.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1242,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								200,
+								200
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 16,
+					"type": "text"
+				},
+				{
+					"buffer": 30,
+					"file": "settings/database.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1121,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								913,
+								913
+							]
+						],
+						"settings":
+						{
+							"auto_name": "database.py",
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 54.0,
+						"zoom_level": 1.0
+					},
 					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 31,
+					"file": "viewer-framework/viewer/views/shared_code.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 13380,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								10879,
+								10879
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 4631.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 32,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 34,
+					"type": "text"
+				},
+				{
+					"buffer": 33,
+					"file": "README.md",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1888,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								866,
+								866
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Markdown/Markdown.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 21,
+					"type": "text"
+				},
+				{
+					"buffer": 34,
+					"file": "setup.sh",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 270,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								244,
+								244
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ShellScript/Shell-Unix-Generic.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 35,
+					"file": "viewer-framework/viewer/classes/data/Corpus.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 361,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"auto_name": "Corpus",
+							"syntax": "Packages/Python/Python.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 36,
+					"file": "requirements.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 25,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								25,
+								25
+							]
+						],
+						"settings":
+						{
+							"auto_name": "requirements.txt",
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 20,
+					"type": "text"
+				},
+				{
+					"buffer": 37,
+					"file": "viewer-framework/viewer/classes/index/Handle_Index_Whoosh.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7785,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2099,
+								2099
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 136.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 37,
 					"type": "text"
 				}
 			]
@@ -1310,11 +2399,11 @@
 	],
 	"incremental_find":
 	{
-		"height": 25.0
+		"height": 26.0
 	},
 	"input":
 	{
-		"height": 37.0
+		"height": 38.0
 	},
 	"layout":
 	{
@@ -1347,7 +2436,7 @@
 	"project": "viewer-framework.sublime-project",
 	"replace":
 	{
-		"height": 46.0
+		"height": 48.0
 	},
 	"save_all_on_build": true,
 	"select_file":
