@@ -149,6 +149,19 @@ $(document).ready(function()
     let recommendation_tag_new = new Recommendation(document, '#input_name_new_tag', '#wrapper_tag_recommendations_new', trigger_tag_new_change);
     let recommendation_tag_assign = new Recommendation(document, '#input_add_tag', '#wrapper_tag_recommendations_add_tag', trigger_tag_add_change);
 
+    kritten_resize_manager.set_callback_mouseup(function(row_is_hidden, width_current) {
+        if(row_is_hidden)
+        {
+            set_session_entry('width_filters', false);
+        } else {
+            set_session_entry('width_filters', width_current);
+        }
+    });
+
+    kritten_resize_manager.set_callback_click(function(width_last) {
+        set_session_entry('width_filters', width_last);
+    });
+
     $(document).on('change', '#input_page', function() { handle_page_input($(this)) });
     $(document).on('click', '#info_paginator button', function(e) { e.preventDefault(); handle_pager_click($(this)) });
 
