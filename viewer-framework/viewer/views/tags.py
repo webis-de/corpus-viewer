@@ -12,7 +12,8 @@ def tags_export(request, id_corpus):
     json_result = ''
     queryset_tags = m_Tag.objects.filter(key_corpus=id_corpus)
     if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
-        queryset_tags = queryset_tags.prefetch_related('corpus_viewer_items')
+        related_name = glob_manager_data.get_setting_for_corpus('database_related_name', id_corpus)
+        queryset_tags = queryset_tags.prefetch_related(related_name)
     else:
         queryset_tags = queryset_tags.prefetch_related('m2m_entity')
     for tag in queryset_tags:
@@ -21,7 +22,9 @@ def tags_export(request, id_corpus):
         obj_tag['color'] = tag.color
         list_ids = []
         if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
-            for entity in tag.corpus_viewer_items.all():
+            related_name = glob_manager_data.get_setting_for_corpus('database_related_name', id_corpus)
+
+            for entity in getattr(tag, related_name).all():
                 list_ids.append(entity.id)
         else:
             for entity in tag.m2m_entity.all():
@@ -106,7 +109,9 @@ def import_tags(request, id_corpus):
         obj_tag = m_Tag.objects.get_or_create(name = obj_json['name'], key_corpus=id_corpus, color = obj_json['color'])[0]
         
         if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
-            ThroughModel = m_Tag.corpus_viewer_items.through
+            related_name = glob_manager_data.get_setting_for_corpus('database_related_name', id_corpus)
+
+            ThroughModel = getattr(m_Tag, related_name).through
             list_tmp = []
 
             for id_item in obj_json['ids']:

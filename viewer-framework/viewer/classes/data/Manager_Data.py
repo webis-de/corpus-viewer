@@ -279,6 +279,8 @@ class Manager_Data:
             return []
         elif key == 'database_select_related':
             return []
+        elif key == 'database_related_name':
+            return 'corpus_viewer_items'
 
         raise ValueError('setting-key \''+key+'\' not found')
 

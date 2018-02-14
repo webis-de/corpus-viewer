@@ -139,7 +139,8 @@ def toggle_item_to_tag(obj, id_corpus):
         module_custom = importlib.import_module(glob_manager_data.get_setting_for_corpus('app_label', id_corpus)+'.models')
         model_custom = getattr(module_custom, glob_manager_data.get_setting_for_corpus('model_name', id_corpus))
 
-        db_obj_tag.corpus_viewer_items.add(model_custom.objects.get(id=obj['viewer__id_item_internal']))
+        related_name = glob_manager_data.get_setting_for_corpus('database_related_name', id_corpus)
+        getattr(db_obj_tag, related_name).add(model_custom.objects.get(id=obj['viewer__id_item_internal']))
     else:
         print(str(obj['id_item']))
         try:
@@ -171,7 +172,9 @@ def delete_tag_from_item(obj, id_corpus):
         module_custom = importlib.import_module(glob_manager_data.get_setting_for_corpus('app_label', id_corpus)+'.models')
         model_custom = getattr(module_custom, glob_manager_data.get_setting_for_corpus('model_name', id_corpus))
 
-        db_obj_tag.corpus_viewer_items.remove(model_custom.objects.get(id=obj['id_item']))
+        related_name = glob_manager_data.get_setting_for_corpus('database_related_name', id_corpus)
+        getattr(db_obj_tag, related_name).remove(model_custom.objects.get(id=obj['id_item']))
+        
         response['status'] = 'success'
     else:
         db_obj_tag = m_Tag.objects.get(id=obj['id_tag'])
