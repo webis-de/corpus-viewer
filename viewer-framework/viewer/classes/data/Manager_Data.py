@@ -75,6 +75,11 @@ class Manager_Data:
             self.path_settings = settings.PATH_FILES_SETTINGS
         except AttributeError:
             pass
+
+        try:
+            self.path_cache = settings.PATH_FILES_CACHE
+        except AttributeError:
+            pass
             
         self.create_paths_if_necessary()
         # for every settings-file in the directory load the settings into the empty dict_corpora
