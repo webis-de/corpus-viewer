@@ -748,7 +748,7 @@ def get_tags_filtered_items(list_ids, request):
                 related_name = glob_manager_data.get_setting_for_corpus('database_related_name', id_corpus)
 
                 list_tags = m_Tag.objects.filter(
-                    *{
+                    **{
                         related_name + '__in': list_ids,
                         'key_corpus': id_corpus
                     }
