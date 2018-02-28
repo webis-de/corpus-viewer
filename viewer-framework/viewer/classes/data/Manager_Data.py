@@ -12,6 +12,12 @@ import pprint
 from django.conf import settings
 import errno, stat
 
+import getpass
+username = getpass.getuser()
+print(username)
+print(os.getegid())
+print(os.path.abspath(os.path.join('..', 'settings')))
+
 modules = glob.glob('viewer/classes/index/Handle_Index_*.py')
 __all__ = [os.path.basename(f)[:-3] for f in modules]
 dict_handle_indices = {}
