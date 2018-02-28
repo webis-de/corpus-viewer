@@ -30,7 +30,7 @@ class Manager_Data:
         self.debug = True
         self.dict_exceptions = {}
         self.path_settings = os.path.join(settings.BASE_DIR , '..', 'settings')
-        self.path_backup = 'backup_settings'
+        self.path_backup = os.path.join(settings.BASE_DIR, 'backup_settings')
         self.path_cache = os.path.join(settings.BASE_DIR, '..', 'cache')
         self.struct = struct.Struct('<Q L') # position, length
         self.length_struct = self.struct.size
