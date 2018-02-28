@@ -6,6 +6,7 @@ from whoosh.scoring import WeightingModel, BaseScorer
 from whoosh.analysis import StemmingAnalyzer, RegexTokenizer, LowercaseFilter, NgramFilter
 # from whoosh.qparser import QueryParser
 from whoosh.fields import Schema, TEXT, KEYWORD, NUMERIC, BOOLEAN, ID
+from django.conf import settings
 import os
 import time
 import shutil
@@ -13,7 +14,7 @@ import shutil
 class Handle_Index_Whoosh(Handle_Index):
     def __init__(self, id_corpus, settings_corpus):
         Handle_Index.__init__(self, id_corpus, settings_corpus)
-        self.path_index = os.path.join('..', 'index_whoosh', id_corpus)
+        self.path_index = os.path.join(settings.BASE_DIR, '..', 'index_whoosh', id_corpus)
         self.field_internal_id = 'viewer__id'
 
         self.suffix_case_sensitive = '_cs'
