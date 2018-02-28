@@ -14,6 +14,7 @@ import errno, stat
 
 import getpass
 username = getpass.getuser()
+print(os.getcwd())
 print(username)
 print(os.getegid())
 print(os.path.abspath(os.path.join('..', 'settings')))
@@ -35,7 +36,7 @@ class Manager_Data:
     def __init__(self):
         self.debug = True
         self.dict_exceptions = {}
-        self.path_settings = os.path.join('..', 'settings')
+        self.path_settings = os.path.join(os.getcwd(), '..', 'settings')
         self.path_backup = 'backup_settings'
         self.path_cache = os.path.join('..', 'cache')
         self.struct = struct.Struct('<Q L') # position, length
