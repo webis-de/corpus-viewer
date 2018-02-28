@@ -12,7 +12,7 @@ import pprint
 from django.conf import settings
 import errno, stat
 
-modules = glob.glob('viewer/classes/index/Handle_Index_*.py')
+modules = glob.glob(os.path.join(settings.BASE_DIR, 'viewer/classes/index/Handle_Index_*.py'))
 __all__ = [os.path.basename(f)[:-3] for f in modules]
 dict_handle_indices = {}
 for corpus in __all__:
