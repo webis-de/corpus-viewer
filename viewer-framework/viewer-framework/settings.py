@@ -23,6 +23,8 @@ PATH_FILES_SETTINGS = os.path.join(BASE_DIR, '..', 'settings')
 
 PATH_FILES_CACHE = os.path.join(BASE_DIR, '..', 'cache')
 
+PATH_FILES_INDEX = os.path.join(BASE_DIR, '..', 'index')
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 

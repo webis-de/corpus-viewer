@@ -14,7 +14,7 @@ import shutil
 class Handle_Index_Whoosh(Handle_Index):
     def __init__(self, id_corpus, settings_corpus):
         Handle_Index.__init__(self, id_corpus, settings_corpus)
-        self.path_index = os.path.join(settings.BASE_DIR, '..', 'index_whoosh', id_corpus)
+        self.path_index = os.path.join(settings.PATH_FILES_INDEX, id_corpus)
         self.field_internal_id = 'viewer__id'
 
         self.suffix_case_sensitive = '_cs'
