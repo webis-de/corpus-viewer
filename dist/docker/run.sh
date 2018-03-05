@@ -48,11 +48,16 @@ if [ \( -z "$file_settings" \) -o \( -z "$data_output" \) -o \( -z "$port" \) ];
   exit 1
 fi
 
+file_settings=$(readlink -f -- $file_settings)
+data_output=$(readlink -f -- $data_output)
+data_corpus=$(readlink -f -- $data_corpus)
+
 mkdir -p $data_output
 
 is_in_docker_group=$(groups | sed 's/ /\n/g' | grep '^docker$' | wc -l)
 
-command="docker run -d -t -i --mount type=bind,src=$data_output,dst=/data --mount type=bind,src=$data_corpus,dst=/data_corpus,readonly --mount type=bind,src=$file_settings,dst=/settings.py,readonly -p $port:80 corpus-viewer"
+command="docker run -d -t -i --volume $data_output:/data --volume $data_corpus:/data_corpus:ro --volume $file_settings:/settings.py:ro -p $port:80 corpus-viewer"
+# command="docker run -d -t -i --mount type=bind,src=$data_output,dst=/data --mount type=bind,src=$data_corpus,dst=/data_corpus,readonly --mount type=bind,src=$file_settings,dst=/settings.py,readonly -p $port:80 corpus-viewer"
 if [ $is_in_docker_group -eq 0 ];then
   sudo $command
 else
