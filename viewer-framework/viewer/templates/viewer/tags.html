@@ -26,7 +26,8 @@
                     </td>
                     <td class="column_tag_count_items">
                         {% if data_type == 'database' %}
-                            {{ tag.corpus_viewer_items.all.count }}
+                            {% get_count_items tag as count_items %}
+                            {{ count_items }}
                         {% else %}
                             {{ tag.m2m_entity.all.count }}
                         {% endif %}
@@ -81,10 +82,22 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body">
-                    <label>
+                    <!-- <label>
                         Path
                         <input type="text" name="path" value="exported_tags/tags_exported_1488036909.ldjson" class="form-control">
-                    </label>
+                    </label> -->
+
+                    <div class="form-row form-group">
+                        <div class="col input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">File</span>
+                            </div>
+                            <label class="custom-file">
+                                <input type="file" name="file" class="custom-file-input">
+                                <span class="custom-file-label"></span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
@@ -104,12 +117,12 @@
                     <h4 class="modal-title">Export tags</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
-                <div class="modal-body">
+                <!-- <div class="modal-body">
                     <label>
                         Path
                         <input type="text" name="path" value="./exported_tags" class="form-control">
                     </label>
-                </div>
+                </div> -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-primary" onclick="export_tags($('#modal_export_tags'))">Export tags</button>
@@ -119,7 +132,7 @@
     </div>
 </div>
 
-<!-- MODAL MERGE TAGS -->
+<!-- MODAL DELETE TAGS -->
 <div class="modal fade" data-id_tag="" id="modal_delete_tag" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <form>

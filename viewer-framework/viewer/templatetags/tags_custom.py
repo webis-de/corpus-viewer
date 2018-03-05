@@ -82,6 +82,12 @@ def in_columns_checked(key, request):
     current_corpus = request.session['viewer__viewer__current_corpus']
     return key in request.session[current_corpus]['viewer__viewer__columns']
 
+@register.simple_tag(takes_context=True)
+def get_count_items(context, tag):
+    current_corpus = context.request.session['viewer__viewer__current_corpus']
+    related_name = glob_manager_data.get_setting_for_corpus('database_related_name', current_corpus)
+    return getattr(tag, related_name).count()
+
 @register.filter
 def get(item, field):
     try:

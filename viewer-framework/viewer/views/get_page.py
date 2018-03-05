@@ -96,6 +96,12 @@ def get_page(request, id_corpus):
     start = time.time()
     # paginator = Paginator(range(0, get_setting('page_size', request=request))
     paginator = Paginator(list_ids, glob_manager_data.get_setting_for_corpus('page_size', id_corpus))
+
+    print(glob_manager_data.dict_corpora[id_corpus]['size'])
+
+    # if get_filters_if_not_empty(request, id_corpus) == None:
+    #     paginator.count = glob_manager_data.dict_corpora[id_corpus]['size']
+
     # paginator = Paginator(data, get_setting('page_size', request=request))
     try:
         page_current = paginator.page(request.session[id_corpus]['viewer__viewer__page'])
@@ -671,15 +677,16 @@ def add_tag(obj, list_ids, request):
     if glob_manager_data.get_setting_for_corpus('data_type', id_corpus) == 'database':
         print(obj)
         if obj['ids'] == 'all':
-            db_obj_tag.corpus_viewer_items.add(*list_ids)
-            pass
+            related_name = glob_manager_data.get_setting_for_corpus('database_related_name', id_corpus)
+            getattr(db_obj_tag, related_name).add(*list_ids)
         else:
             module_custom = importlib.import_module(glob_manager_data.get_setting_for_corpus('app_label', id_corpus)+'.models')
             model_custom = getattr(module_custom, glob_manager_data.get_setting_for_corpus('model_name', id_corpus))
 
             queryset = model_custom.objects.filter(id__in=[x['viewer__id_item_internal'] for x in obj['ids']])
 
-            db_obj_tag.corpus_viewer_items.add(*queryset)
+            related_name = glob_manager_data.get_setting_for_corpus('database_related_name', id_corpus)
+            getattr(db_obj_tag, related_name).add(*queryset)
 
         return {'created_tag': created_tag, 'tag': {'id': db_obj_tag.id, 'name': db_obj_tag.name, 'color': db_obj_tag.color} }
     else:
@@ -738,7 +745,14 @@ def get_tags_filtered_items(list_ids, request):
 
         try:
             if connection.vendor == 'postgresql':
-                list_tags = m_Tag.objects.filter(corpus_viewer_items__in=list_ids, key_corpus=id_corpus).distinct()
+                related_name = glob_manager_data.get_setting_for_corpus('database_related_name', id_corpus)
+
+                list_tags = m_Tag.objects.filter(
+                    *{
+                        related_name + '__in': list_ids,
+                        'key_corpus': id_corpus
+                    }
+                ).distinct()
             else:
                 list_tags = m_Tag.objects.filter(key_corpus=id_corpus)
 
