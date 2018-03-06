@@ -21,7 +21,13 @@ path_file_settings = os.path.join('/', 'settings.py')
 # if not os.path.exists(path_viewer):
 #     os.mkdir(path_viewer)
 
+def find_owner(filename):
+    return os.stat(filename).st_uid
+
 def main():
+    id_owner = find_owner('/data_corpus')
+    subprocess.run('usermod -u {} www-data'.format(id_owner), shell=True)
+
     print(os.getenv('folder_setting_files'))
 
     id_corpus = get_id()
@@ -63,6 +69,8 @@ def configure_apache(id_corpus):
                 list_lines.append('ServerName corpus-viewer\n')
 
                 list_lines.append('Alias /static/ {}/viewer-framework/static/\n'.format(path_project))
+
+                list_lines.append('Alias /favicon.ico {}/viewer-framework/static/favicon.ico\n'.format(path_project))
 
                 # list_lines.append('<Directory path_project/viewer-framework/static>\n')
                 # list_lines.append('Require all granted\n')
