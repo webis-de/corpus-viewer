@@ -328,7 +328,7 @@ function handle_toggle_container_text(table)
     {
         row.hide();
     } else {
-        row.find('td div').html(table.find('td').html());
+        row.find('td div').html(table.find('td').text());
         row.show();
     }
 }

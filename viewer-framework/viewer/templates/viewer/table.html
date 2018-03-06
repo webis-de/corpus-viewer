@@ -39,7 +39,7 @@
                 {% if field|get_type_field:settings == 'text' %}
                     <table class="fixed_table" data-id_item="{{ item|get:settings.id }}">
                         <tr>
-                            <td style="border-top: none">{{ item|get:field|safe }}</td>
+                            <td style="border-top: none">{{ item|get:field }}</td>
                         </tr>
                     </table>
                 {% else %}
