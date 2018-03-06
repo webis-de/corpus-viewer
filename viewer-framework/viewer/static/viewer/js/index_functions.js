@@ -328,7 +328,7 @@ function handle_toggle_container_text(table)
     {
         row.hide();
     } else {
-        row.find('td div').html('<pre class="m-0" style="font-family: sans-serif; font-size: 1rem">'+table.find('td').text()+'</pre>');
+        row.find('td div').html('<pre class="m-0" style="font-family: sans-serif; font-size: 1rem; white-space: pre-wrap;">'+table.find('td').text()+'</pre>');
         row.show();
     }
 }
