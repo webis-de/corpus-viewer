@@ -60,17 +60,17 @@ def get_page(request, id_corpus):
         elif obj['task'] == 'export_data':
             response = export_data(obj, data, request)
         elif obj['task'] == 'reload_settings':
-            if has_access_to_editing:
-                if glob_manager_data.reload_settings(id_corpus) == None:
-                    response['success'] = False
-                else:
-                    response['success'] = True
+            # if has_access_to_editing:
+            if glob_manager_data.reload_settings(id_corpus) == None:
+                response['success'] = False
+            else:
+                response['success'] = True
         elif obj['task'] == 'reindex_corpus':
-            if has_access_to_editing:
-                try:
-                    glob_manager_data.reindex_corpus(obj['id_corpus'], obj['class_handle_index'])
-                except:
-                    glob_manager_data.reindex_corpus(id_corpus, obj['class_handle_index'])
+            # if has_access_to_editing:
+            try:
+                glob_manager_data.reindex_corpus(obj['id_corpus'], obj['class_handle_index'])
+            except:
+                glob_manager_data.reindex_corpus(id_corpus, obj['class_handle_index'])
         elif obj['task'] == 'get_number_of_indexed_items':
             if id_corpus in glob_manager_data.dict_exceptions:
                 response['exception_occured'] = True
