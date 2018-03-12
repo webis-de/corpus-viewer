@@ -42,4 +42,5 @@ class MultiPortMiddleware(object):
     def __call__(self, request):
         response = self.get_response(request)
         settings.SESSION_COOKIE_NAME = 'sessionid_{}'.format(request.META['SERVER_PORT'])
+        settings.CSRF_COOKIE_NAME = 'csrftoken_{}'.format(request.META['SERVER_PORT'])
         return response
