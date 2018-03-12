@@ -60,15 +60,17 @@ def get_page(request, id_corpus):
         elif obj['task'] == 'export_data':
             response = export_data(obj, data, request)
         elif obj['task'] == 'reload_settings':
-            if glob_manager_data.reload_settings(id_corpus) == None:
-                response['success'] = False
-            else:
-                response['success'] = True
+            if has_access_to_editing:
+                if glob_manager_data.reload_settings(id_corpus) == None:
+                    response['success'] = False
+                else:
+                    response['success'] = True
         elif obj['task'] == 'reindex_corpus':
-            try:
-                glob_manager_data.reindex_corpus(obj['id_corpus'], obj['class_handle_index'])
-            except:
-                glob_manager_data.reindex_corpus(id_corpus, obj['class_handle_index'])
+            if has_access_to_editing:
+                try:
+                    glob_manager_data.reindex_corpus(obj['id_corpus'], obj['class_handle_index'])
+                except:
+                    glob_manager_data.reindex_corpus(id_corpus, obj['class_handle_index'])
         elif obj['task'] == 'get_number_of_indexed_items':
             if id_corpus in glob_manager_data.dict_exceptions:
                 response['exception_occured'] = True
@@ -78,7 +80,8 @@ def get_page(request, id_corpus):
             response['number_of_indexed_items'] = glob_manager_data.get_number_of_indexed_items(obj['id_corpus'])
             response['state_loaded'] = glob_manager_data.get_state_loaded(obj['id_corpus'])
         elif obj['task'] == 'delete_corpus':
-            glob_manager_data.delete_corpus(id_corpus, obj['keep_settings_file'])
+            if has_access_to_editing:
+                glob_manager_data.delete_corpus(id_corpus, obj['keep_settings_file'])
         elif obj['task'] == 'create_variable_glob_selected_items':
             response['glob_selected_items'] = create_variable_glob_selected_items(id_corpus, list_ids)
 
