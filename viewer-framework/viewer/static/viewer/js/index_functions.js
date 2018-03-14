@@ -322,7 +322,7 @@ function handle_click_on_button_deselect_all_items(button)
 
 function handle_toggle_container_text(table)
 {
-    let rawText = table.find('td').text();
+    let rawText = table.find('td').data('content');
     let displayText = null;
     try {
         displayText = JSON.stringify(JSON.parse(rawText), null, 2);
@@ -336,7 +336,9 @@ function handle_toggle_container_text(table)
     {
         row.hide();
     } else {
-        row.find('td div').html('<pre class="m-0" style="font-family: sans-serif; font-size: 1rem; white-space: pre-wrap;">'+displayText+'</pre>');
+        row.find('td div').html(
+            '<pre class="m-0" style="font-family: sans-serif; font-size: 1rem; white-space: pre-wrap;">'+displayText+'</pre>'
+        );
         row.show();
     }
 }
