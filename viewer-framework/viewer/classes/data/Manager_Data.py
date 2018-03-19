@@ -286,6 +286,8 @@ class Manager_Data:
             return []
         elif key == 'database_related_name':
             return 'corpus_viewer_items'
+        elif key == 'secret_token_help':
+            return None
 
         raise ValueError('setting-key \''+key+'\' not found')
 

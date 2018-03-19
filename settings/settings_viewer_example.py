@@ -77,5 +77,6 @@ DICT_SETTINGS_VIEWER = {
     ],
     'secret_token': 'test',
     'secret_token_editing': '',
-    'template': '../corpora/index.html'
+    'template': '../corpora/index.html',
+    'secret_token_help': None,
 }

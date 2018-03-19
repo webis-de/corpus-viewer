@@ -10,6 +10,13 @@
 </div>
 <div class="row">
     <div class="col">
+    {% if secret_token_help %}
+        {{ secret_token_help|safe }}
+    {% endif %}
+    </div>
+</div>
+<div class="row">
+    <div class="col">
         <form method="post">
             {% csrf_token %}
             <div class="form-group">
