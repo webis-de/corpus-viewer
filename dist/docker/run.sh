@@ -36,7 +36,7 @@ for config_file; do
     string_name_container="--name $name_container"
   fi
 
-  command="docker run -t -d -i $string_name_container $string_mount_data_output $string_mount_data_corpus $string_mount_file_settings $string_port corpus-viewer"
+  command="docker run -t -d -i --restart unless-stopped $string_name_container $string_mount_data_output $string_mount_data_corpus $string_mount_file_settings $string_port corpus-viewer"
 
   if [ $is_in_docker_group -eq 0 ];then
     sudo $command
