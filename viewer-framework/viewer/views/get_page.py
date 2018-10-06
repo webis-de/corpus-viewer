@@ -141,8 +141,9 @@ def get_page(request, id_corpus):
     if page_current.has_next():
         next_page_number = page_current.next_page_number()
 
-    if glob_manager_data.get_setting_for_corpus('custom_view', id_corpus) == True:
-        context['html_custom'] = '<b>hi</b>{{data}}'
+    name_custom_view = glob_manager_data.get_setting_for_corpus('custom_view', id_corpus)
+    if name_custom_view != None:
+        context['name_custom_view'] = name_custom_view
         template = get_template('viewer/view_custom.html')
     else:
         template = get_template('viewer/table.html')

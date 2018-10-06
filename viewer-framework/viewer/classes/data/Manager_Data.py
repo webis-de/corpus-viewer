@@ -289,7 +289,7 @@ class Manager_Data:
         elif key == 'secret_token_help':
             return None
         elif key == 'custom_view':
-            return False
+            return None
 
         raise ValueError('setting-key \''+key+'\' not found')
 
