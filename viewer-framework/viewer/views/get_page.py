@@ -140,7 +140,13 @@ def get_page(request, id_corpus):
         previous_page_number = page_current.previous_page_number()
     if page_current.has_next():
         next_page_number = page_current.next_page_number()
-    template = get_template('viewer/table.html')
+
+    if glob_manager_data.get_setting_for_corpus('custom_view', id_corpus) == True:
+        context['html_custom'] = '<b>hi</b>{{data}}'
+        template = get_template('viewer/view_custom.html')
+    else:
+        template = get_template('viewer/table.html')
+
 
     print('TIME: '+str(round(float(time.perf_counter() - start_total) * 1000, 2))+'ms')
 

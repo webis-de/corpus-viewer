@@ -288,6 +288,8 @@ class Manager_Data:
             return 'corpus_viewer_items'
         elif key == 'secret_token_help':
             return None
+        elif key == 'custom_view':
+            return False
 
         raise ValueError('setting-key \''+key+'\' not found')
 
