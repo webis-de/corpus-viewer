@@ -1,3 +1,20 @@
-<ol>
-    <li>{{ item }}</li>
-</ol>
+{% load tags_custom %}
+
+{% if not field == "viewer__item_selection" and not field == "viewer__tags" %}
+<td class="column_{{ field }} {% if field|get_type_field:settings == 'text' %}viewer__column_type_text{% endif %}" style="{% if not field|in_columns_checked:request %}display: none;{% endif %}">
+{% if field|get_type_field:settings == 'text' %}
+    <table class="fixed_table" data-id_item="{{ item|get:settings.id }}">
+        <tr>
+            <td style="border-top: none" data-content="{{ item|get:field|escape }}">{{ item|get:field|striptags }}</td>
+        </tr>
+    </table>
+{% else %}
+    {% if field == 'image_url' %}
+        <img src="{{ item|get:field }}">
+    {% else %}
+        <span class="text-nowrap">{{ item|get:field }}</span>
+    {% endif %}
+
+{% endif %}
+</td>
+{% endif %}

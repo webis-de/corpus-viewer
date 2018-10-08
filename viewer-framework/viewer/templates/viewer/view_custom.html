@@ -1,3 +1,65 @@
-{% for item in data %}
-    {% include 'viewer/custom_views/'|add:name_custom_view with item=item only %}
-{% endfor %}
+{% load tags_custom %}
+{% get_has_template_view_item as has_template_view_item %}
+
+<table class="table table-sm table-hover table-striped">
+    <thead>
+        <tr>
+            <th class="column_viewer__item_selection" {% if not "viewer__item_selection"|in_columns_checked:request %}style="display: none"{% endif %}><input id="input_select_all_items" type="checkbox"></th>
+            {% for field in settings.displayed_fields %}
+                {% if not field == "viewer__item_selection" and not field == "viewer__tags" %}
+                {% get_state_sorted field as state_sorted %}
+
+                <th class="column_{{ field }}" data-sortable="sortable" data-state_sorted="{{ state_sorted }}" {% if not field|in_columns_checked:request %}style="display: none"{% endif %}>
+                    <span>
+                        {{ field|get_display_name:settings }} 
+                        {% if state_sorted == 'asc' %}
+                            <i class="fa fa-caret-up indicator_sorting" aria-hidden="true"></i>
+                        {% elif state_sorted == 'desc' %}
+                            <i class="fa fa-caret-down indicator_sorting" aria-hidden="true"></i>
+                        {% endif %}
+                    </span>
+                </th>
+                {% endif %}
+            {% endfor %}
+            <th class="column_viewer__tags" {% if not "viewer__tags"|in_columns_checked:request %}style="display: none"{% endif %}>Tags</th>
+            {% if has_template_view_item %}
+            <th class="column_viewer__view_item" {% if not "viewer__view_item"|in_columns_checked:request %}style="display: none"{% endif %}>Detail</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+    {% for item in data %}
+        <tr class="row_viewer__item" data-id_item="{{ item|get:settings.id }}" data-viewer__id_item_internal="{{ item|get:'viewer__id_item_internal' }}">
+            <td class="column_viewer__item_selection" {% if not "viewer__item_selection"|in_columns_checked:request %}style="display: none"{% endif %}>
+                <input data-id_item="{{item|get:settings.id}}" data-viewer__id_item_internal="{{ item|get:'viewer__id_item_internal' }}" class="input_select_item" type="checkbox">
+            </td>
+            {% for field in settings.displayed_fields %}
+                {% include 'viewer/custom_views/'|add:name_custom_view with item=item field=field request=request settings=setting only %}
+            {% endfor %}
+
+            <td class="column_viewer__tags" {% if not "viewer__tags"|in_columns_checked:request %}style="display: none"{% endif %}>
+                <div class="wrapper_tags {{ item.viewer_tags|display_as_tag_classes }}"></div>
+                {% if has_access_to_editing %}
+                    <a class="link_add_tag" data-id_item="{{item|get:settings.id}}" data-viewer__id_item_internal="{{ item|get:'viewer__id_item_internal' }}" href="#"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                {% endif %} 
+            </td>
+               
+            {% if has_template_view_item %}
+            <td class="column_viewer__view_item" {% if not "viewer__view_item"|in_columns_checked:request %}style="display: none"{% endif %}>
+                <a href="{% url 'viewer:view_item' id_corpus item|get:'viewer__id_item_internal'  %}">
+                    <i class="fa fa-eye" aria-hidden="true"></i>
+                </a>
+            </td>
+            {% endif %}
+        </tr>
+        <tr style="display: none;"></tr>
+        <tr style="display: none;" class="tr_container_text" data-id_item="{{ item|get:settings.id }}">
+            <td class="p-3" colspan="{{ settings.displayed_fields|length|add:2 }}">
+                <div class="p-1"></div>
+            </td>
+        </tr>
+        <tr style="display: none;"></tr>
+        <tr style="display: none;"></tr>
+    {% endfor %}
+    </tbody>
+</table>
