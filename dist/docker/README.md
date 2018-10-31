@@ -19,4 +19,4 @@ data_corpus="<path/to/corpusdata>" #if relative, relative to the run.sh!
  
 3. visit `localhost:4000/netspeak` -->
 
-4. Stop and remove a container by running `docker stop <container> && docker rm <container>` or stop and remove all containers by running `sudo docker stop $(sudo docker ps -a -q) && sudo docker rm $(sudo docker ps -a -q)`
+4. Stop and remove a container by running `docker stop <container> && docker rm <container>`
