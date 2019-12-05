@@ -7,7 +7,7 @@ ADD . /app
 RUN apt-get update && apt-get install -y --no-install-recommends python3.5 git python3-pip python3-dev postgresql postgresql-contrib build-essential nano apache2 libapache2-mod-wsgi-py3 python3-setuptools python-psycopg2 libpq-dev
 RUN a2enmod wsgi
 RUN pip3 install --upgrade pip
-RUN pip3 install psycopg2 django==2.0 whoosh==2.7.4 pytz
+RUN pip3 install psycopg2 django==2.0.12 whoosh==2.7.4 pytz
 
 WORKDIR /var/www/python
 RUN git clone https://github.com/webis-de/corpus-viewer.git
