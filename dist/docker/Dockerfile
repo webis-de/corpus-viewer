@@ -4,7 +4,7 @@ WORKDIR /app
 
 ADD . /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends python3.5 git python3-pip postgresql postgresql-contrib nano apache2 libapache2-mod-wsgi-py3
+RUN apt-get update && apt-get install -y --no-install-recommends python3.5 git python3-pip python3-dev postgresql postgresql-contrib build-essential nano apache2 libapache2-mod-wsgi-py3 python3-setuptools python-psycopg2 libpq-dev
 RUN a2enmod wsgi
 RUN pip3 install --upgrade pip
 RUN pip3 install psycopg2 django==2.0 whoosh==2.7.4 pytz
