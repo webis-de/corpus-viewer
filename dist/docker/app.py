@@ -11,15 +11,8 @@ folder_index = 'index'
 path_project = '/var/www/python/corpus-viewer'
 
 path_data = '/data'
-# path_database = os.path.join(path_data, folder_database)
-# path_viewer = os.path.join(path_data, folder_viewer)
 
 path_file_settings = os.path.join('/', 'settings.py')
-
-# if not os.path.exists(path_database):
-#     os.mkdir(path_database)
-# if not os.path.exists(path_viewer):
-#     os.mkdir(path_viewer)
 
 def find_owner(filename):
     return os.stat(filename).st_uid
@@ -39,7 +32,6 @@ def main():
 
     config_django_settings(id_corpus, path_data_corpus)
     config_django_urls(id_corpus)
-    # config_django_templates()
 
     change_directory_database(id_corpus, path_data_corpus)
 
@@ -49,15 +41,22 @@ def main():
 
     subprocess.run(["python3", "manage.py", "collectstatic"], cwd=path_project+'/viewer-framework')
 
-    # subprocess.run('chown -R  755 {}'.format(path_project), shell=True)
     subprocess.run('chown -R  www-data:www-data {}'.format(path_project), shell=True)
     subprocess.run('chown -R  www-data:www-data {}'.format(os.path.join(path_data_corpus, folder_viewer)), shell=True)
 
     subprocess.run('service apache2 restart', shell=True)
 
+    endless_loop()
 
-    subprocess.run(["python3"])
-    # subprocess.run(["python3", "manage.py", "runserver", "0.0.0.0:8000"], cwd=path_project+'/viewer-framework')
+
+def endless_loop():
+    # stupid hack at the moment: keep the process alive for k8s/docker
+    import time
+    while True:
+        try:
+            time.sleep(60000)
+        except:
+            pass
 
 def configure_apache(id_corpus):
     list_lines = []
@@ -71,10 +70,6 @@ def configure_apache(id_corpus):
                 list_lines.append('Alias /static/ {}/viewer-framework/static/\n'.format(path_project))
 
                 list_lines.append('Alias /favicon.ico {}/viewer-framework/static/favicon.ico\n'.format(path_project))
-
-                # list_lines.append('<Directory path_project/viewer-framework/static>\n')
-                # list_lines.append('Require all granted\n')
-                # list_lines.append('</Directory>\n')
 
                 list_lines.append('<Directory {}/>\n'.format(path_project))
                 list_lines.append('Require all granted\n')
@@ -91,7 +86,6 @@ def configure_apache(id_corpus):
                 list_lines.append('</Directory>\n')
 
                 list_lines.append('WSGIDaemonProcess viewer-framework python-home=/var/www/python/corpus-viewer/viewer-framework/ python-path={}/viewer-framework/\n'.format(path_project))
-                # list_lines.append('WSGIDaemonProcess viewer-framework python-home=/home/sammy/myproject/myprojectenv python-path=/home/sammy/myproject\n')
                 list_lines.append('WSGIProcessGroup viewer-framework\n')
                 list_lines.append('WSGIScriptAlias / {}/viewer-framework/viewer-framework/wsgi.py\n'.format(path_project))
 
@@ -135,32 +129,10 @@ def config_django_settings(id_corpus, path_data_corpus):
                 if line.startswith('DEBUG'):
                     line = 'DEBUG = False'
 
-                # if line.startswith('ALLOWED_HOSTS'):
-                    # line = 'ALLOWED_HOSTS = ["somehost"]'
-
                 if line.startswith('DASHBOARD_AVAILABLE'):
                     continue
 
                 list_lines.append(line)
-
-
-            # if line.startswith('DATABASES'):
-            #     is_databases = True
-                
-            # if not is_databases:
-            #     list_lines.append(line)
-            # else:
-            #     if line.startswith('}'):
-            #         is_databases = False
-
-            # if line.startswith('PATH_FILES_CACHE'):
-            #     line = 'PATH_FILES_CACHE = "{}"'.format(path_cache)
-            #     list_lines.append(line)
-
-            # if line.startswith('PATH_FILES_INDEX'):
-            #     line = 'PATH_FILES_INDEX = "{}"'.format(path_index)
-            #     list_lines.append(line)
-
 
 
     dict_databases = {
@@ -199,22 +171,6 @@ urlpatterns = [
 ]
         ''')
 
-    # list_lines = []
-    # with open(path_project+'/viewer-framework/viewer/urls.py', 'r') as f:
-    #     for line in f:
-    #         if '<str:id_corpus>' in line:
-    #             line = line.replace('<str:id_corpus>\'', '\'')
-    #             line = line.replace('<str:id_corpus>/', '')
-    #             line = line.replace('name=', '{\'id_corpus\': \''+id_corpus+'\'}, name=')
-        
-    #             # line = line[:-3]+', {\'id_corpus\': \''+id_corpus+'\'}'+line[-3:]
-
-    #         list_lines.append(line)
-
-
-    # with open(path_project+'/viewer-framework/viewer/urls.py', 'w') as f:
-    #     for line in list_lines:
-    #         f.write(line)
 
 def config_django_templates():
 
