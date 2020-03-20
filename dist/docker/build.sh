@@ -1,3 +1,4 @@
 #!/bin/bash
  
-sudo docker build -t corpus-viewer .
+docker build -t webis/corpus-viewer-base:1.0.2 .
+
